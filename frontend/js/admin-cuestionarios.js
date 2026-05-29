@@ -1,808 +1,320 @@
 const API = window.EDUQUAK_API_URL || "";
-
-const token =
-  localStorage.getItem("token");
+const token = localStorage.getItem("token");
 
 if (!token) {
-
-  window.location.href =
-    "/pages/login.html";
-
+  window.location.href = "/pages/login.html";
 }
 
-/* =========================
-   ELEMENTOS
-========================= */
+const cuestionariosGrid = document.getElementById("cuestionariosGrid");
+const buscarInput = document.getElementById("buscarCuestionario");
+const tabs = document.querySelectorAll(".tab-btn");
+const paginationContainer = document.getElementById("cuestionariosPagination");
 
-const cuestionariosGrid =
-  document.getElementById(
-    "cuestionariosGrid"
-  );
-
-const buscarInput =
-  document.getElementById(
-    "buscarCuestionario"
-  );
-
-const tabs =
-  document.querySelectorAll(
-    ".tab-btn"
-  );
-
-const modalPreguntas =
-  document.getElementById(
-    "modalPreguntas"
-  );
-
-const preguntasContainer =
-  document.getElementById(
-    "preguntasContainer"
-  );
-
-const modalTitulo =
-  document.getElementById(
-    "modalTituloCuestionario"
-  );
-
-const modalInfo =
-  document.getElementById(
-    "modalInfoCuestionario"
-  );
-
-const btnCerrarPreguntas =
-  document.getElementById(
-    "btnCerrarPreguntas"
-  );
-
-/* =========================
-   ESTADO
-========================= */
 
 let cuestionarios = [];
-
 let estadoActual = "";
+let paginaActual = 1;
+const limitePorPagina = 20;
+let paginacionActual = { page: 1, limit: limitePorPagina, total: 0, totalPages: 1 };
 
-/* =========================
-   FETCH
-========================= */
-
-async function fetchJson(
-  url,
-  options = {}
-) {
-
-  const response =
-    await fetch(url, {
-
-      ...options,
-
-      headers: {
-
-        Authorization:
-          `Bearer ${token}`,
-
-        "Content-Type":
-          "application/json",
-
-        ...(options.headers || {})
-      }
-    });
-
-  return response.json();
-
+function escaparHTML(valor) {
+  return String(valor ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 }
 
-/* =========================
-   CARGAR
-========================= */
+function construirArchivoUrl(url) {
+  if (!url) return "";
+  if (/^https?:\/\//i.test(url)) return url;
+  return `${API}${url}`;
+}
 
-async function cargarCuestionarios() {
-
-  try {
-
-    const data =
-      await fetchJson(
-        `${API}/api/cuestionarios/admin/todos`
-      );
-
-    if (!data.ok) {
-
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text:
-          data.message ||
-          "No se pudieron cargar cuestionarios"
-      });
-
-      return;
-
+async function fetchJson(url, options = {}) {
+  const response = await fetch(url, {
+    ...options,
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+      ...(options.headers || {})
     }
-
-    cuestionarios =
-      data.cuestionarios || [];
-
-    actualizarKPIs();
-
-    renderCuestionarios();
-
-  } catch (error) {
-
-    console.error(error);
-
-    Swal.fire({
-      icon: "error",
-      title: "Error",
-      text:
-        "Error al cargar cuestionarios"
-    });
-
-  }
-
-}
-
-/* =========================
-   KPIS
-========================= */
-
-function actualizarKPIs() {
-
-  const total =
-    cuestionarios.length;
-
-  const pendientes =
-    cuestionarios.filter(
-      c =>
-        c.estado_revision ===
-        "pendiente_revision"
-    ).length;
-
-  const aprobados =
-    cuestionarios.filter(
-      c =>
-        c.estado_revision ===
-        "aprobado"
-    ).length;
-
-  const rechazados =
-    cuestionarios.filter(
-      c =>
-        c.estado_revision ===
-        "rechazado"
-    ).length;
-
-  document.getElementById(
-    "totalCuestionarios"
-  ).textContent = total;
-
-  document.getElementById(
-    "totalPendientes"
-  ).textContent = pendientes;
-
-  document.getElementById(
-    "totalAprobados"
-  ).textContent = aprobados;
-
-  document.getElementById(
-    "totalRechazados"
-  ).textContent = rechazados;
-
-}
-
-/* =========================
-   RENDER
-========================= */
-
-function renderCuestionarios() {
-
-  let filtrados =
-    [...cuestionarios];
-
-  const texto =
-    buscarInput.value
-      .toLowerCase()
-      .trim();
-
-  if (texto) {
-
-    filtrados =
-      filtrados.filter(c =>
-
-        c.titulo
-          .toLowerCase()
-          .includes(texto)
-
-        ||
-
-        c.materia
-          .toLowerCase()
-          .includes(texto)
-
-        ||
-
-        c.nombre_asesor
-          .toLowerCase()
-          .includes(texto)
-
-      );
-
-  }
-
-  if (estadoActual) {
-
-    filtrados =
-      filtrados.filter(
-        c =>
-          c.estado_revision ===
-          estadoActual
-      );
-
-  }
-
-  if (filtrados.length === 0) {
-
-    cuestionariosGrid.innerHTML = `
-
-      <div class="empty-state">
-
-        No se encontraron cuestionarios.
-
-      </div>
-
-    `;
-
-    return;
-
-  }
-
-  cuestionariosGrid.innerHTML = "";
-
-  filtrados.forEach(c => {
-
-    cuestionariosGrid.innerHTML += `
-
-      <article class="cuestionario-card">
-
-        <div class="cuestionario-top">
-
-          <div>
-
-            <span class="materia-badge">
-
-              ${c.materia}
-
-            </span>
-
-            <h3 class="cuestionario-title">
-
-              ${c.titulo}
-
-            </h3>
-
-          </div>
-
-          <span class="
-            estado-badge
-            ${c.estado_revision}
-          ">
-
-            ${formatearEstado(
-              c.estado_revision
-            )}
-
-          </span>
-
-        </div>
-
-        <p class="cuestionario-description">
-
-          ${
-            c.descripcion ||
-            "Sin descripción"
-          }
-
-        </p>
-
-        <div class="cuestionario-meta">
-
-          <span>
-            👤 ${c.nombre_asesor}
-          </span>
-
-          <span>
-            Fecha: ${formatearFecha(
-              c.fecha_creacion
-            )}
-          </span>
-
-        </div>
-
-        ${
-          c.motivo_revision
-            ? `
-              <div class="motivo-box">
-
-                <strong>
-                  Motivo:
-                </strong>
-
-                ${c.motivo_revision}
-
-              </div>
-            `
-            : ""
-        }
-
-        <div class="cuestionario-actions">
-
-          <button
-            class="btn outline"
-            onclick="verPreguntas(
-              ${c.id_cuestionario}
-            )"
-          >
-            Ver preguntas
-          </button>
-
-          <button
-            class="btn success"
-            onclick="aprobarCuestionario(
-              ${c.id_cuestionario}
-            )"
-          >
-            Aprobar
-          </button>
-
-          <button
-            class="btn danger"
-            onclick="rechazarCuestionario(
-              ${c.id_cuestionario}
-            )"
-          >
-            Rechazar
-          </button>
-
-        </div>
-
-      </article>
-
-    `;
-
   });
 
+  return response.json().catch(() => ({}));
 }
 
-/* =========================
-   FORMATS
-========================= */
+function construirUrlCuestionarios() {
+  const params = new URLSearchParams();
+  params.set("page", String(paginaActual));
+  params.set("limit", String(limitePorPagina));
 
-function formatearEstado(
-  estado
-) {
+  const search = buscarInput.value.trim();
+  if (search) params.set("search", search);
+  if (estadoActual) params.set("estado", estadoActual);
 
-  switch (estado) {
-
-    case "pendiente_revision":
-      return "Pendiente";
-
-    case "aprobado":
-      return "Aprobado";
-
-    case "rechazado":
-      return "Rechazado";
-
-    default:
-      return estado;
-
-  }
-
+  return `${API}/api/cuestionarios/admin/todos?${params.toString()}`;
 }
 
-function formatearFecha(
-  fecha
-) {
-
-  return new Date(fecha)
-    .toLocaleDateString("es-MX");
-
-}
-
-/* =========================
-   VER PREGUNTAS
-========================= */
-
-async function verPreguntas(
-  id
-) {
-
+async function cargarCuestionarios() {
   try {
-
-    const data =
-      await fetchJson(
-        `${API}/api/cuestionarios/admin/${id}/preguntas`
-      );
-
-    if (!data.ok) {
-
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text:
-          data.message
-      });
-
-      return;
-
-    }
-
-    const {
-      cuestionario,
-      preguntas
-    } = data;
-
-    modalTitulo.textContent =
-      cuestionario.titulo;
-
-    modalInfo.textContent = `
-
-      ${cuestionario.materia}
-      •
-      ${cuestionario.nombre_asesor}
-
+    cuestionariosGrid.innerHTML = `
+      <div class="usuario-skeleton"></div>
+      <div class="usuario-skeleton"></div>
+      <div class="usuario-skeleton"></div>
+      <div class="usuario-skeleton"></div>
     `;
 
-    preguntasContainer.innerHTML = "";
+    if (paginationContainer) paginationContainer.innerHTML = "";
 
-    preguntas.forEach(
-      (
-        pregunta,
-        index
-      ) => {
+    const data = await fetchJson(construirUrlCuestionarios());
 
-        preguntasContainer.innerHTML += `
+    if (!data.ok) {
+      Swal.fire({ icon: "error", title: "Error", text: data.message || "No se pudieron cargar cuestionarios" });
+      return;
+    }
 
-          <article class="pregunta-preview-card">
+    cuestionarios = data.cuestionarios || [];
+    paginacionActual = data.pagination || paginacionActual;
 
-            <div class="pregunta-head">
-
-              <span class="pregunta-number">
-
-                Pregunta ${index + 1}
-
-              </span>
-
-            </div>
-
-            <h4 class="pregunta-text">
-
-              ${pregunta.pregunta}
-
-            </h4>
-
-            <div class="opciones-preview">
-
-              ${crearOpcion(
-                "A",
-                pregunta.opcion_a,
-                pregunta.respuesta_correcta
-              )}
-
-              ${crearOpcion(
-                "B",
-                pregunta.opcion_b,
-                pregunta.respuesta_correcta
-              )}
-
-              ${crearOpcion(
-                "C",
-                pregunta.opcion_c,
-                pregunta.respuesta_correcta
-              )}
-
-              ${crearOpcion(
-                "D",
-                pregunta.opcion_d,
-                pregunta.respuesta_correcta
-              )}
-
-            </div>
-
-          </article>
-
-        `;
-
-      }
-    );
-
-    modalPreguntas.classList
-      .remove("hidden");
-
+    actualizarKPIs(data.resumen || {});
+    renderCuestionarios();
+    renderPaginacion();
   } catch (error) {
-
     console.error(error);
-
+    Swal.fire({ icon: "error", title: "Error", text: "Error al cargar cuestionarios" });
   }
-
 }
 
-function crearOpcion(
-  letra,
-  texto,
-  correcta
-) {
+function actualizarKPIs(resumen) {
+  document.getElementById("totalCuestionarios").textContent = resumen.total ?? 0;
+  document.getElementById("totalPendientes").textContent = resumen.pendientes ?? 0;
+  document.getElementById("totalAprobados").textContent = resumen.aprobados ?? 0;
+  document.getElementById("totalRechazados").textContent = resumen.rechazados ?? 0;
+}
 
-  return `
+function renderCuestionarios() {
+  if (cuestionarios.length === 0) {
+    cuestionariosGrid.innerHTML = `<div class="empty-state">No se encontraron cuestionarios.</div>`;
+    return;
+  }
 
-    <div class="
-      opcion-preview
-      ${
-        correcta === letra
-          ? "correcta"
-          : ""
-      }
-    ">
+  cuestionariosGrid.innerHTML = cuestionarios.map((c) => `
+    <article class="cuestionario-card">
+      <div class="cuestionario-top">
+        <div>
+          <span class="materia-badge">${escaparHTML(c.materia)}</span>
+          <h3 class="cuestionario-title">${escaparHTML(c.titulo)}</h3>
+        </div>
+        <span class="estado-badge ${escaparHTML(c.estado_revision)}">${formatEstado(c.estado_revision)}</span>
+      </div>
 
-      <span class="opcion-letter">
+      <p class="cuestionario-description">${escaparHTML(c.descripcion || "Sin descripción")}</p>
 
-        ${letra}
+      <div class="cuestionario-meta">
+        <span>👤 ${escaparHTML(c.nombre_asesor)}</span>
+        <span>Fecha: ${formatFecha(c.fecha_creacion)}</span>
+      </div>
 
-      </span>
+      ${c.motivo_revision ? `<div class="motivo-box"><strong>Motivo:</strong> ${escaparHTML(c.motivo_revision)}</div>` : ""}
 
-      <span>
+      <div class="cuestionario-actions">
+        <button class="btn outline" data-action="questions" data-id="${c.id_cuestionario}">Ver preguntas</button>
+        <button class="btn success" data-action="approve" data-id="${c.id_cuestionario}">Aprobar</button>
+        <button class="btn danger" data-action="reject" data-id="${c.id_cuestionario}">Rechazar</button>
+      </div>
+    </article>
+  `).join("");
+}
 
-        ${texto}
+function renderPaginacion() {
+  if (!paginationContainer) return;
 
-      </span>
+  const { page, total, totalPages, limit } = paginacionActual;
+  const inicio = total === 0 ? 0 : ((page - 1) * limit) + 1;
+  const fin = Math.min(page * limit, total);
 
-      ${
-        correcta === letra
-          ? `
-            <span class="correcta-icon">
-              ✅
-            </span>
-          `
-          : ""
-      }
-
+  paginationContainer.innerHTML = `
+    <div class="pagination-info">Mostrando <strong>${inicio}-${fin}</strong> de <strong>${total}</strong> cuestionarios</div>
+    <div class="pagination-actions">
+      <button class="btn outline" type="button" data-page="first" ${page <= 1 ? "disabled" : ""}>Primera</button>
+      <button class="btn outline" type="button" data-page="prev" ${page <= 1 ? "disabled" : ""}>Anterior</button>
+      <span class="pagination-page">Página ${page} de ${totalPages}</span>
+      <button class="btn outline" type="button" data-page="next" ${page >= totalPages ? "disabled" : ""}>Siguiente</button>
+      <button class="btn outline" type="button" data-page="last" ${page >= totalPages ? "disabled" : ""}>Última</button>
     </div>
-
   `;
-
 }
 
-/* =========================
-   APROBAR
-========================= */
+function cambiarPagina(accion) {
+  const totalPages = paginacionActual.totalPages || 1;
+  if (accion === "first") paginaActual = 1;
+  if (accion === "prev") paginaActual = Math.max(1, paginaActual - 1);
+  if (accion === "next") paginaActual = Math.min(totalPages, paginaActual + 1);
+  if (accion === "last") paginaActual = totalPages;
+  cargarCuestionarios();
+}
 
-async function aprobarCuestionario(
-  id
-) {
+function reiniciarYCargar() {
+  paginaActual = 1;
+  cargarCuestionarios();
+}
 
-  const result =
-    await Swal.fire({
-
-      title:
-        "¿Aprobar cuestionario?",
-
-      text:
-        "Será visible para alumnos.",
-
-      icon: "question",
-
-      showCancelButton: true,
-
-      confirmButtonText:
-        "Sí, aprobar",
-
-      cancelButtonText:
-        "Cancelar"
-    });
-
-  if (!result.isConfirmed) {
-    return;
+function formatEstado(estado) {
+  switch (estado) {
+    case "pendiente_revision": return "Pendiente";
+    case "aprobado": return "Aprobado";
+    case "rechazado": return "Rechazado";
+    default: return estado || "-";
   }
+}
+
+function formatFecha(fecha) {
+  if (!fecha) return "-";
+  return new Date(fecha).toLocaleDateString("es-MX");
+}
+
+async function aprobarCuestionario(id) {
+  const result = await Swal.fire({
+    title: "¿Aprobar cuestionario?",
+    text: "El cuestionario será visible para alumnos.",
+    icon: "question",
+    showCancelButton: true,
+    confirmButtonText: "Sí, aprobar",
+    cancelButtonText: "Cancelar"
+  });
+
+  if (!result.isConfirmed) return;
 
   try {
-
-    const data =
-      await fetchJson(
-        `${API}/api/cuestionarios/admin/${id}/approve`,
-        {
-          method: "PUT"
-        }
-      );
-
+    const data = await fetchJson(`${API}/api/cuestionarios/admin/${id}/approve`, { method: "PUT" });
     if (!data.ok) {
-
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: data.message
-      });
-
+      Swal.fire({ icon: "error", title: "Error", text: data.message });
       return;
-
     }
-
-    Swal.fire({
-      icon: "success",
-      title:
-        "Cuestionario aprobado",
-      timer: 1600,
-      showConfirmButton: false
-    });
-
+    Swal.fire({ icon: "success", title: "Cuestionario aprobado", timer: 1600, showConfirmButton: false });
     cargarCuestionarios();
-
   } catch (error) {
-
     console.error(error);
-
   }
-
 }
 
-/* =========================
-   RECHAZAR
-========================= */
+async function rechazarCuestionario(id) {
+  const result = await Swal.fire({
+    title: "Rechazar cuestionario",
+    input: "textarea",
+    inputLabel: "Motivo del rechazo",
+    inputPlaceholder: "Ej. Archivo incorrecto...",
+    showCancelButton: true,
+    confirmButtonText: "Rechazar",
+    cancelButtonText: "Cancelar"
+  });
 
-async function rechazarCuestionario(
-  id
-) {
-
-  const result =
-    await Swal.fire({
-
-      title:
-        "Rechazar cuestionario",
-
-      input: "textarea",
-
-      inputLabel:
-        "Motivo del rechazo",
-
-      inputPlaceholder:
-        "Ej. Preguntas incorrectas...",
-
-      showCancelButton: true,
-
-      confirmButtonText:
-        "Rechazar",
-
-      cancelButtonText:
-        "Cancelar"
-    });
-
-  if (!result.isConfirmed) {
-    return;
-  }
+  if (!result.isConfirmed) return;
 
   try {
-
-    const data =
-      await fetchJson(
-        `${API}/api/cuestionarios/admin/${id}/reject`,
-        {
-
-          method: "PUT",
-
-          body: JSON.stringify({
-
-            motivo_revision:
-              result.value
-
-          })
-
-        }
-      );
-
-    if (!data.ok) {
-
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: data.message
-      });
-
-      return;
-
-    }
-
-    Swal.fire({
-      icon: "success",
-      title:
-        "Cuestionario rechazado",
-      timer: 1600,
-      showConfirmButton: false
+    const data = await fetchJson(`${API}/api/cuestionarios/admin/${id}/reject`, {
+      method: "PUT",
+      body: JSON.stringify({ motivo_revision: result.value })
     });
-
+    if (!data.ok) {
+      Swal.fire({ icon: "error", title: "Error", text: data.message });
+      return;
+    }
+    Swal.fire({ icon: "success", title: "Cuestionario rechazado", timer: 1600, showConfirmButton: false });
     cargarCuestionarios();
-
   } catch (error) {
-
     console.error(error);
-
   }
-
 }
 
-/* =========================
-   MODAL
-========================= */
+const modalPreguntas = document.getElementById("modalPreguntas");
+const preguntasContainer = document.getElementById("preguntasContainer");
+const modalTitulo = document.getElementById("modalTituloCuestionario");
+const modalInfo = document.getElementById("modalInfoCuestionario");
+const btnCerrarPreguntas = document.getElementById("btnCerrarPreguntas");
 
-btnCerrarPreguntas
-?.addEventListener(
-  "click",
-  () => {
+async function verPreguntas(id) {
+  try {
+    const data = await fetchJson(`${API}/api/cuestionarios/admin/${id}/preguntas`);
 
-    modalPreguntas.classList
-      .add("hidden");
-
-  }
-);
-
-/* =========================
-   BUSCADOR
-========================= */
-
-buscarInput
-?.addEventListener(
-  "input",
-  renderCuestionarios
-);
-
-/* =========================
-   TABS
-========================= */
-
-tabs.forEach(tab => {
-
-  tab.addEventListener(
-    "click",
-    () => {
-
-      tabs.forEach(t =>
-        t.classList.remove(
-          "active"
-        )
-      );
-
-      tab.classList.add(
-        "active"
-      );
-
-      estadoActual =
-        tab.dataset.estado;
-
-      renderCuestionarios();
-
+    if (!data.ok) {
+      Swal.fire({ icon: "error", title: "Error", text: data.message });
+      return;
     }
-  );
 
+    const { cuestionario, preguntas } = data;
+    modalTitulo.textContent = cuestionario.titulo;
+    modalInfo.textContent = `${cuestionario.materia} • ${cuestionario.nombre_asesor}`;
+
+    preguntasContainer.innerHTML = (preguntas || []).map((pregunta, index) => `
+      <article class="pregunta-preview-card">
+        <div class="pregunta-head"><span class="pregunta-number">Pregunta ${index + 1}</span></div>
+        <h4 class="pregunta-text">${escaparHTML(pregunta.pregunta)}</h4>
+        <div class="opciones-preview">
+          ${crearOpcion("A", pregunta.opcion_a, pregunta.respuesta_correcta)}
+          ${crearOpcion("B", pregunta.opcion_b, pregunta.respuesta_correcta)}
+          ${crearOpcion("C", pregunta.opcion_c, pregunta.respuesta_correcta)}
+          ${crearOpcion("D", pregunta.opcion_d, pregunta.respuesta_correcta)}
+        </div>
+      </article>
+    `).join("");
+
+    modalPreguntas.classList.remove("hidden");
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+function crearOpcion(letra, texto, correcta) {
+  return `
+    <div class="opcion-preview ${letra === correcta ? "correcta" : ""}">
+      <strong>${letra}</strong> ${escaparHTML(texto)}
+    </div>
+  `;
+}
+
+cuestionariosGrid?.addEventListener("click", (event) => {
+  const boton = event.target.closest("button[data-action]");
+  if (!boton) return;
+
+  if (boton.dataset.action === "questions") verPreguntas(boton.dataset.id);
+  if (boton.dataset.action === "approve") aprobarCuestionario(boton.dataset.id);
+  if (boton.dataset.action === "reject") rechazarCuestionario(boton.dataset.id);
 });
 
-/* =========================
-   LOGOUT
-========================= */
+paginationContainer?.addEventListener("click", (event) => {
+  const boton = event.target.closest("button[data-page]");
+  if (!boton || boton.disabled) return;
+  cambiarPagina(boton.dataset.page);
+});
 
-document
-  .getElementById(
-    "btnLogout"
-  )
-  ?.addEventListener(
-    "click",
-    () => {
+btnCerrarPreguntas?.addEventListener("click", () => {
+  modalPreguntas.classList.add("hidden");
+});
 
-      localStorage.clear();
+buscarInput?.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") reiniciarYCargar();
+});
 
-      window.location.href =
-        "/pages/login.html";
+buscarInput?.addEventListener("input", () => {
+  clearTimeout(buscarInput._timer);
+  buscarInput._timer = setTimeout(reiniciarYCargar, 450);
+});
 
-    }
-  );
+tabs.forEach((tab) => {
+  tab.addEventListener("click", () => {
+    tabs.forEach((t) => t.classList.remove("active"));
+    tab.classList.add("active");
+    estadoActual = tab.dataset.estado || "";
+    reiniciarYCargar();
+  });
+});
 
-/* =========================
-   INIT
-========================= */
+document.getElementById("btnLogout")?.addEventListener("click", () => {
+  localStorage.clear();
+  window.location.href = "/pages/login.html";
+});
 
 cargarCuestionarios();

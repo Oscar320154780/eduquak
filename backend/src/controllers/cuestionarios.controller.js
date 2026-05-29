@@ -31,6 +31,21 @@ function allQuery(sql, params = []) {
   });
 }
 
+
+
+function normalizarPaginacion(req, limiteDefault = 20, limiteMaximo = 100) {
+  const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
+  const limitSolicitado = parseInt(req.query.limit, 10) || limiteDefault;
+  const limit = Math.min(Math.max(limitSolicitado, 1), limiteMaximo);
+  const offset = (page - 1) * limit;
+
+  return { page, limit, offset };
+}
+
+function normalizarTexto(valor) {
+  return String(valor || "").trim();
+}
+
 // ASESOR: crear cuestionario
 exports.crearCuestionario = async (req, res) => {
   try {
@@ -74,6 +89,21 @@ exports.crearCuestionario = async (req, res) => {
     });
   }
 };
+
+
+
+function normalizarPaginacion(req, limiteDefault = 20, limiteMaximo = 100) {
+  const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
+  const limitSolicitado = parseInt(req.query.limit, 10) || limiteDefault;
+  const limit = Math.min(Math.max(limitSolicitado, 1), limiteMaximo);
+  const offset = (page - 1) * limit;
+
+  return { page, limit, offset };
+}
+
+function normalizarTexto(valor) {
+  return String(valor || "").trim();
+}
 
 // ASESOR: crear cuestionario completo con preguntas
 exports.crearCuestionarioCompleto = async (req, res) => {
@@ -535,6 +565,51 @@ exports.responderCuestionario = async (req, res) => {
 // ADMIN: ver todos los cuestionarios
 exports.obtenerTodosLosCuestionarios = async (req, res) => {
   try {
+    const { page, limit, offset } = normalizarPaginacion(req, 20, 100);
+    const search = normalizarTexto(req.query.search).toLowerCase();
+    const estado = normalizarTexto(req.query.estado).toLowerCase();
+
+    const where = [];
+    const params = [];
+
+    if (["pendiente_revision", "aprobado", "rechazado", "oculto"].includes(estado)) {
+      where.push("q.estado_revision = ?");
+      params.push(estado);
+    }
+
+    if (search) {
+      where.push(`(
+        LOWER(q.titulo) LIKE ?
+        OR LOWER(q.materia) LIKE ?
+        OR LOWER(u.nombre) LIKE ?
+        OR LOWER(COALESCE(q.descripcion, '')) LIKE ?
+      )`);
+      params.push(`%${search}%`, `%${search}%`, `%${search}%`, `%${search}%`);
+    }
+
+    const whereSql = where.length ? `WHERE ${where.join(" AND ")}` : "";
+
+    const totalFiltrado = await getQuery(
+      `
+      SELECT COUNT(*) AS total
+      FROM cuestionarios q
+      JOIN usuarios u ON q.id_asesor = u.id_usuario
+      ${whereSql}
+      `,
+      params
+    );
+
+    const resumen = await getQuery(
+      `
+      SELECT
+        COUNT(*) AS total,
+        COALESCE(SUM(CASE WHEN estado_revision = 'pendiente_revision' THEN 1 ELSE 0 END), 0) AS pendientes,
+        COALESCE(SUM(CASE WHEN estado_revision = 'aprobado' THEN 1 ELSE 0 END), 0) AS aprobados,
+        COALESCE(SUM(CASE WHEN estado_revision = 'rechazado' THEN 1 ELSE 0 END), 0) AS rechazados
+      FROM cuestionarios
+      `
+    );
+
     const cuestionarios = await allQuery(
       `SELECT
         q.id_cuestionario,
@@ -548,12 +623,29 @@ exports.obtenerTodosLosCuestionarios = async (req, res) => {
         u.correo AS correo_asesor
       FROM cuestionarios q
       JOIN usuarios u ON q.id_asesor = u.id_usuario
-      ORDER BY q.fecha_creacion DESC`
+      ${whereSql}
+      ORDER BY q.fecha_creacion DESC, q.id_cuestionario DESC
+      LIMIT ? OFFSET ?`,
+      [...params, limit, offset]
     );
+
+    const total = Number(totalFiltrado?.total || 0);
 
     return res.json({
       ok: true,
-      cuestionarios
+      cuestionarios,
+      resumen: {
+        total: Number(resumen?.total || 0),
+        pendientes: Number(resumen?.pendientes || 0),
+        aprobados: Number(resumen?.aprobados || 0),
+        rechazados: Number(resumen?.rechazados || 0)
+      },
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.max(Math.ceil(total / limit), 1)
+      }
     });
   } catch (error) {
     console.error("Error al obtener todos los cuestionarios:", error);

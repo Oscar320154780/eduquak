@@ -1320,3 +1320,115 @@ a {
   }
 
 }
+
+/* =========================
+   PAGINACIÓN / FIX OVERFLOW
+========================= */
+
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.dashboard,
+.panel-card,
+.stats-grid,
+.usuarios-grid,
+.materiales-grid,
+.cuestionarios-grid,
+.reportes-grid {
+  min-width: 0;
+}
+
+.usuarios-grid,
+.materiales-grid,
+.cuestionarios-grid,
+.reportes-grid {
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+}
+
+.usuario-card,
+.material-card,
+.cuestionario-card,
+.reporte-card {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.usuario-top,
+.material-top,
+.cuestionario-top,
+.reporte-top {
+  min-width: 0;
+}
+
+.usuario-identidad,
+.usuario-top > div,
+.material-top > div,
+.cuestionario-top > div,
+.reporte-top > div {
+  min-width: 0;
+}
+
+.usuario-top h3,
+.material-title,
+.cuestionario-title,
+.reporte-title,
+.usuario-correo {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.pagination-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  box-shadow: var(--shadow);
+  padding: 18px 20px;
+  margin-top: 22px;
+}
+
+.pagination-info {
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.pagination-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.pagination-page {
+  color: var(--primary-dark);
+  font-weight: 800;
+  padding: 0 6px;
+}
+
+.pagination-bar .btn[disabled] {
+  opacity: .45;
+  cursor: not-allowed;
+  transform: none;
+}
+
+@media (max-width: 768px) {
+  .pagination-bar,
+  .pagination-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .pagination-bar .btn,
+  .pagination-actions .btn {
+    width: 100%;
+  }
+}
+

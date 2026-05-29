@@ -6,6 +6,25 @@ const {
   allQuery
 } = require("../utils/dbHelpers");
 
+
+
+/* =========================
+   PAGINACION / FILTROS
+========================= */
+
+function normalizarPaginacion(req, limiteDefault = 20, limiteMaximo = 100) {
+  const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
+  const limitSolicitado = parseInt(req.query.limit, 10) || limiteDefault;
+  const limit = Math.min(Math.max(limitSolicitado, 1), limiteMaximo);
+  const offset = (page - 1) * limit;
+
+  return { page, limit, offset };
+}
+
+function normalizarTexto(valor) {
+  return String(valor || "").trim();
+}
+
 /* =========================
    SEED ADMIN TEMPORAL
 ========================= */
@@ -106,6 +125,58 @@ exports.seedAdmin = async (req, res) => {
 
 exports.getPendingUsers = async (req, res) => {
   try {
+    const { page, limit, offset } = normalizarPaginacion(req, 20, 100);
+    const search = normalizarTexto(req.query.search).toLowerCase();
+    const rol = normalizarTexto(req.query.rol).toLowerCase();
+    const estado = normalizarTexto(req.query.estado).toLowerCase();
+
+    const where = [
+      "u.rol IN ('alumno', 'asesor')"
+    ];
+
+    const params = [];
+
+    if (search) {
+      params.push(`%${search}%`);
+      where.push(`(
+        LOWER(u.nombre) LIKE $${params.length}
+        OR LOWER(u.correo) LIKE $${params.length}
+      )`);
+    }
+
+    if (["alumno", "asesor"].includes(rol)) {
+      params.push(rol);
+      where.push(`u.rol = $${params.length}`);
+    }
+
+    if (["pendiente", "verificado", "rechazado"].includes(estado)) {
+      params.push(estado);
+      where.push(`u.estado_validacion = $${params.length}`);
+    }
+
+    const whereSql = where.length ? `WHERE ${where.join(" AND ")}` : "";
+
+    const totalFiltradoRow = await getQuery(
+      `
+      SELECT COUNT(*)::int AS total
+      FROM usuarios u
+      ${whereSql}
+      `,
+      params
+    );
+
+    const resumen = await getQuery(
+      `
+      SELECT
+        COUNT(*)::int AS total,
+        COALESCE(SUM(CASE WHEN estado_validacion = 'pendiente' THEN 1 ELSE 0 END), 0)::int AS pendientes,
+        COALESCE(SUM(CASE WHEN estado_validacion = 'verificado' THEN 1 ELSE 0 END), 0)::int AS verificados,
+        COALESCE(SUM(CASE WHEN estado_validacion = 'rechazado' THEN 1 ELSE 0 END), 0)::int AS rechazados
+      FROM usuarios
+      WHERE rol IN ('alumno', 'asesor')
+      `
+    );
+
     const users = await allQuery(
       `
       SELECT
@@ -139,10 +210,13 @@ exports.getPendingUsers = async (req, res) => {
       LEFT JOIN asesores s
         ON u.id_usuario = s.id_usuario
 
-      WHERE u.rol IN ('alumno', 'asesor')
+      ${whereSql}
 
-      ORDER BY u.fecha_registro DESC
-      `
+      ORDER BY u.fecha_registro DESC, u.id_usuario DESC
+      LIMIT $${params.length + 1}
+      OFFSET $${params.length + 2}
+      `,
+      [...params, limit, offset]
     );
 
     const usersFormateados = users.map((u) => {
@@ -180,9 +254,23 @@ exports.getPendingUsers = async (req, res) => {
       };
     });
 
+    const total = Number(totalFiltradoRow?.total || 0);
+
     return res.json({
       ok: true,
-      users: usersFormateados
+      users: usersFormateados,
+      resumen: {
+        total: Number(resumen?.total || 0),
+        pendientes: Number(resumen?.pendientes || 0),
+        verificados: Number(resumen?.verificados || 0),
+        rechazados: Number(resumen?.rechazados || 0)
+      },
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.max(Math.ceil(total / limit), 1)
+      }
     });
   } catch (error) {
     console.error("Error al obtener usuarios:", error);
@@ -330,6 +418,41 @@ exports.rejectUser = async (req, res) => {
 
 exports.obtenerReportesAsesorias = async (req, res) => {
   try {
+    const { page, limit, offset } = normalizarPaginacion(req, 20, 100);
+    const estado = normalizarTexto(req.query.estado).toLowerCase();
+    const search = normalizarTexto(req.query.search).toLowerCase();
+
+    const where = [];
+    const params = [];
+
+    if (["pendiente", "revisado", "resuelto"].includes(estado)) {
+      params.push(estado);
+      where.push(`r.estado = $${params.length}`);
+    }
+
+    if (search) {
+      params.push(`%${search}%`);
+      where.push(`(
+        LOWER(alumno.nombre) LIKE $${params.length}
+        OR LOWER(asesor.nombre) LIKE $${params.length}
+        OR LOWER(r.motivo) LIKE $${params.length}
+        OR LOWER(COALESCE(r.descripcion, '')) LIKE $${params.length}
+      )`);
+    }
+
+    const whereSql = where.length ? `WHERE ${where.join(" AND ")}` : "";
+
+    const totalFiltradoRow = await getQuery(
+      `
+      SELECT COUNT(*)::int AS total
+      FROM reportes_asesoria r
+      JOIN usuarios alumno ON r.id_alumno = alumno.id_usuario
+      JOIN usuarios asesor ON r.id_asesor = asesor.id_usuario
+      ${whereSql}
+      `,
+      params
+    );
+
     const reportes = await allQuery(
       `
       SELECT
@@ -372,6 +495,8 @@ exports.obtenerReportesAsesorias = async (req, res) => {
       JOIN asesorias a
         ON r.id_asesoria = a.id_asesoria
 
+      ${whereSql}
+
       ORDER BY
         CASE r.estado
           WHEN 'pendiente' THEN 1
@@ -381,19 +506,24 @@ exports.obtenerReportesAsesorias = async (req, res) => {
         END,
         total_reportes DESC,
         r.fecha_reporte DESC
-      `
+      LIMIT $${params.length + 1}
+      OFFSET $${params.length + 2}
+      `,
+      [...params, limit, offset]
     );
 
     const resumen = await getQuery(
       `
       SELECT
-        COUNT(*) AS total,
-        COALESCE(SUM(CASE WHEN estado = 'pendiente' THEN 1 ELSE 0 END), 0) AS pendientes,
-        COALESCE(SUM(CASE WHEN estado = 'revisado' THEN 1 ELSE 0 END), 0) AS revisados,
-        COALESCE(SUM(CASE WHEN estado = 'resuelto' THEN 1 ELSE 0 END), 0) AS resueltos
+        COUNT(*)::int AS total,
+        COALESCE(SUM(CASE WHEN estado = 'pendiente' THEN 1 ELSE 0 END), 0)::int AS pendientes,
+        COALESCE(SUM(CASE WHEN estado = 'revisado' THEN 1 ELSE 0 END), 0)::int AS revisados,
+        COALESCE(SUM(CASE WHEN estado = 'resuelto' THEN 1 ELSE 0 END), 0)::int AS resueltos
       FROM reportes_asesoria
       `
     );
+
+    const total = Number(totalFiltradoRow?.total || 0);
 
     return res.json({
       ok: true,
@@ -403,6 +533,12 @@ exports.obtenerReportesAsesorias = async (req, res) => {
         pendientes: Number(resumen?.pendientes || 0),
         revisados: Number(resumen?.revisados || 0),
         resueltos: Number(resumen?.resueltos || 0)
+      },
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.max(Math.ceil(total / limit), 1)
       }
     });
   } catch (error) {

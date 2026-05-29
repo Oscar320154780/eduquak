@@ -32,6 +32,21 @@ function getQuery(sql, params = []) {
   });
 }
 
+
+
+function normalizarPaginacion(req, limiteDefault = 20, limiteMaximo = 100) {
+  const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
+  const limitSolicitado = parseInt(req.query.limit, 10) || limiteDefault;
+  const limit = Math.min(Math.max(limitSolicitado, 1), limiteMaximo);
+  const offset = (page - 1) * limit;
+
+  return { page, limit, offset };
+}
+
+function normalizarTexto(valor) {
+  return String(valor || "").trim();
+}
+
 // Controla la lógica de subir material: recibe la petición, habla con la base de datos y responde al frontend.
 exports.subirMaterial = async (req, res) => {
   try {
@@ -202,6 +217,51 @@ exports.obtenerMaterialesAprobados = async (req, res) => {
 // ADMIN: ver todos los materiales
 exports.obtenerTodosLosMateriales = async (req, res) => {
   try {
+    const { page, limit, offset } = normalizarPaginacion(req, 20, 100);
+    const search = normalizarTexto(req.query.search).toLowerCase();
+    const estado = normalizarTexto(req.query.estado).toLowerCase();
+
+    const where = [];
+    const params = [];
+
+    if (["pendiente_revision", "aprobado", "rechazado", "oculto"].includes(estado)) {
+      where.push("m.estado_revision = ?");
+      params.push(estado);
+    }
+
+    if (search) {
+      where.push(`(
+        LOWER(m.titulo) LIKE ?
+        OR LOWER(m.materia) LIKE ?
+        OR LOWER(u.nombre) LIKE ?
+        OR LOWER(COALESCE(m.descripcion, '')) LIKE ?
+      )`);
+      params.push(`%${search}%`, `%${search}%`, `%${search}%`, `%${search}%`);
+    }
+
+    const whereSql = where.length ? `WHERE ${where.join(" AND ")}` : "";
+
+    const totalFiltrado = await getQuery(
+      `
+      SELECT COUNT(*) AS total
+      FROM materiales m
+      JOIN usuarios u ON m.id_asesor = u.id_usuario
+      ${whereSql}
+      `,
+      params
+    );
+
+    const resumen = await getQuery(
+      `
+      SELECT
+        COUNT(*) AS total,
+        COALESCE(SUM(CASE WHEN estado_revision = 'pendiente_revision' THEN 1 ELSE 0 END), 0) AS pendientes,
+        COALESCE(SUM(CASE WHEN estado_revision = 'aprobado' THEN 1 ELSE 0 END), 0) AS aprobados,
+        COALESCE(SUM(CASE WHEN estado_revision = 'rechazado' THEN 1 ELSE 0 END), 0) AS rechazados
+      FROM materiales
+      `
+    );
+
     const materiales = await allQuery(
       `SELECT
         m.id_material,
@@ -216,12 +276,29 @@ exports.obtenerTodosLosMateriales = async (req, res) => {
         u.correo AS correo_asesor
       FROM materiales m
       JOIN usuarios u ON m.id_asesor = u.id_usuario
-      ORDER BY m.fecha_subida DESC`
+      ${whereSql}
+      ORDER BY m.fecha_subida DESC, m.id_material DESC
+      LIMIT ? OFFSET ?`,
+      [...params, limit, offset]
     );
+
+    const total = Number(totalFiltrado?.total || 0);
 
     return res.json({
       ok: true,
-      materiales
+      materiales,
+      resumen: {
+        total: Number(resumen?.total || 0),
+        pendientes: Number(resumen?.pendientes || 0),
+        aprobados: Number(resumen?.aprobados || 0),
+        rechazados: Number(resumen?.rechazados || 0)
+      },
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.max(Math.ceil(total / limit), 1)
+      }
     });
   } catch (error) {
     console.error("Error al obtener todos los materiales:", error);
