@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel Asesor - EduQuak</title>
+  <link rel="stylesheet" href="/css/asesor.css">
+  <link rel="stylesheet" href="/css/nav-global.css">
+  <link rel="stylesheet" href="/css/compact-ui.css">
+  <link rel="stylesheet" href="/css/ui-feedback.css">
+  <link rel="stylesheet" href="/css/ui-loading.css">
+  <link rel="stylesheet" href="/css/chatbot-plataforma.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="logo-wrap">
+      <div class="logo-mark">
+        <img src="/img/logo-eduquak.png" alt="Logo EduQuak" onerror="this.style.display='none'">
+      </div>
+      <div class="logo-text">
+        <span class="logo-title">EduQuak</span>
+        <span class="logo-subtitle">Asesor</span>
+      </div>
+    </div>
+
+    <div class="nav-actions">
+      <button id="btnLogout" class="btn danger">Cerrar sesión</button>
+    </div>
+  </nav>
+
+  <main class="container">
+    <section class="hero-card">
+      <div class="hero-content">
+        <div class="hero-info">
+          <span class="badge">Panel del asesor</span>
+          <h1>Hola, <span id="nombre">-</span></h1>
+          <p class="subtitle">
+            Desde aquí puedes gestionar solicitudes, materiales, cuestionarios, asesorías y revisar tus estadísticas.
+          </p>
+
+          <div class="hero-actions">
+            <a href="/pages/perfil_asesor.html" class="btn primary">Ir a mi perfil</a>
+          </div>
+        </div>
+
+        <div class="hero-mini-card">
+          <span class="mini-label">Estado actual</span>
+          <p id="estado">-</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="alertaValidacionAsesor" class="alerta-validacion hidden">
+      <div class="alerta-validacion__icono">!</div>
+
+      <div class="alerta-validacion__contenido">
+        <p class="alerta-validacion__eyebrow">Atención requerida</p>
+        <h2 id="tituloAlertaAsesor">Tu cuenta necesita revisión</h2>
+        <p id="textoAlertaAsesor" class="alerta-validacion__texto">-</p>
+        <p id="motivoAlertaAsesor" class="alerta-validacion__motivo hidden"></p>
+
+        <div class="alerta-validacion__acciones">
+          <a id="btnAccionAlertaAsesor" href="/pages/perfil_asesor.html" class="btn primary">
+            Reenviar documento
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div>
+          <h2>Accesos rápidos</h2>
+          <p>Gestiona tu trabajo de forma rápida y organizada.</p>
+        </div>
+      </div>
+
+      <div class="acciones-grid">
+        <a href="/pages/solicitudes_asesor.html" class="accion-card">
+          <div class="accion-icon"><img src="/img/icon-solicitudes.svg" alt="" aria-hidden="true"></div>
+          <h3>Solicitudes</h3>
+          <p>Revisa, acepta, rechaza o finaliza asesorías de forma intuitiva.</p>
+        </a>
+
+        <a href="/pages/asesorias_asesor.html" class="accion-card">
+          <div class="accion-icon"><img src="/img/icon-asesorias.svg" alt="" aria-hidden="true"></div>
+          <h3>Asesorías</h3>
+          <p>Gestiona tus sesiones individuales y grupales, entra a reuniones y revisa inscritos.</p>
+        </a>
+
+        <a href="/pages/materiales_asesor.html" class="accion-card">
+          <div class="accion-icon"><img src="/img/icon-materiales-asesor.svg" alt="" aria-hidden="true"></div>
+          <h3>Materiales</h3>
+          <p>Sube material y revisa el estado de tus archivos.</p>
+        </a>
+
+        <a href="/pages/cuestionarios_asesor.html" class="accion-card">
+          <div class="accion-icon"><img src="/img/icon-cuestionarios-asesor.svg" alt="" aria-hidden="true"></div>
+          <h3>Cuestionarios</h3>
+          <p>Crea cuestionarios completos con preguntas desde el inicio.</p>
+        </a>
+
+        <a href="/pages/estadisticas_asesor.html" class="accion-card">
+          <div class="accion-icon"><img src="/img/icon-estadisticas.svg" alt="" aria-hidden="true"></div>
+          <h3>Estadísticas</h3>
+          <p>Visualiza tu actividad, rendimiento y seguimiento.</p>
+        </a>
+
+        <a href="/pages/calificaciones_asesor.html" class="accion-card">
+          <div class="accion-icon"><img src="/img/icon-resenas.svg" alt="" aria-hidden="true"></div>
+          <h3>Reseñas</h3>
+          <p>Consulta tu promedio, total de calificaciones y comentarios.</p>
+        </a>
+      </div>
+    </section>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="/js/ui-feedback.js"></script>
+  <script src="/js/ui-loading.js"></script>
+  <script src="/js/chatbot-plataforma.js"></script>
+
+  <script src="/js/asesor.js"></script>
+  <script src="/js/config.js"></script>
+</body>
+</html>

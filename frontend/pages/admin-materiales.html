@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    Admin Materiales - EduQuak
+  </title>
+
+  <link
+    rel="stylesheet"
+    href="/css/admin-materiales.css"
+  >
+
+  <!-- SWEETALERT -->
+
+  <link rel="stylesheet" href="/css/nav-global.css">
+  <link rel="stylesheet" href="/css/compact-ui.css">
+  <link rel="stylesheet" href="/css/ui-feedback.css">
+  <link rel="stylesheet" href="/css/ui-loading.css">
+</head>
+
+<body>
+
+  <!-- NAVBAR -->
+
+  <nav class="navbar">
+
+    <div class="logo-wrap">
+      <div class="logo-mark">
+        <img src="/img/logo-eduquak.png" alt="Logo EduQuak" onerror="this.style.display='none'">
+      </div>
+
+      <div class="logo-text">
+        <span class="logo-title">EduQuak</span>
+        <span class="logo-subtitle">Admin</span>
+      </div>
+    </div>
+
+    <div class="nav-actions">
+
+      <a
+        href="/pages/admin.html"
+        class="nav-link"
+      >Panel admin</a>
+
+      <button
+        id="btnLogout"
+        class="btn danger small"
+      >
+        Cerrar sesión
+      </button>
+
+    </div>
+
+  </nav>
+
+  <!-- MAIN -->
+
+  <main class="dashboard">
+
+    <!-- HERO -->
+
+    <section class="page-header">
+
+      <div>
+
+        <span class="badge">
+          Administración
+        </span>
+
+        <h1>
+          Gestión de materiales
+        </h1>
+
+        <p class="subtitle">
+          Revisa, aprueba o rechaza
+          materiales subidos por asesores.
+        </p>
+
+      </div>
+
+    </section>
+
+    <!-- KPIS -->
+
+    <section class="stats-grid">
+
+      <article class="stat-card">
+
+        <span class="stat-label">
+          Total materiales
+        </span>
+
+        <h2 id="totalMateriales">
+          0
+        </h2>
+
+      </article>
+
+      <article class="stat-card">
+
+        <span class="stat-label">
+          Pendientes
+        </span>
+
+        <h2 id="totalPendientes">
+          0
+        </h2>
+
+      </article>
+
+      <article class="stat-card">
+
+        <span class="stat-label">
+          Aprobados
+        </span>
+
+        <h2 id="totalAprobados">
+          0
+        </h2>
+
+      </article>
+
+      <article class="stat-card">
+
+        <span class="stat-label">
+          Rechazados
+        </span>
+
+        <h2 id="totalRechazados">
+          0
+        </h2>
+
+      </article>
+
+    </section>
+
+    <!-- FILTROS -->
+
+    <section class="panel-card">
+
+      <div class="filters-grid">
+
+        <div class="input-group">
+
+          <label>
+            Buscar material
+          </label>
+
+          <input
+            type="text"
+            id="buscarMaterial"
+            placeholder="Título, materia o asesor..."
+          >
+
+        </div>
+
+      </div>
+
+      <!-- TABS -->
+
+      <div class="tabs-wrapper">
+
+        <div class="tabs-header">
+
+          <span class="tabs-label">
+            Estado
+          </span>
+
+        </div>
+
+        <div class="tabs-container">
+
+          <button
+            class="tab-btn active"
+            data-estado=""
+          >
+            Todos
+          </button>
+
+          <button
+            class="tab-btn"
+            data-estado="pendiente_revision"
+          >
+            Pendientes
+          </button>
+
+          <button
+            class="tab-btn"
+            data-estado="aprobado"
+          >
+            Aprobados
+          </button>
+
+          <button
+            class="tab-btn"
+            data-estado="rechazado"
+          >
+            Rechazados
+          </button>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- GRID -->
+
+    <section
+      id="materialesGrid"
+      class="materiales-grid"
+    ></section>
+
+  </main>
+
+  <!-- MODAL PDF -->
+
+  <div
+    id="modalPdf"
+    class="modal-overlay hidden"
+  >
+
+    <div class="pdf-modal-card">
+
+      <div class="modal-head">
+
+        <div>
+
+          <h3>
+            Vista previa del material
+          </h3>
+
+          <p class="pdf-subtitle">
+            Visualización integrada del archivo.
+          </p>
+
+        </div>
+
+        <button
+          id="btnCerrarPdf"
+          class="modal-close"
+          type="button"
+        >
+          ×
+        </button>
+
+      </div>
+
+      <div class="pdf-actions">
+
+        <a
+          id="btnAbrirPdf"
+          target="_blank"
+          class="btn outline"
+        >
+          Abrir aparte
+        </a>
+
+        <a
+          id="btnDescargarPdf"
+          download
+          class="btn primary"
+        >
+          Descargar
+        </a>
+
+      </div>
+
+      <div class="pdf-container">
+
+        <iframe
+          id="pdfViewer"
+        ></iframe>
+
+      </div>
+
+    </div>
+
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="/js/ui-feedback.js"></script>
+  <script src="/js/ui-loading.js"></script>
+
+  <script src="/js/admin-materiales.js"></script>
+
+  <script src="/js/config.js"></script>
+</body>
+</html>

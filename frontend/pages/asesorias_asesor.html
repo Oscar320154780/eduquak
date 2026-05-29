@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Asesorías - EduQuak</title>
+  <link rel="stylesheet" href="/css/asesorias_asesor.css">
+  <link rel="stylesheet" href="/css/chat-modal.css">
+  <link rel="stylesheet" href="/css/nav-global.css">
+  <link rel="stylesheet" href="/css/compact-ui.css">
+  <link rel="stylesheet" href="/css/ui-feedback.css">
+  <link rel="stylesheet" href="/css/ui-loading.css">
+  <link rel="stylesheet" href="/css/chatbot-plataforma.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="logo-wrap">
+      <div class="logo-mark">
+        <img src="/img/logo-eduquak.png" alt="Logo EduQuak" onerror="this.style.display='none'">
+      </div>
+      <div class="logo-text">
+        <span class="logo-title">EduQuak</span>
+        <span class="logo-subtitle">Asesor</span>
+      </div>
+    </div>
+
+    <div class="nav-actions">
+      <a href="/pages/asesor.html" class="nav-link">Volver al panel</a>
+    </div>
+  </nav>
+
+  <main class="container">
+    <section class="hero-card">
+      <span class="badge">Asesorías</span>
+      <h1>Gestiona tus sesiones individuales y grupales</h1>
+      <p class="subtitle">
+        Aquí puedes entrar a videollamadas, revisar información de tus alumnos, ver inscritos y finalizar sesiones.
+      </p>
+    </section>
+
+    <section class="tabs-card">
+      <div class="tabs-switcher" role="tablist" aria-label="Tipos de asesorías">
+        <button
+          id="tabBtnIndividuales"
+          class="tab-btn active"
+          type="button"
+          data-tab="individuales"
+          role="tab"
+          aria-selected="true"
+        >
+          Individuales
+        </button>
+
+        <button
+          id="tabBtnGrupales"
+          class="tab-btn"
+          type="button"
+          data-tab="grupales"
+          role="tab"
+          aria-selected="false"
+        >
+          Grupales
+        </button>
+
+        <button
+          id="tabBtnHistorial"
+          class="tab-btn"
+          type="button"
+          data-tab="historial"
+          role="tab"
+          aria-selected="false"
+        >
+          Historial
+        </button>
+      </div>
+    </section>
+
+    <div id="mensajeAsesorias" class="message-box hidden"></div>
+
+    <section id="panelTabIndividuales" class="tab-panel active">
+      <section class="panel-card">
+        <div class="section-head">
+          <div>
+            <h2>Asesorías individuales</h2>
+            <p>Sesiones aceptadas con alumnos específicos.</p>
+          </div>
+        </div>
+
+        <div id="listaIndividuales" class="asesorias-grid"></div>
+      </section>
+    </section>
+
+    <section id="panelTabGrupales" class="tab-panel hidden">
+      <section class="panel-card">
+        <div class="section-head section-head-grupales">
+          <div>
+            <h2>Asesorías grupales</h2>
+            <p>Consulta tus grupales aceptadas, revisa cupos e ingresa a la reunión.</p>
+          </div>
+
+          <button id="btnToggleNuevaGrupal" class="btn primary btn-plus" type="button">
+            + Nueva grupal
+          </button>
+        </div>
+
+        <section id="panelNuevaGrupal" class="create-panel hidden">
+          <div class="create-panel-head">
+            <h3>Crear nueva asesoría grupal</h3>
+            <p>Define fecha, hora, cupo y un mensaje opcional para tus alumnos.</p>
+          </div>
+
+          <form id="formNuevaGrupal" class="form-grid">
+            <div class="input-group">
+              <label for="fechaGrupal">Fecha</label>
+              <input type="date" id="fechaGrupal" name="fecha" required>
+            </div>
+
+            <div class="input-group">
+              <label for="horaGrupal">Hora</label>
+              <input type="time" id="horaGrupal" name="hora" required>
+            </div>
+
+            <div class="input-group">
+              <label for="cupoGrupal">Cupo máximo</label>
+              <input type="number" id="cupoGrupal" name="cupo_maximo" min="2" max="50" placeholder="Ej. 10" required>
+            </div>
+
+            <div class="input-group full">
+              <label for="mensajeGrupal">Mensaje opcional</label>
+              <textarea
+                id="mensajeGrupal"
+                name="mensaje"
+                placeholder="Ej. Repaso de integrales, traer dudas y ejercicios previos"
+              ></textarea>
+            </div>
+
+            <div class="button-row form-actions full">
+              <button type="submit" class="btn primary">Crear grupal</button>
+              <button type="button" id="btnCancelarNuevaGrupal" class="btn outline">Cancelar</button>
+            </div>
+          </form>
+        </section>
+
+        <div id="listaGrupalesAsesor" class="asesorias-grid"></div>
+      </section>
+
+      <section id="panelInscritos" class="panel-card hidden">
+        <div class="section-head">
+          <div>
+            <h2>Inscritos de la grupal</h2>
+            <p>Lista de alumnos registrados en la sesión.</p>
+          </div>
+        </div>
+
+        <div id="listaInscritosGrupal" class="inscritos-grid"></div>
+      </section>
+    </section>
+
+    <section id="panelTabHistorial" class="tab-panel hidden">
+      <section class="panel-card">
+        <div class="section-head">
+          <div>
+            <h2>Historial</h2>
+            <p>Asesorías finalizadas para consulta y seguimiento.</p>
+          </div>
+        </div>
+
+        <div id="listaHistorial" class="asesorias-grid"></div>
+      </section>
+    </section>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="/js/ui-feedback.js"></script>
+  <script src="/js/ui-loading.js"></script>
+  <script src="/js/chatbot-plataforma.js"></script>
+
+  <script src="/js/chat-modal.js"></script>
+  <script src="/js/asesorias_asesor.js"></script>
+  <script src="/js/config.js"></script>
+</body>
+</html>

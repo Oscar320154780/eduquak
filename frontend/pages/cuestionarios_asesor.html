@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cuestionarios - EduQuak</title>
+  <link rel="stylesheet" href="/css/cuestionarios_asesor.css">
+  <link rel="stylesheet" href="/css/nav-global.css">
+  <link rel="stylesheet" href="/css/compact-ui.css">
+  <link rel="stylesheet" href="/css/ui-feedback.css">
+  <link rel="stylesheet" href="/css/ui-loading.css">
+  <link rel="stylesheet" href="/css/chatbot-plataforma.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="logo-wrap">
+      <div class="logo-mark">
+        <img src="/img/logo-eduquak.png" alt="Logo EduQuak" onerror="this.style.display='none'">
+      </div>
+      <div class="logo-text">
+        <span class="logo-title">EduQuak</span>
+        <span class="logo-subtitle">Asesor</span>
+      </div>
+    </div>
+
+    <div class="nav-actions">
+      <a href="/pages/asesor.html" class="nav-link">Volver al panel</a>
+    </div>
+  </nav>
+
+  <main class="container">
+    <section class="hero-card">
+      <span class="badge">Cuestionarios</span>
+      <h1>Crea cuestionarios</h1>
+      <p class="subtitle">
+        Agrega título, descripción, materia y preguntas con sus respuestas correctas.
+      </p>
+    </section>
+
+    <section class="tabs-card">
+      <div class="tabs-switcher" role="tablist" aria-label="Secciones de cuestionarios">
+        <button
+          id="tabBtnNuevoCuestionario"
+          class="tab-btn active"
+          type="button"
+          data-tab="nuevo"
+          role="tab"
+          aria-selected="true"
+        >
+          Nuevo cuestionario
+        </button>
+
+        <button
+          id="tabBtnMisCuestionarios"
+          class="tab-btn"
+          type="button"
+          data-tab="mis-cuestionarios"
+          role="tab"
+          aria-selected="false"
+        >
+          Mis cuestionarios
+        </button>
+      </div>
+    </section>
+
+    <div id="mensajeCuestionario" class="message-box hidden"></div>
+
+    <section id="panelTabNuevoCuestionario" class="tab-panel active">
+      <section class="panel-card">
+        <div class="section-head">
+          <h2>Nuevo cuestionario</h2>
+          <p>Crea el cuestionario completo con sus preguntas.</p>
+        </div>
+
+        <form id="formCuestionario" class="form-grid">
+          <div class="input-group">
+            <label for="tituloCuestionario">Título</label>
+            <input type="text" id="tituloCuestionario" placeholder="Ej. Repaso de integrales" required>
+          </div>
+
+          <div class="input-group">
+            <label for="materiaCuestionario">Materia</label>
+            <input type="text" id="materiaCuestionario" placeholder="Ej. Cálculo" required>
+          </div>
+
+          <div class="input-group full">
+            <label for="descripcionCuestionario">Descripción</label>
+            <textarea id="descripcionCuestionario" placeholder="Describe el objetivo del cuestionario"></textarea>
+          </div>
+
+          <div class="full preguntas-head">
+            <h3>Preguntas</h3>
+            <button type="button" id="btnAgregarPregunta" class="btn outline">+ Agregar pregunta</button>
+          </div>
+
+          <div id="contenedorPreguntas" class="preguntas-stack"></div>
+
+          <div class="full">
+            <button type="submit" class="btn primary">Guardar cuestionario</button>
+          </div>
+        </form>
+      </section>
+    </section>
+
+    <section id="panelTabMisCuestionarios" class="tab-panel hidden">
+      <section class="panel-card">
+        <div class="section-head">
+          <h2>Mis cuestionarios</h2>
+          <p>Consulta el estado de tus cuestionarios y revisa su información.</p>
+        </div>
+
+        <div id="listaCuestionariosAsesor" class="cuestionarios-grid"></div>
+      </section>
+    </section>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="/js/ui-feedback.js"></script>
+  <script src="/js/ui-loading.js"></script>
+  <script src="/js/chatbot-plataforma.js"></script>
+
+  <script src="/js/cuestionarios_asesor.js"></script>
+  <script src="/js/config.js"></script>
+</body>
+</html>

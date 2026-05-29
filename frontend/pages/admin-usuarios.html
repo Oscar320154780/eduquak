@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    Gestión de usuarios - EduQuak
+  </title>
+
+  <link
+    rel="stylesheet"
+    href="/css/admin-usuarios.css"
+  >
+
+  <!-- SWEETALERT2 -->
+
+  <link rel="stylesheet" href="/css/nav-global.css">
+  <link rel="stylesheet" href="/css/compact-ui.css">
+  <link rel="stylesheet" href="/css/ui-feedback.css">
+  <link rel="stylesheet" href="/css/ui-loading.css">
+</head>
+<body>
+
+  <!-- NAVBAR -->
+
+  <nav class="navbar">
+
+    <div class="logo-wrap">
+      <div class="logo-mark">
+        <img src="/img/logo-eduquak.png" alt="Logo EduQuak" onerror="this.style.display='none'">
+      </div>
+
+      <div class="logo-text">
+        <span class="logo-title">EduQuak</span>
+        <span class="logo-subtitle">Admin</span>
+      </div>
+    </div>
+
+    <div class="nav-actions">
+
+      <a
+        href="/pages/admin.html"
+        class="nav-link"
+      >Panel admin</a>
+
+      <button
+        id="btnLogout"
+        class="btn danger small"
+      >
+        Cerrar sesión
+      </button>
+
+    </div>
+
+  </nav>
+
+  <!-- MAIN -->
+
+  <main class="dashboard">
+
+    <!-- HEADER -->
+
+    <section class="page-header">
+
+      <div>
+
+        <span class="badge">
+          Administración
+        </span>
+
+        <h1>
+          Gestión de usuarios
+        </h1>
+
+        <p class="subtitle">
+          Administra alumnos y asesores,
+          revisa documentos y controla
+          estados de validación.
+        </p>
+
+      </div>
+
+    </section>
+
+    <!-- CONTADORES -->
+
+    <section class="stats-grid">
+
+      <article class="stat-card">
+
+        <span class="stat-label">
+          Total usuarios
+        </span>
+
+        <h2 id="totalUsuarios">
+          0
+        </h2>
+
+      </article>
+
+      <article class="stat-card">
+
+        <span class="stat-label">
+          Pendientes
+        </span>
+
+        <h2 id="totalPendientes">
+          0
+        </h2>
+
+      </article>
+
+      <article class="stat-card">
+
+        <span class="stat-label">
+          Verificados
+        </span>
+
+        <h2 id="totalVerificados">
+          0
+        </h2>
+
+      </article>
+
+      <article class="stat-card">
+
+        <span class="stat-label">
+          Rechazados
+        </span>
+
+        <h2 id="totalRechazados">
+          0
+        </h2>
+
+      </article>
+
+    </section>
+
+    <!-- FILTROS -->
+
+    <section class="panel-card">
+
+      <div class="filters-grid">
+
+        <!-- BUSCADOR -->
+
+        <div class="input-group">
+
+          <label>
+            Buscar usuario
+          </label>
+
+          <input
+            type="text"
+            id="buscarUsuario"
+            placeholder="Nombre o correo..."
+          >
+
+        </div>
+
+        <!-- FILTRO ROL -->
+
+        <div class="input-group">
+
+          <label>
+            Rol
+          </label>
+
+          <select id="filtroRol">
+
+            <option value="">
+              Todos
+            </option>
+
+            <option value="alumno">
+              Alumno
+            </option>
+
+            <option value="asesor">
+              Asesor
+            </option>
+
+          </select>
+
+        </div>
+
+        <!-- TABS -->
+
+        <div class="tabs-wrapper">
+
+          <div class="tabs-header">
+
+            <label class="tabs-label">
+              Estado
+            </label>
+
+            <button
+              id="btnBuscarUsuarios"
+              class="btn primary"
+              type="button"
+            >
+              Buscar
+            </button>
+
+          </div>
+
+          <div class="tabs-container">
+
+            <button
+              class="tab-btn active"
+              data-estado=""
+              type="button"
+            >
+              Todos
+            </button>
+
+            <button
+              class="tab-btn"
+              data-estado="pendiente"
+              type="button"
+            >
+              Pendientes
+            </button>
+
+            <button
+              class="tab-btn"
+              data-estado="verificado"
+              type="button"
+            >
+              Verificados
+            </button>
+
+            <button
+              class="tab-btn"
+              data-estado="rechazado"
+              type="button"
+            >
+              Rechazados
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- LISTA -->
+
+    <section
+      id="usuariosGrid"
+      class="usuarios-grid"
+    >
+
+      <!-- SKELETONS -->
+
+      <div class="usuario-skeleton"></div>
+      <div class="usuario-skeleton"></div>
+      <div class="usuario-skeleton"></div>
+      <div class="usuario-skeleton"></div>
+
+    </section>
+
+  </main>
+
+  <!-- MODAL PDF -->
+
+  <div
+    id="modalPdf"
+    class="modal-overlay hidden"
+  >
+
+    <div class="pdf-modal-card">
+
+      <!-- HEADER -->
+
+      <div class="modal-head">
+
+        <div>
+
+          <h3>
+            Documento del usuario
+          </h3>
+
+          <p class="pdf-subtitle">
+            Vista previa integrada del archivo.
+          </p>
+
+        </div>
+
+        <button
+          id="btnCerrarPdf"
+          class="modal-close"
+          type="button"
+        >
+          ×
+        </button>
+
+      </div>
+
+      <!-- ACTIONS -->
+
+      <div class="pdf-actions">
+
+        <a
+          id="btnAbrirPdf"
+          class="btn outline"
+          target="_blank"
+        >
+          Abrir aparte
+        </a>
+
+        <a
+          id="btnDescargarPdf"
+          class="btn primary"
+          target="_blank"
+          download
+        >
+          Descargar PDF
+        </a>
+
+      </div>
+
+      <!-- PDF -->
+
+      <div class="pdf-container">
+
+        <iframe
+          id="pdfViewer"
+          src=""
+          frameborder="0"
+        ></iframe>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- JS -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="/js/ui-feedback.js"></script>
+  <script src="/js/ui-loading.js"></script>
+
+  <script src="/js/admin-usuarios.js"></script>
+
+  <script src="/js/config.js"></script>
+</body>
+</html>

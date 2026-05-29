@@ -1,0 +1,288 @@
+
+/* =========================
+   EDUQUAK GLOBAL NAV / LOGO
+   ========================= */
+
+.navbar {
+  min-height: 88px !important;
+  padding: 16px 7% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 24px !important;
+}
+
+.logo-wrap {
+  width: 260px !important;
+  min-width: 260px !important;
+  height: 58px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 14px !important;
+  overflow: hidden !important;
+}
+
+.logo-mark {
+  width: 54px !important;
+  height: 54px !important;
+  min-width: 54px !important;
+  max-width: 54px !important;
+  min-height: 54px !important;
+  max-height: 54px !important;
+  border-radius: 17px !important;
+  overflow: hidden !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+  background: linear-gradient(135deg, var(--primary, #2563eb), var(--primary-dark, #1d4ed8)) !important;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.08) !important;
+}
+
+.logo-mark img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center !important;
+  display: block !important;
+}
+
+.logo-text {
+  width: 180px !important;
+  min-width: 0 !important;
+  height: 48px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  line-height: 1.05 !important;
+}
+
+.logo-title {
+  display: block !important;
+  font-size: 1.35rem !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.01em !important;
+  color: var(--primary-dark, #1d4ed8) !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+.logo-subtitle {
+  display: block !important;
+  margin-top: 4px !important;
+  font-size: 0.88rem !important;
+  font-weight: 800 !important;
+  color: var(--muted, #64748b) !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+/* Admin usa escala y estructura igual, solo color más sobrio */
+body .navbar .logo {
+  display: none !important;
+}
+
+.nav-actions,
+.nav-links {
+  min-height: 54px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 14px !important;
+  flex-wrap: wrap !important;
+}
+
+@media (max-width: 720px) {
+  .navbar {
+    min-height: auto !important;
+    align-items: flex-start !important;
+    flex-direction: column !important;
+    padding: 14px 5% !important;
+  }
+
+  .logo-wrap {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .nav-actions,
+  .nav-links {
+    width: 100% !important;
+    justify-content: flex-start !important;
+  }
+}
+
+
+/* =========================
+   BOTONES DE NAV CONSISTENTES
+   ========================= */
+
+.nav-actions .nav-link,
+.nav-links .nav-link {
+  min-height: 46px !important;
+  padding: 0 18px !important;
+  border-radius: 14px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  background: #f8fbff !important;
+  border: 1px solid #dbe4f0 !important;
+  color: #0f172a !important;
+  font-size: 0.95rem !important;
+  font-weight: 800 !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.04) !important;
+  transition:
+    transform 0.18s ease,
+    border-color 0.18s ease,
+    background 0.18s ease,
+    color 0.18s ease !important;
+}
+
+.nav-actions .nav-link:hover,
+.nav-links .nav-link:hover {
+  transform: translateY(-1px) !important;
+  background: var(--primary-light, #dbeafe) !important;
+  border-color: var(--primary, #2563eb) !important;
+  color: var(--primary-dark, #1d4ed8) !important;
+}
+
+
+
+.nav-links .nav-link[href="/pages/login.html"]::before {
+  content: none !important;
+}
+
+.nav-actions .btn,
+.nav-links .btn,
+.nav-actions button,
+.nav-links button {
+  min-height: 46px !important;
+  border-radius: 14px !important;
+  padding: 0 20px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 0.95rem !important;
+  font-weight: 800 !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+  border: none !important;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08) !important;
+}
+
+.nav-actions .btn.danger,
+.nav-links .btn.danger,
+.nav-actions button.danger,
+.nav-links button.danger {
+  background: #dc2626 !important;
+  color: #ffffff !important;
+}
+
+.nav-actions .btn.danger:hover,
+.nav-links .btn.danger:hover,
+.nav-actions button.danger:hover,
+.nav-links button.danger:hover {
+  background: #b91c1c !important;
+  transform: translateY(-1px) !important;
+}
+
+.nav-actions .btn.small,
+.nav-links .btn.small {
+  min-height: 46px !important;
+  padding: 0 20px !important;
+  font-size: 0.95rem !important;
+}
+
+@media (max-width: 720px) {
+  .nav-actions .nav-link,
+  .nav-links .nav-link,
+  .nav-actions .btn,
+  .nav-links .btn,
+  .nav-actions button,
+  .nav-links button {
+    min-height: 42px !important;
+    padding: 0 14px !important;
+    font-size: 0.9rem !important;
+  }
+}
+
+
+/* Quita flechas automáticas en cualquier botón del nav */
+.nav-actions .nav-link::before,
+.nav-links .nav-link::before,
+.nav-actions .btn::before,
+.nav-links .btn::before,
+.nav-actions button::before,
+.nav-links button::before {
+  content: none !important;
+}
+
+
+/* =========================
+   NAV MÁS DELGADA
+   ========================= */
+
+.navbar {
+  min-height: 68px !important;
+  padding: 9px 7% !important;
+}
+
+.logo-wrap {
+  height: 48px !important;
+  min-height: 48px !important;
+}
+
+.logo-mark {
+  width: 44px !important;
+  height: 44px !important;
+  min-width: 44px !important;
+  max-width: 44px !important;
+  min-height: 44px !important;
+  max-height: 44px !important;
+  border-radius: 14px !important;
+}
+
+.logo-text {
+  height: 42px !important;
+}
+
+.logo-title {
+  font-size: 1.18rem !important;
+}
+
+.logo-subtitle {
+  font-size: 0.78rem !important;
+  margin-top: 2px !important;
+}
+
+.nav-actions,
+.nav-links {
+  min-height: 44px !important;
+}
+
+.nav-actions .nav-link,
+.nav-links .nav-link,
+.nav-actions .btn,
+.nav-links .btn,
+.nav-actions button,
+.nav-links button {
+  min-height: 40px !important;
+  padding: 0 16px !important;
+  border-radius: 12px !important;
+  font-size: 0.9rem !important;
+}
+
+@media (max-width: 720px) {
+  .navbar {
+    padding: 10px 5% !important;
+  }
+
+  .logo-wrap {
+    height: 46px !important;
+  }
+}

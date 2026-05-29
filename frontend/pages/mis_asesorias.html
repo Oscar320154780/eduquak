@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mis asesorías - EduQuak</title>
+
+  <link rel="stylesheet" href="/css/alumno_nav.css">
+  <link rel="stylesheet" href="/css/mis_asesorias.css">
+  <link rel="stylesheet" href="/css/chat-modal.css">
+  <link rel="stylesheet" href="/css/nav-global.css">
+  <link rel="stylesheet" href="/css/compact-ui.css">
+  <link rel="stylesheet" href="/css/ui-feedback.css">
+  <link rel="stylesheet" href="/css/ui-loading.css">
+  <link rel="stylesheet" href="/css/chatbot-plataforma.css">
+</head>
+
+<body>
+
+  <nav class="navbar">
+
+    <div class="logo-wrap">
+      <div class="logo-mark">
+        <img src="/img/logo-eduquak.png" alt="Logo EduQuak" onerror="this.style.display='none'">
+      </div>
+
+      <div class="logo-text">
+        <span class="logo-title">EduQuak</span>
+        <span class="logo-subtitle">Alumno</span>
+      </div>
+    </div>
+
+    <div class="nav-actions">
+      <a href="/pages/alumno.html" class="nav-link">Volver al panel</a>
+    </div>
+
+  </nav>
+
+  <main class="container">
+
+    <section class="hero-card">
+
+      <span class="badge">
+        Mis asesorías
+      </span>
+
+      <h1>
+        Consulta tu historial y tus próximas sesiones
+      </h1>
+
+      <p class="subtitle">
+        Aquí puedes revisar el estado de tus asesorías individuales y grupales,
+        entrar a videollamadas o reportar problemas.
+      </p>
+
+    </section>
+
+    <section class="tabs-card">
+      <div class="tabs-switcher" role="tablist" aria-label="Filtrar asesorías por estado">
+        <button id="tabTodas" class="tab-estado-btn active" type="button" data-estado="todas" role="tab" aria-selected="true">
+          Todas
+        </button>
+
+        <button id="tabPendientes" class="tab-estado-btn" type="button" data-estado="pendiente" role="tab" aria-selected="false">
+          Pendientes
+        </button>
+
+        <button id="tabAceptadas" class="tab-estado-btn" type="button" data-estado="aceptada" role="tab" aria-selected="false">
+          Aceptadas
+        </button>
+
+        <button id="tabFinalizadas" class="tab-estado-btn" type="button" data-estado="finalizada" role="tab" aria-selected="false">
+          Finalizadas
+        </button>
+
+        <button id="tabRechazadas" class="tab-estado-btn" type="button" data-estado="rechazada" role="tab" aria-selected="false">
+          Rechazadas
+        </button>
+      </div>
+    </section>
+
+    <section
+      id="listaMisAsesorias"
+      class="asesorias-grid"
+    ></section>
+
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="/js/ui-feedback.js"></script>
+  <script src="/js/ui-loading.js"></script>
+  <script src="/js/chatbot-plataforma.js"></script>
+
+  <script src="/js/chat-modal.js"></script>
+  <script src="/js/mis_asesorias.js"></script>
+  <script src="/js/config.js"></script>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Asesorías grupales - EduQuak</title>
+  <link rel="stylesheet" href="/css/alumno_nav.css">
+  <link rel="stylesheet" href="/css/grupales.css">
+  <link rel="stylesheet" href="/css/nav-global.css">
+  <link rel="stylesheet" href="/css/compact-ui.css">
+  <link rel="stylesheet" href="/css/ui-feedback.css">
+  <link rel="stylesheet" href="/css/ui-loading.css">
+  <link rel="stylesheet" href="/css/chatbot-plataforma.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="logo-wrap">
+      <div class="logo-mark">
+        <img src="/img/logo-eduquak.png" alt="Logo EduQuak" onerror="this.style.display='none'">
+      </div>
+      <div class="logo-text">
+        <span class="logo-title">EduQuak</span>
+        <span class="logo-subtitle">Alumno</span>
+      </div>
+    </div>
+
+    <div class="nav-actions">
+      <a href="/pages/alumno.html" class="nav-link">Volver al panel</a>
+    </div>
+  </nav>
+
+  <main class="container">
+    <section class="hero-card">
+      <span class="badge">Asesorías grupales</span>
+      <h1>Encuentra una sesión grupal y aparta tu lugar</h1>
+      <p class="subtitle">
+        Consulta los cupos disponibles, revisa quiénes ya están inscritos y entra a tu videollamada cuando corresponda.
+      </p>
+    </section>
+
+    <section id="listaGrupales" class="grupales-grid"></section>
+
+    <div id="mensajeGrupal" class="message-box hidden"></div>
+
+    <section id="panelInscritos" class="panel-card hidden">
+      <div class="panel-head-inscritos">
+        <div>
+          <h2>Inscritos de la grupal</h2>
+          <p class="panel-subtitle">Lista de alumnos registrados en esta sesión.</p>
+        </div>
+        <div id="resumenInscritos" class="inscritos-resumen hidden"></div>
+      </div>
+
+      <div id="resultadoInscritosAlumnoGrupal" class="inscritos-grid"></div>
+    </section>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="/js/ui-feedback.js"></script>
+  <script src="/js/ui-loading.js"></script>
+  <script src="/js/chatbot-plataforma.js"></script>
+
+  <script src="/js/grupales.js"></script>
+  <script src="/js/config.js"></script>
+</body>
+</html>

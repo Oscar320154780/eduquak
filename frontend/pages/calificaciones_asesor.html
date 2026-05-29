@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calificaciones - EduQuak</title>
+  <link rel="stylesheet" href="/css/calificaciones_asesor.css">
+  <link rel="stylesheet" href="/css/nav-global.css">
+  <link rel="stylesheet" href="/css/compact-ui.css">
+  <link rel="stylesheet" href="/css/ui-feedback.css">
+  <link rel="stylesheet" href="/css/ui-loading.css">
+  <link rel="stylesheet" href="/css/chatbot-plataforma.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="logo-wrap">
+      <div class="logo-mark">
+        <img src="/img/logo-eduquak.png" alt="Logo EduQuak" onerror="this.style.display='none'">
+      </div>
+      <div class="logo-text">
+        <span class="logo-title">EduQuak</span>
+        <span class="logo-subtitle">Asesor</span>
+      </div>
+    </div>
+
+    <div class="nav-actions">
+      <a href="/pages/asesor.html" class="nav-link">Volver al panel</a>
+    </div>
+  </nav>
+
+  <main class="container">
+    <section class="hero-card">
+      <span class="badge">Calificaciones</span>
+      <h1>Conoce cómo evalúan tus asesorías</h1>
+      <p class="subtitle">
+        Revisa tu promedio, cuántas reseñas has recibido y los comentarios que te han dejado tus alumnos.
+      </p>
+    </section>
+
+    <section class="stats-grid">
+      <article class="stat-card">
+        <span class="stat-label">Promedio general</span>
+        <p id="promedioGeneral">-</p>
+      </article>
+
+      <article class="stat-card">
+        <span class="stat-label">Total de reseñas</span>
+        <p id="totalResenas">-</p>
+      </article>
+    </section>
+
+    <section class="panel-card">
+      <div class="section-head">
+        <h2>Reseñas recibidas</h2>
+        <p>Comentarios reales de tus alumnos después de una asesoría.</p>
+      </div>
+
+      <div id="listaResenas" class="resenas-grid"></div>
+    </section>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="/js/ui-feedback.js"></script>
+  <script src="/js/ui-loading.js"></script>
+  <script src="/js/chatbot-plataforma.js"></script>
+
+  <script src="/js/calificaciones_asesor.js"></script>
+  <script src="/js/config.js"></script>
+</body>
+</html>

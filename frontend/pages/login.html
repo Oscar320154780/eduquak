@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - EduQuak</title>
+  <link rel="stylesheet" href="/css/login.css">
+  <link rel="stylesheet" href="/css/nav-global.css">
+  <link rel="stylesheet" href="/css/compact-ui.css">
+  <link rel="stylesheet" href="/css/ui-feedback.css">
+  <link rel="stylesheet" href="/css/ui-loading.css">
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="logo-wrap">
+      <div class="logo-mark">
+        <img src="/img/logo-eduquak.png" alt="Logo EduQuak" onerror="this.style.display='none'">
+      </div>
+      <div class="logo-text">
+        <span class="logo-title">EduQuak</span>
+        <span class="logo-subtitle">Acceso a plataforma</span>
+      </div>
+    </div>
+
+    <div class="nav-actions">
+      <a href="/" class="nav-link">Inicio</a>
+    </div>
+  </nav>
+
+  <main class="container">
+    <div class="login-card">
+      <h1>Iniciar sesión</h1>
+      <p class="subtitle">Accede a tu cuenta para continuar</p>
+
+      <form id="formLogin" class="form">
+        <div class="input-group">
+          <label for="correo">Correo</label>
+          <input type="email" id="correo" name="correo" placeholder="ejemplo@email.com" required>
+        </div>
+
+        <div class="input-group">
+          <label for="password">Contraseña</label>
+
+          <div class="password-field">
+            <input type="password" id="password" name="password" placeholder="••••••••" required>
+
+            <button
+              type="button"
+              class="password-toggle"
+              data-password-toggle="password"
+              aria-label="Mostrar contraseña"
+            >
+              <svg class="eye-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"></path>
+                <circle cx="12" cy="12" r="2.7"></circle>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" class="btn alumno full">Entrar</button>
+      </form>
+
+      <div id="mensajeLogin" class="mensaje"></div>
+
+      <div class="extra">
+        <p>¿No tienes cuenta?</p>
+        <a href="/pages/registro_alumno.html" class="link alumno">Registrarme como alumno</a>
+        <a href="/pages/registro_asesor.html" class="link asesor">Registrarme como asesor</a>
+      </div>
+    </div>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="/js/ui-feedback.js"></script>
+  <script src="/js/ui-loading.js"></script>
+
+  <script src="/js/login.js"></script>
+  <script src="/js/config.js"></script>
+</body>
+</html>

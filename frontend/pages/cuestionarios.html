@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cuestionarios - EduQuak</title>
+  <link rel="stylesheet" href="/css/alumno_nav.css">
+  <link rel="stylesheet" href="/css/cuestionarios.css">
+  <link rel="stylesheet" href="/css/nav-global.css">
+  <link rel="stylesheet" href="/css/compact-ui.css">
+  <link rel="stylesheet" href="/css/ui-feedback.css">
+  <link rel="stylesheet" href="/css/ui-loading.css">
+  <link rel="stylesheet" href="/css/chatbot-plataforma.css">
+</head>
+<body>
+  <nav class="navbar">
+  <div class="logo-wrap">
+    <div class="logo-mark">
+        <img src="/img/logo-eduquak.png" alt="Logo EduQuak" onerror="this.style.display='none'">
+      </div>
+    <div class="logo-text">
+      <span class="logo-title">EduQuak</span>
+      <span class="logo-subtitle">Alumno</span>
+    </div>
+  </div>
+
+  <div class="nav-actions">
+    <a href="/pages/alumno.html" class="nav-link">Volver al panel</a>
+  </div>
+</nav>
+
+  <main class="container">
+    <section class="hero-card">
+      <span class="badge">Cuestionarios disponibles</span>
+      <h1>Practica y mide tu avance</h1>
+      <p class="subtitle">
+        Explora cuestionarios aprobados, consulta su información y resuélvelos desde una página dedicada.
+      </p>
+    </section>
+
+    <section class="toolbar">
+      <div class="search-box">
+        <label for="busquedaCuestionario">Buscar cuestionario</label>
+        <input type="text" id="busquedaCuestionario" placeholder="Título, materia o asesor">
+      </div>
+    </section>
+
+    <section id="listaCuestionarios" class="cuestionarios-grid"></section>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="/js/ui-feedback.js"></script>
+  <script src="/js/ui-loading.js"></script>
+  <script src="/js/chatbot-plataforma.js"></script>
+
+  <script src="/js/cuestionarios.js"></script>
+  <script src="/js/config.js"></script>
+</body>
+</html>

@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    Panel Admin - EduQuak
+  </title>
+
+  <!-- CSS -->
+
+  <link
+    rel="stylesheet"
+    href="/css/admin.css"
+  >
+
+  <link rel="stylesheet" href="/css/nav-global.css">
+  <link rel="stylesheet" href="/css/compact-ui.css">
+  <link rel="stylesheet" href="/css/ui-feedback.css">
+  <link rel="stylesheet" href="/css/ui-loading.css">
+</head>
+
+<body>
+
+  <!-- NAVBAR -->
+
+  <nav class="navbar">
+
+    <div class="logo-wrap">
+      <div class="logo-mark">
+        <img src="/img/logo-eduquak.png" alt="Logo EduQuak" onerror="this.style.display='none'">
+      </div>
+
+      <div class="logo-text">
+        <span class="logo-title">EduQuak</span>
+        <span class="logo-subtitle">Admin</span>
+      </div>
+    </div>
+
+    <div class="nav-actions">
+<button
+        id="btnLogout"
+        class="btn danger small"
+      >
+        Cerrar sesión
+      </button>
+
+    </div>
+
+  </nav>
+
+  <!-- MAIN -->
+
+  <main class="dashboard">
+
+    <!-- HERO -->
+
+    <section class="dashboard-hero">
+
+      <div class="hero-left">
+
+        <span class="badge admin-badge">
+          Panel administrativo
+        </span>
+
+        <h1>
+          Hola,
+          <span id="nombre">
+            Administrador
+          </span>
+        </h1>
+
+        <p class="subtitle">
+          Gestiona usuarios, materiales,
+          cuestionarios, reportes y estadísticas
+          generales de EduQuak.
+        </p>
+
+        <div class="hero-buttons">
+
+          <a
+            href="/pages/admin-usuarios.html"
+            class="btn primary"
+          >
+            Ver usuarios
+          </a>
+
+          <a
+            href="/pages/admin-reportes.html"
+            class="btn outline"
+          >
+            Ver reportes
+          </a>
+
+        </div>
+
+      </div>
+
+      <div class="hero-status">
+
+        <div class="hero-status-card">
+
+          <span>
+            Correo
+          </span>
+
+          <strong id="correo">
+            -
+          </strong>
+
+        </div>
+
+        <div class="hero-status-card">
+
+          <span>
+            Rol
+          </span>
+
+          <strong id="rol">
+            -
+          </strong>
+
+        </div>
+
+        <div class="hero-status-card">
+
+          <span>
+            Estado
+          </span>
+
+          <strong id="estado">
+            -
+          </strong>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ACCESOS RAPIDOS -->
+
+    <section class="quick-grid">
+
+      <a
+        href="/pages/admin-usuarios.html"
+        class="quick-card"
+      >
+
+        <span>
+          Usuarios
+        </span>
+
+        <strong>
+          Validar cuentas
+        </strong>
+
+        <p>
+          Aprueba o rechaza alumnos y asesores.
+        </p>
+
+      </a>
+
+      <a
+        href="/pages/admin-materiales.html"
+        class="quick-card"
+      >
+
+        <span>
+          Materiales
+        </span>
+
+        <strong>
+          Revisar contenido
+        </strong>
+
+        <p>
+          Modera materiales antes de publicarlos.
+        </p>
+
+      </a>
+
+      <a
+        href="/pages/admin-cuestionarios.html"
+        class="quick-card"
+      >
+
+        <span>
+          Cuestionarios
+        </span>
+
+        <strong>
+          Validar preguntas
+        </strong>
+
+        <p>
+          Revisa cuestionarios creados por asesores.
+        </p>
+
+      </a>
+
+      <a
+        href="/pages/admin-reportes.html"
+        class="quick-card danger-card"
+      >
+
+        <span>
+          Reportes
+        </span>
+
+        <strong>
+          Atender incidencias
+        </strong>
+
+        <p>
+          Da seguimiento a reportes de asesorías.
+        </p>
+
+      </a>
+
+    </section>
+
+    <!-- RESUMEN -->
+
+    <section class="panel-card">
+
+      <div class="panel-head">
+
+        <div>
+
+          <h2>
+            Resumen general
+          </h2>
+
+          <p class="subtitle">
+            Estadísticas generales
+            de la plataforma.
+          </p>
+
+        </div>
+
+        <button
+          id="btnVerStatsAdmin"
+          class="btn primary"
+        >
+          Actualizar
+        </button>
+
+      </div>
+
+      <!-- FILTROS -->
+
+      <div class="stats-filtros">
+
+        <input
+          type="date"
+          id="fechaInicio"
+          class="input-date"
+        >
+
+        <input
+          type="date"
+          id="fechaFin"
+          class="input-date"
+        >
+
+        <button
+          class="btn outline"
+          id="btnFiltrarStats"
+        >
+          Filtrar
+        </button>
+
+      </div>
+
+      <!-- KPIS -->
+
+      <div
+        id="resultadoStatsAdmin"
+        class="kpi-grid"
+      ></div>
+
+      <!-- GRAFICAS -->
+
+      <div class="charts-grid">
+
+        <!-- USUARIOS -->
+
+        <div class="chart-card">
+
+          <div class="chart-head">
+
+            <h3>
+              Usuarios por rol
+            </h3>
+
+          </div>
+
+          <div class="chart-container">
+
+            <canvas
+              id="chartUsuariosRol"
+            ></canvas>
+
+          </div>
+
+        </div>
+
+        <!-- ASESORIAS -->
+
+        <div class="chart-card">
+
+          <div class="chart-head">
+
+            <h3>
+              Estado de asesorías
+            </h3>
+
+          </div>
+
+          <div class="chart-container">
+
+            <canvas
+              id="chartAdminAsesorias"
+            ></canvas>
+
+          </div>
+
+        </div>
+
+        <!-- CONTENIDO -->
+
+        <div class="chart-card">
+
+          <div class="chart-head">
+
+            <h3>
+              Contenido plataforma
+            </h3>
+
+          </div>
+
+          <div class="chart-container">
+
+            <canvas
+              id="chartAdminContenido"
+            ></canvas>
+
+          </div>
+
+        </div>
+
+        <!-- VALIDACION -->
+
+        <div class="chart-card">
+
+          <div class="chart-head">
+
+            <h3>
+              Validación usuarios
+            </h3>
+
+          </div>
+
+          <div class="chart-container">
+
+            <canvas
+              id="chartValidacionUsuarios"
+            ></canvas>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- TOP ASESORES -->
+
+      <div class="top-asesores-card">
+
+        <div class="chart-head">
+
+          <h3>
+            Top asesores mejor calificados
+          </h3>
+
+        </div>
+
+        <div class="chart-container top-chart">
+
+          <canvas
+            id="chartTopAsesores"
+          ></canvas>
+
+        </div>
+
+        <div
+          id="topAsesoresLista"
+          class="top-asesores-list"
+        ></div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- CHART JS -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="/js/ui-feedback.js"></script>
+  <script src="/js/ui-loading.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- SWEETALERT -->
+
+  <!-- JS -->
+
+  <script src="/js/admin.js"></script>
+
+  <script src="/js/config.js"></script>
+</body>
+</html>
