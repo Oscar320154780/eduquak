@@ -1,5 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
-  <rect width="96" height="96" rx="26" fill="#2563eb" opacity="0.12"/>
-  <circle cx="48" cy="48" r="28" fill="#2563eb" opacity="0.16"/>
-  <text x="48" y="55" text-anchor="middle" font-family="Arial, sans-serif" font-size="22" font-weight="800" fill="#2563eb">BA</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <circle cx="27" cy="25" r="11" stroke="currentColor" stroke-width="3"/>
+  <path d="M36 34L46 44" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="27" cy="22" r="4" fill="currentColor" opacity="0.18"/>
+  <path d="M20 31C21.5 27.8 24 26 27 26C30 26 32.5 27.8 34 31" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+  <rect x="10" y="10" width="44" height="44" rx="14" stroke="currentColor" stroke-width="3" opacity="0.22"/>
 </svg>

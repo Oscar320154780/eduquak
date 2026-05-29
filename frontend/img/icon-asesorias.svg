@@ -1,5 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
-  <rect width="96" height="96" rx="26" fill="#16a34a" opacity="0.12"/>
-  <circle cx="48" cy="48" r="28" fill="#16a34a" opacity="0.16"/>
-  <text x="48" y="55" text-anchor="middle" font-family="Arial, sans-serif" font-size="22" font-weight="800" fill="#16a34a">A</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <rect x="8" y="12" width="48" height="42" rx="12" fill="currentColor" opacity="0.12"/>
+  <rect x="12" y="16" width="40" height="34" rx="8" stroke="currentColor" stroke-width="3"/>
+  <path d="M20 10V18M44 10V18M12 24H52" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="24" cy="34" r="3" fill="currentColor"/>
+  <path d="M32 34H42" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="24" cy="42" r="3" fill="currentColor"/>
+  <path d="M32 42H38" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
 </svg>
