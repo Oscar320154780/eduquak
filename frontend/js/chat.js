@@ -7,6 +7,16 @@ const idAsesoria = params.get("id");
 let ultimoRender = "";
 let cargando = false;
 
+function ajustarAlturaInput() {
+  const input = document.getElementById("mensajeInput");
+  if (!input) return;
+
+  input.style.height = "44px";
+  const nuevaAltura = Math.min(input.scrollHeight, 92);
+  input.style.height = `${Math.max(44, nuevaAltura)}px`;
+}
+
+
 if (!token) {
   window.location.href = "/pages/login.html";
 }
@@ -184,12 +194,22 @@ async function enviarMensaje(e) {
     }
 
     input.value = "";
+    ajustarAlturaInput();
     await cargarMensajes();
   } catch (error) {
     console.error(error);
     mostrarEstado("Error al enviar el mensaje.");
   }
 }
+
+const mensajeInput = document.getElementById("mensajeInput");
+mensajeInput.addEventListener("input", ajustarAlturaInput);
+mensajeInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && !e.shiftKey) {
+    e.preventDefault();
+    document.getElementById("formChat").requestSubmit();
+  }
+});
 
 document.getElementById("formChat").addEventListener("submit", enviarMensaje);
 

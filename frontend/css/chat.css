@@ -217,22 +217,32 @@ body {
   .chat-shell {
     width: 100%;
     padding: 0;
+    align-items: stretch;
   }
 
   .chat-card {
-    height: 100vh;
+    height: 100dvh;
+    min-height: 100dvh;
     border-radius: 0;
+    box-shadow: none;
   }
 
   .chat-header {
-    flex-direction: column;
+    padding: 14px 16px 12px;
   }
 
   .mensaje {
-    max-width: 88%;
+    max-width: 84%;
   }
 
   .chat-form {
     grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+  }
+
+  .chat-form textarea {
+    height: 44px;
+    min-height: 44px;
+    resize: none;
   }
 }
