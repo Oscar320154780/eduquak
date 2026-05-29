@@ -202,6 +202,12 @@
     messages.scrollTop = messages.scrollHeight;
   }
 
+
+  function mostrarFormularioChat(form) {
+    if (!form) return;
+    form.style.display = window.matchMedia("(max-width: 768px)").matches ? "flex" : "grid";
+  }
+
   async function cargarMensajes() {
     if (state.cargando || !state.idAsesoria) return;
     state.cargando = true;
@@ -221,7 +227,7 @@
       }
 
       const { form } = getRefs();
-      form.style.display = "grid";
+      mostrarFormularioChat(form);
       ocultarEstado();
       renderInfo(data.asesoria);
       renderMensajes(data.mensajes || []);
@@ -290,7 +296,7 @@
     refs.title.textContent = "Comunicación de la sesión";
     refs.info.textContent = "Cargando información...";
     refs.textarea.value = "";
-    refs.form.style.display = "grid";
+    refs.mostrarFormularioChat(form);
     ocultarEstado();
 
     refs.overlay.classList.remove("hidden");
