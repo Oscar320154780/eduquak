@@ -95,6 +95,14 @@ router.post(
   controller.reportarAsesoria
 );
 
+
+// validar acceso a videollamada por horario y pertenencia
+router.get(
+  "/:id/video-access",
+  requireAuth,
+  controller.validarAccesoVideollamada
+);
+
 /* =========================
    ASESOR
 ========================= */

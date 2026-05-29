@@ -27,6 +27,18 @@ function getQuery(sql, params = []) {
   });
 }
 
+
+async function marcarChatComoLeido(idAsesoria, idUsuario) {
+  await runQuery(
+    `INSERT INTO chat_lecturas
+       (id_asesoria, id_usuario, ultimo_leido_en)
+     VALUES (?, ?, CURRENT_TIMESTAMP)
+     ON CONFLICT (id_asesoria, id_usuario)
+     DO UPDATE SET ultimo_leido_en = CURRENT_TIMESTAMP`,
+    [idAsesoria, idUsuario]
+  );
+}
+
 async function obtenerAsesoriaAutorizada(idAsesoria, usuario) {
   const asesoria = await getQuery(
     `SELECT
@@ -164,6 +176,11 @@ exports.obtenerMensajes = async (req, res) => {
       [idAsesoria]
     );
 
+    await marcarChatComoLeido(
+      idAsesoria,
+      req.user.id_usuario
+    );
+
     return res.json({
       ok: true,
       asesoria: permiso.asesoria,
@@ -178,6 +195,68 @@ exports.obtenerMensajes = async (req, res) => {
     return res.status(500).json({
       ok: false,
       message: "Error al obtener mensajes del chat"
+    });
+  }
+};
+
+
+exports.obtenerNoLeidos = async (req, res) => {
+  try {
+    const idUsuario = Number(req.user.id_usuario);
+
+    const rows = await allQuery(
+      `WITH asesorias_permitidas AS (
+          SELECT a.id_asesoria
+          FROM asesorias a
+          WHERE a.estado = 'aceptada'
+            AND (
+              a.id_asesor = ?
+              OR a.id_alumno = ?
+              OR EXISTS (
+                SELECT 1
+                FROM inscripciones_asesoria ia
+                WHERE ia.id_asesoria = a.id_asesoria
+                  AND ia.id_alumno = ?
+                  AND ia.estado = 'inscrito'
+              )
+            )
+        )
+        SELECT
+          cm.id_asesoria,
+          COUNT(*)::int AS no_leidos
+        FROM chat_mensajes cm
+        JOIN asesorias_permitidas ap
+          ON ap.id_asesoria = cm.id_asesoria
+        LEFT JOIN chat_lecturas cl
+          ON cl.id_asesoria = cm.id_asesoria
+         AND cl.id_usuario = ?
+        WHERE cm.id_emisor <> ?
+          AND cm.fecha_envio > COALESCE(cl.ultimo_leido_en, TIMESTAMP '1970-01-01')
+        GROUP BY cm.id_asesoria`,
+      [idUsuario, idUsuario, idUsuario, idUsuario, idUsuario]
+    );
+
+    const porAsesoria = {};
+    let total = 0;
+
+    rows.forEach((row) => {
+      const idAsesoria = String(row.id_asesoria);
+      const noLeidos = Number(row.no_leidos || 0);
+      porAsesoria[idAsesoria] = noLeidos;
+      total += noLeidos;
+    });
+
+    return res.json({
+      ok: true,
+      total,
+      por_asesoria: porAsesoria
+    });
+  } catch (error) {
+    console.error("Error al obtener mensajes no leídos:", error);
+
+    return res.status(500).json({
+      ok: false,
+      message: "Error al obtener mensajes no leídos"
     });
   }
 };

@@ -5,6 +5,12 @@ const controller = require("../controllers/chat.controller");
 const { requireAuth } = require("../middleware/auth.middleware");
 
 router.get(
+  "/unread/counts",
+  requireAuth,
+  controller.obtenerNoLeidos
+);
+
+router.get(
   "/:idAsesoria",
   requireAuth,
   controller.obtenerMensajes

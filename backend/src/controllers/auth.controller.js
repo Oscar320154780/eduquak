@@ -7,6 +7,20 @@ const {
   getQuery
 } = require("../utils/dbHelpers");
 
+const PASSWORD_RULES_MESSAGE =
+  "La contraseña debe tener mínimo 8 caracteres, al menos una mayúscula y al menos un número";
+
+function validarPasswordSegura(password) {
+
+  if (typeof password !== "string") {
+    return false;
+  }
+
+  return /^(?=.*[A-Z])(?=.*\d).{8,}$/.test(password);
+
+}
+
+
 // =====================================
 // REGISTER ALUMNO
 // =====================================
@@ -21,7 +35,8 @@ exports.registerAlumno = async (req, res) => {
       password,
       institucion,
       telefono,
-      tipo_documento
+      tipo_documento,
+      terminos_aceptados
     } = req.body;
 
     if (
@@ -34,6 +49,25 @@ exports.registerAlumno = async (req, res) => {
       return res.status(400).json({
         ok: false,
         message: "Faltan campos obligatorios"
+      });
+
+    }
+
+    if (!validarPasswordSegura(password)) {
+
+      return res.status(400).json({
+        ok: false,
+        code: "PASSWORD_NO_SEGURA",
+        message: PASSWORD_RULES_MESSAGE
+      });
+
+    }
+
+    if (![true, "true", "on", "1", 1].includes(terminos_aceptados)) {
+
+      return res.status(400).json({
+        ok: false,
+        message: "Debes aceptar los Términos y Condiciones para registrarte"
       });
 
     }
@@ -216,7 +250,8 @@ exports.registerAsesor = async (req, res) => {
       materias,
       descripcion,
       modalidad,
-      tipo_documento
+      tipo_documento,
+      terminos_aceptados
 
     } = req.body;
 
@@ -231,6 +266,25 @@ exports.registerAsesor = async (req, res) => {
       return res.status(400).json({
         ok: false,
         message: "Faltan campos obligatorios"
+      });
+
+    }
+
+    if (!validarPasswordSegura(password)) {
+
+      return res.status(400).json({
+        ok: false,
+        code: "PASSWORD_NO_SEGURA",
+        message: PASSWORD_RULES_MESSAGE
+      });
+
+    }
+
+    if (![true, "true", "on", "1", 1].includes(terminos_aceptados)) {
+
+      return res.status(400).json({
+        ok: false,
+        message: "Debes aceptar los Términos y Condiciones para registrarte"
       });
 
     }

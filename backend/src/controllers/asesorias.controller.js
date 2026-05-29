@@ -39,6 +39,212 @@ function generarSalaJitsi(idAsesoria) {
   return { room_name, video_url };
 }
 
+
+function parseFechaHoraAsesoria(fecha, hora) {
+  if (!fecha || !hora) return null;
+
+  const fechaTxt = String(fecha).trim();
+  const horaTxt = String(hora).trim();
+
+  let year;
+  let month;
+  let day;
+
+  const iso = fechaTxt.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  const mx = fechaTxt.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+
+  if (iso) {
+    year = Number(iso[1]);
+    month = Number(iso[2]);
+    day = Number(iso[3]);
+  } else if (mx) {
+    day = Number(mx[1]);
+    month = Number(mx[2]);
+    year = Number(mx[3]);
+  } else {
+    return null;
+  }
+
+  const horaMatch = horaTxt.match(/^(\d{1,2}):(\d{2})/);
+
+  if (!horaMatch) return null;
+
+  const hour = Number(horaMatch[1]);
+  const minute = Number(horaMatch[2]);
+
+  if (
+    !year || !month || !day ||
+    hour < 0 || hour > 23 ||
+    minute < 0 || minute > 59
+  ) {
+    return null;
+  }
+
+  return Date.UTC(year, month - 1, day, hour, minute, 0);
+}
+
+function ahoraMexicoMs() {
+  const partes = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Mexico_City",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hourCycle: "h23"
+  }).formatToParts(new Date());
+
+  const mapa = Object.fromEntries(
+    partes.map((parte) => [parte.type, parte.value])
+  );
+
+  return Date.UTC(
+    Number(mapa.year),
+    Number(mapa.month) - 1,
+    Number(mapa.day),
+    Number(mapa.hour),
+    Number(mapa.minute),
+    Number(mapa.second)
+  );
+}
+
+async function obtenerAsesoriaVideoAutorizada(idAsesoria, usuario) {
+  const asesoria = await getQuery(
+    `SELECT
+        id_asesoria,
+        id_alumno,
+        id_asesor,
+        estado,
+        tipo,
+        fecha,
+        hora,
+        room_name,
+        video_url
+     FROM asesorias
+     WHERE id_asesoria = ?`,
+    [idAsesoria]
+  );
+
+  if (!asesoria) {
+    return {
+      ok: false,
+      status: 404,
+      message: "La asesoría no existe"
+    };
+  }
+
+  const idUsuario = Number(usuario.id_usuario);
+  const esAsesor = Number(asesoria.id_asesor) === idUsuario;
+  const esAlumnoIndividual =
+    asesoria.tipo === "individual" &&
+    Number(asesoria.id_alumno) === idUsuario;
+
+  let esAlumnoGrupal = false;
+
+  if (asesoria.tipo === "grupal") {
+    const inscripcion = await getQuery(
+      `SELECT id_inscripcion
+       FROM inscripciones_asesoria
+       WHERE id_asesoria = ?
+         AND id_alumno = ?
+         AND estado = 'inscrito'
+       LIMIT 1`,
+      [idAsesoria, idUsuario]
+    );
+
+    esAlumnoGrupal = Boolean(inscripcion);
+  }
+
+  if (!esAsesor && !esAlumnoIndividual && !esAlumnoGrupal) {
+    return {
+      ok: false,
+      status: 403,
+      message: "No tienes acceso a esta videollamada"
+    };
+  }
+
+  if (asesoria.estado !== "aceptada") {
+    return {
+      ok: false,
+      status: 403,
+      message: "La videollamada solo está disponible para asesorías aceptadas"
+    };
+  }
+
+  if (!asesoria.room_name || !asesoria.fecha || !asesoria.hora) {
+    return {
+      ok: false,
+      status: 400,
+      message: "La asesoría no tiene sala, fecha u hora configurada"
+    };
+  }
+
+  const inicioMs = parseFechaHoraAsesoria(asesoria.fecha, asesoria.hora);
+
+  if (!inicioMs) {
+    return {
+      ok: false,
+      status: 400,
+      message: "La fecha u hora de la asesoría no es válida"
+    };
+  }
+
+  const ahoraMs = ahoraMexicoMs();
+  const aperturaMs = inicioMs - (10 * 60 * 1000);
+
+  if (ahoraMs < aperturaMs) {
+    return {
+      ok: false,
+      status: 403,
+      message: "La videollamada estará disponible 10 minutos antes de la hora agendada.",
+      disponible_desde: new Date(aperturaMs).toISOString(),
+      fecha: asesoria.fecha,
+      hora: asesoria.hora
+    };
+  }
+
+  return {
+    ok: true,
+    asesoria
+  };
+}
+
+
+exports.validarAccesoVideollamada = async (req, res) => {
+  try {
+    const permiso = await obtenerAsesoriaVideoAutorizada(
+      req.params.id,
+      req.user
+    );
+
+    if (!permiso.ok) {
+      return res.status(permiso.status).json({
+        ok: false,
+        message: permiso.message,
+        disponible_desde: permiso.disponible_desde || null,
+        fecha: permiso.fecha || null,
+        hora: permiso.hora || null
+      });
+    }
+
+    return res.json({
+      ok: true,
+      message: "Videollamada disponible",
+      asesoria: permiso.asesoria,
+      room_name: permiso.asesoria.room_name,
+      video_url: permiso.asesoria.video_url
+    });
+  } catch (error) {
+    console.error("Error al validar acceso a videollamada:", error);
+
+    return res.status(500).json({
+      ok: false,
+      message: "Error al validar la videollamada"
+    });
+  }
+};
+
 // alumno solicita asesoría individual
 exports.crearAsesoria = async (req, res) => {
   try {

@@ -31,7 +31,8 @@ const primaryKeys = {
   resenas_asesor: "id_resena",
   inscripciones_asesoria: "id_inscripcion",
   reportes_asesoria: "id_reporte",
-  chat_mensajes: "id_mensaje"
+  chat_mensajes: "id_mensaje",
+  chat_lecturas: "id_lectura"
 };
 
 function normalizarSQL(sql) {
