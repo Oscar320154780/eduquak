@@ -1,50 +1,44 @@
-// Guía rápida: estos comentarios explican para qué sirve cada función sin cambiar la lógica del archivo.
+// Cuestionarios del alumno con búsqueda y paginación desde backend.
 const API = window.EDUQUAK_API_URL || "";
 const token = localStorage.getItem("token");
 
-let cuestionariosCache = [];
 let estadoAlumno = null;
+let paginaActual = 1;
+const LIMITE_POR_PAGINA = 12;
+let textoBusqueda = "";
+let busquedaTimer = null;
 
 if (!token) {
   window.location.href = "/pages/login.html";
 }
 
-// Se encarga de obtener mi perfil en esta pantalla y mantiene conectada la vista con el backend.
 async function obtenerMiPerfil() {
   try {
     const res = await fetch(`${API}/api/users/me`, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
+      headers: { Authorization: `Bearer ${token}` }
     });
 
     const data = await res.json();
-
-    if (!data.ok) {
-      return null;
-    }
-
-    return data.user || null;
+    return data.ok ? data.user || null : null;
   } catch (error) {
     console.error("Error al obtener perfil:", error);
     return null;
   }
 }
 
-// Se encarga de alumno no verificado en esta pantalla y mantiene conectada la vista con el backend.
 function alumnoNoVerificado() {
   return estadoAlumno !== "verificado";
 }
 
-// Se encarga de mostrar bloqueado en esta pantalla y mantiene conectada la vista con el backend.
 function renderBloqueado() {
   const contenedor = document.getElementById("listaCuestionarios");
-
   contenedor.innerHTML = `
     <div class="empty-state">
       Tu cuenta debe estar verificada por un administrador para ver cuestionarios.
     </div>
   `;
+
+  document.getElementById("paginacionCuestionarios")?.classList.add("hidden");
 
   const inputBusqueda = document.getElementById("busquedaCuestionario");
   if (inputBusqueda) {
@@ -53,7 +47,6 @@ function renderBloqueado() {
   }
 }
 
-// Se encarga de mostrar cuestionarios en esta pantalla y mantiene conectada la vista con el backend.
 function renderCuestionarios(lista) {
   const contenedor = document.getElementById("listaCuestionarios");
   contenedor.innerHTML = "";
@@ -61,7 +54,7 @@ function renderCuestionarios(lista) {
   if (!lista || lista.length === 0) {
     contenedor.innerHTML = `
       <div class="empty-state">
-        No hay cuestionarios disponibles por ahora.
+        No hay cuestionarios disponibles con esos filtros.
       </div>
     `;
     return;
@@ -99,13 +92,53 @@ function renderCuestionarios(lista) {
   });
 }
 
-// Se encarga de cargar cuestionarios en esta pantalla y mantiene conectada la vista con el backend.
+function renderPaginacion(pagination) {
+  const paginacion = document.getElementById("paginacionCuestionarios");
+  if (!paginacion) return;
+
+  const total = Number(pagination?.total || 0);
+  const page = Number(pagination?.page || 1);
+  const totalPages = Number(pagination?.totalPages || 1);
+  const limit = Number(pagination?.limit || LIMITE_POR_PAGINA);
+  const inicio = total === 0 ? 0 : (page - 1) * limit + 1;
+  const fin = Math.min(page * limit, total);
+
+  paginacion.classList.remove("hidden");
+  paginacion.innerHTML = `
+    <p class="pagination-info">Mostrando ${inicio}-${fin} de ${total} cuestionarios</p>
+    <div class="pagination-actions">
+      <button class="btn outline" id="cuestionariosAnterior" ${page <= 1 ? "disabled" : ""}>Anterior</button>
+      <span>Página ${page} de ${totalPages}</span>
+      <button class="btn outline" id="cuestionariosSiguiente" ${page >= totalPages ? "disabled" : ""}>Siguiente</button>
+    </div>
+  `;
+
+  document.getElementById("cuestionariosAnterior")?.addEventListener("click", () => {
+    if (paginaActual > 1) {
+      paginaActual -= 1;
+      cargarCuestionarios();
+    }
+  });
+
+  document.getElementById("cuestionariosSiguiente")?.addEventListener("click", () => {
+    if (paginaActual < totalPages) {
+      paginaActual += 1;
+      cargarCuestionarios();
+    }
+  });
+}
+
 async function cargarCuestionarios() {
   try {
-    const res = await fetch(`${API}/api/cuestionarios/publicos`, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
+    const params = new URLSearchParams({
+      page: String(paginaActual),
+      limit: String(LIMITE_POR_PAGINA)
+    });
+
+    if (textoBusqueda) params.set("q", textoBusqueda);
+
+    const res = await fetch(`${API}/api/cuestionarios/publicos?${params.toString()}`, {
+      headers: { Authorization: `Bearer ${token}` }
     });
 
     const data = await res.json();
@@ -115,48 +148,33 @@ async function cargarCuestionarios() {
       document.getElementById("listaCuestionarios").innerHTML = `
         <div class="empty-state">No se pudieron cargar los cuestionarios.</div>
       `;
+      document.getElementById("paginacionCuestionarios")?.classList.add("hidden");
       return;
     }
 
-    cuestionariosCache = data.cuestionarios || [];
-    renderCuestionarios(cuestionariosCache);
+    renderCuestionarios(data.cuestionarios || []);
+    renderPaginacion(data.pagination || { page: paginaActual, limit: LIMITE_POR_PAGINA, total: 0, totalPages: 1 });
   } catch (error) {
     console.error("Error al cargar cuestionarios:", error);
     document.getElementById("listaCuestionarios").innerHTML = `
       <div class="empty-state">Error al cargar cuestionarios.</div>
     `;
+    document.getElementById("paginacionCuestionarios")?.classList.add("hidden");
   }
 }
 
-// Este listener responde al evento "input" y mantiene la pantalla sincronizada con lo que hace el usuario.
 document.getElementById("busquedaCuestionario")?.addEventListener("input", (e) => {
   if (alumnoNoVerificado()) return;
 
-  const texto = e.target.value.trim().toLowerCase();
+  textoBusqueda = e.target.value.trim();
+  paginaActual = 1;
 
-  if (!texto) {
-    renderCuestionarios(cuestionariosCache);
-    return;
-  }
-
-  const filtrados = cuestionariosCache.filter((cuestionario) => {
-    const titulo = (cuestionario.titulo || "").toLowerCase();
-    const materia = (cuestionario.materia || "").toLowerCase();
-    const asesor = (cuestionario.nombre_asesor || "").toLowerCase();
-    const descripcion = (cuestionario.descripcion || "").toLowerCase();
-
-    return (
-      titulo.includes(texto) ||
-      materia.includes(texto) ||
-      asesor.includes(texto) ||
-      descripcion.includes(texto)
-    );
-  });
-
-  renderCuestionarios(filtrados);
+  clearTimeout(busquedaTimer);
+  busquedaTimer = setTimeout(() => {
+    cargarCuestionarios();
+  }, 300);
 });
 
-// Se encarga de init en esta pantalla y mantiene conectada la vista con el backend.
 async function init() {
   const perfil = await obtenerMiPerfil();
 

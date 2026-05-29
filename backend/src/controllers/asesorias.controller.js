@@ -33,6 +33,20 @@ function getQuery(sql, params = []) {
 }
 
 // Controla la lógica de generar sala jitsi: recibe la petición, habla con la base de datos y responde al frontend.
+
+function normalizarPaginacion(req, limiteDefault = 12, limiteMaximo = 50) {
+  const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
+  const limitSolicitado = parseInt(req.query.limit, 10) || limiteDefault;
+  const limit = Math.min(Math.max(limitSolicitado, 1), limiteMaximo);
+  const offset = (page - 1) * limit;
+
+  return { page, limit, offset };
+}
+
+function normalizarTexto(valor) {
+  return String(valor || "").trim();
+}
+
 function generarSalaJitsi(idAsesoria) {
   const room_name = `eduquak-asesoria-${idAsesoria}`;
   const video_url = `https://meet.jit.si/${room_name}`;
@@ -579,6 +593,35 @@ exports.responderAsesoria = async (req, res) => {
 exports.obtenerAsesoriasGrupales = async (req, res) => {
   try {
     const id_alumno = req.user.id_usuario;
+    const { page, limit, offset } = normalizarPaginacion(req, 12, 50);
+    const busqueda = normalizarTexto(req.query.q);
+
+    const where = [
+      "a.tipo = 'grupal'",
+      "a.estado = 'aceptada'"
+    ];
+    const whereParams = [];
+
+    if (busqueda) {
+      const like = `%${busqueda}%`;
+      where.push(`(
+        u.nombre ILIKE ?
+        OR COALESCE(a.mensaje, '') ILIKE ?
+        OR COALESCE(a.fecha, '') ILIKE ?
+        OR COALESCE(a.hora, '') ILIKE ?
+      )`);
+      whereParams.push(like, like, like, like);
+    }
+
+    const whereSql = where.join(" AND ");
+
+    const totalRow = await getQuery(
+      `SELECT COUNT(*) AS total
+       FROM asesorias a
+       JOIN usuarios u ON a.id_asesor = u.id_usuario
+       WHERE ${whereSql}`,
+      whereParams
+    );
 
     const grupales = await allQuery(
       `SELECT
@@ -606,10 +649,10 @@ exports.obtenerAsesoriasGrupales = async (req, res) => {
           ) AS ya_inscrito
        FROM asesorias a
        JOIN usuarios u ON a.id_asesor = u.id_usuario
-       WHERE a.tipo = 'grupal'
-         AND a.estado = 'aceptada'
-       ORDER BY a.fecha, a.hora`,
-      [id_alumno]
+       WHERE ${whereSql}
+       ORDER BY a.fecha, a.hora
+       LIMIT ? OFFSET ?`,
+      [id_alumno, ...whereParams, limit, offset]
     );
 
     const asesorias = grupales.map((g) => {
@@ -625,9 +668,17 @@ exports.obtenerAsesoriasGrupales = async (req, res) => {
       };
     });
 
+    const total = Number(totalRow?.total || 0);
+
     return res.json({
       ok: true,
-      asesorias
+      asesorias,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.max(Math.ceil(total / limit), 1)
+      }
     });
   } catch (error) {
     console.error("Error al obtener asesorías grupales:", error);

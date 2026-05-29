@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="/css/ui-feedback.css">
   <link rel="stylesheet" href="/css/ui-loading.css">
   <link rel="stylesheet" href="/css/chatbot-plataforma.css">
+  <link rel="stylesheet" href="/css/mobile-responsive.css">
 </head>
 <body>
   <nav class="navbar">
@@ -38,7 +39,15 @@
       </p>
     </section>
 
+    <section class="toolbar">
+      <div class="search-box">
+        <label for="busquedaGrupal">Buscar asesoría grupal</label>
+        <input type="text" id="busquedaGrupal" placeholder="Asesor, tema, fecha u hora">
+      </div>
+    </section>
+
     <section id="listaGrupales" class="grupales-grid"></section>
+    <div id="paginacionGrupales" class="pagination-bar hidden"></div>
 
     <div id="mensajeGrupal" class="message-box hidden"></div>
 

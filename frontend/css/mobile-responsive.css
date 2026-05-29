@@ -1,0 +1,1295 @@
+/* =========================================================
+   EDUQUAK - RESPONSIVE MOBILE PATCH
+   Objetivo: navegación compacta, cards más pequeñas,
+   formularios sin overflow, admin limpio y visualización móvil.
+   ========================================================= */
+
+html {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+img,
+video,
+iframe,
+canvas,
+svg {
+  max-width: 100%;
+}
+
+button,
+a,input,select,textarea {
+  max-width: 100%;
+}
+
+/* Evita que textos largos rompan cards */
+.card,
+.accion-card,
+.quick-card,
+.stat-card,
+.panel-card,
+.usuario-card,
+.material-card,
+.cuestionario-card,
+.asesoria-card,
+.solicitud-card,
+.reporte-card,
+.resena-card,
+.hero-card,
+.dashboard-hero,
+.page-header,
+.chart-card,
+.hero-status-card,
+.top-asesores-card,
+.chat-container,
+.chat-card,
+.modal-card,
+.pdf-modal-card,
+.evidencia-modal-card,
+.preguntas-modal-card {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+}
+
+/* =========================
+   TABLET Y MÓVIL GENERAL
+========================= */
+
+@media (max-width: 900px) {
+  .dashboard,
+  .container,
+  main.dashboard,
+  main.container {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 22px 14px 34px !important;
+  }
+
+  .page-header,
+  .dashboard-hero,
+  .hero-card,
+  .panel-card,
+  .form-card,
+  .login-card,
+  .register-card,
+  .chart-card,
+  .top-asesores-card {
+    border-radius: 20px !important;
+    padding: 18px !important;
+    margin-bottom: 16px !important;
+  }
+
+  .dashboard-hero,
+  .hero-card,
+  .hero-content,
+  .hero-status,
+  .charts-grid,
+  .profile-grid,
+  .form-grid,
+  .main-grid,
+  .content-grid,
+  .pregunta-grid,
+  .resolver-grid,
+  .datos-grid,
+  .filters-grid,
+  .filtros-grid,
+  .busqueda-grid,
+  .admin-grid {
+    grid-template-columns: 1fr !important;
+    flex-direction: column !important;
+  }
+
+  .stats-grid,
+  .quick-grid,
+  .acciones-grid,
+  .cards-grid,
+  .materiales-grid,
+  .cuestionarios-grid,
+  .asesorias-grid,
+  .solicitudes-grid,
+  .reportes-grid,
+  .usuarios-grid,
+  .resenas-grid,
+  .metricas-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 12px !important;
+  }
+
+  .stat-card,
+  .quick-card,
+  .accion-card,
+  .material-card,
+  .cuestionario-card,
+  .asesoria-card,
+  .solicitud-card,
+  .usuario-card,
+  .reporte-card,
+  .resena-card,
+  .hero-status-card {
+    padding: 14px !important;
+    border-radius: 16px !important;
+    box-shadow: 0 8px 22px rgba(15, 23, 42, 0.06) !important;
+  }
+
+  .page-header h1,
+  .dashboard-hero h1,
+  .hero-card h1,
+  .hero-left h1,
+  .login-card h1,
+  .form-card h1,
+  .register-card h1 {
+    font-size: clamp(1.45rem, 6vw, 2.05rem) !important;
+    line-height: 1.12 !important;
+  }
+
+  h2 {
+    font-size: clamp(1.08rem, 4.2vw, 1.45rem) !important;
+  }
+
+  h3 {
+    font-size: clamp(0.98rem, 3.8vw, 1.2rem) !important;
+  }
+
+  .subtitle,
+  .page-header p,
+  .hero-card p,
+  .quick-card p,
+  .accion-card p,
+  .card p,
+  .modal-subtitle {
+    font-size: 0.9rem !important;
+    line-height: 1.45 !important;
+  }
+
+  .badge {
+    padding: 7px 11px !important;
+    font-size: 0.76rem !important;
+    margin-bottom: 10px !important;
+  }
+
+  .btn,
+  button,
+  .nav-link,
+  .tab-btn,
+  .pagination-btn,
+  .btn-ver,
+  .btn-aprobar,
+  .btn-rechazar,
+  .btn-chat,
+  .btn-video {
+    min-height: 38px !important;
+    border-radius: 12px !important;
+    font-size: 0.82rem !important;
+  }
+
+  .card-actions,
+  .acciones-card,
+  .acciones,
+  .actions,
+  .user-actions,
+  .material-actions,
+  .cuestionario-actions,
+  .reporte-actions,
+  .modal-actions,
+  .form-actions,
+  .hero-buttons {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+
+  .card-actions > *,
+  .acciones-card > *,
+  .acciones > *,
+  .actions > *,
+  .user-actions > *,
+  .material-actions > *,
+  .cuestionario-actions > *,
+  .reporte-actions > *,
+  .modal-actions > *,
+  .form-actions > * {
+    flex: 1 1 130px !important;
+  }
+
+  /* Skeleton/loading más ligero en móvil */
+  .usuario-skeleton,
+  .material-skeleton,
+  .cuestionario-skeleton,
+  .reporte-skeleton,
+  .skeleton-card,
+  .loading-card {
+    min-height: 92px !important;
+    border-radius: 16px !important;
+    margin-bottom: 10px !important;
+  }
+
+  .loader,
+  .loading-spinner,
+  .spinner {
+    width: 30px !important;
+    height: 30px !important;
+  }
+
+  .loading-overlay,
+  .eduquak-loading-overlay {
+    padding: 16px !important;
+  }
+}
+
+/* =========================
+   NAV MÓVIL
+   Logo izquierda, acciones derecha, sin encimarse.
+========================= */
+
+@media (max-width: 720px) {
+  .navbar {
+    min-height: 62px !important;
+    height: auto !important;
+    padding: 9px 12px !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 8px !important;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 200 !important;
+  }
+
+  .logo-wrap {
+    width: auto !important;
+    min-width: 118px !important;
+    max-width: 46vw !important;
+    height: 44px !important;
+    gap: 8px !important;
+    flex: 0 0 auto !important;
+  }
+
+  .logo-mark {
+    width: 38px !important;
+    height: 38px !important;
+    min-width: 38px !important;
+    max-width: 38px !important;
+    min-height: 38px !important;
+    max-height: 38px !important;
+    border-radius: 12px !important;
+  }
+
+  .logo-text {
+    width: auto !important;
+    max-width: 33vw !important;
+    height: 40px !important;
+  }
+
+  .logo-title {
+    font-size: 1rem !important;
+    max-width: 100% !important;
+  }
+
+  .logo-subtitle {
+    font-size: 0.68rem !important;
+    margin-top: 2px !important;
+  }
+
+  .nav-actions,
+  .nav-links {
+    width: auto !important;
+    min-height: 40px !important;
+    max-width: calc(100vw - 145px) !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 6px !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
+  }
+
+  .nav-actions::-webkit-scrollbar,
+  .nav-links::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  .nav-actions .nav-link,
+  .nav-links .nav-link,
+  .nav-actions .btn,
+  .nav-links .btn,
+  .nav-actions button,
+  .nav-links button {
+    min-height: 36px !important;
+    height: 36px !important;
+    padding: 0 10px !important;
+    border-radius: 11px !important;
+    font-size: 0.75rem !important;
+    line-height: 1 !important;
+    flex: 0 0 auto !important;
+    box-shadow: none !important;
+    white-space: nowrap !important;
+  }
+
+  .nav-actions .btn.small,
+  .nav-links .btn.small {
+    min-height: 36px !important;
+    height: 36px !important;
+    padding: 0 10px !important;
+    font-size: 0.75rem !important;
+  }
+}
+
+@media (max-width: 430px) {
+  .navbar {
+    padding: 8px 10px !important;
+  }
+
+  .logo-wrap {
+    min-width: 104px !important;
+    max-width: 42vw !important;
+  }
+
+  .logo-mark {
+    width: 34px !important;
+    height: 34px !important;
+    min-width: 34px !important;
+    max-width: 34px !important;
+    min-height: 34px !important;
+    max-height: 34px !important;
+  }
+
+  .logo-subtitle {
+    display: none !important;
+  }
+
+  .nav-actions,
+  .nav-links {
+    max-width: calc(100vw - 126px) !important;
+  }
+
+  .nav-actions .nav-link,
+  .nav-links .nav-link,
+  .nav-actions .btn,
+  .nav-links .btn,
+  .nav-actions button,
+  .nav-links button {
+    min-height: 34px !important;
+    height: 34px !important;
+    padding: 0 9px !important;
+    font-size: 0.72rem !important;
+  }
+}
+
+/* =========================
+   FORMULARIOS / LOGIN / REGISTRO
+========================= */
+
+@media (max-width: 720px) {
+  .container {
+    min-height: auto !important;
+  }
+
+  .login-card,
+  .register-card,
+  .form-card,
+  .form-panel,
+  .info-panel {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  label {
+    font-size: 0.82rem !important;
+  }
+
+  input,
+  select,
+  textarea {
+    min-height: 42px !important;
+    padding: 10px 12px !important;
+    font-size: 0.92rem !important;
+    border-radius: 12px !important;
+  }
+
+  textarea {
+    min-height: 92px !important;
+  }
+
+  .terminos-box,
+  .terms-box,
+  .checkbox-group,
+  .check-row {
+    align-items: flex-start !important;
+    gap: 8px !important;
+    font-size: 0.84rem !important;
+  }
+
+  input[type="checkbox"] {
+    width: 18px !important;
+    min-width: 18px !important;
+    height: 18px !important;
+    min-height: 18px !important;
+    margin-top: 2px !important;
+  }
+}
+
+/* =========================
+   ADMIN MÓVIL LIMPIO
+========================= */
+
+@media (max-width: 720px) {
+  body:has(.dashboard) .page-header {
+    padding: 15px !important;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 9px !important;
+  }
+
+  .stat-card {
+    padding: 12px !important;
+    min-height: 82px !important;
+  }
+
+  .stat-label {
+    font-size: 0.72rem !important;
+    line-height: 1.25 !important;
+    margin-bottom: 5px !important;
+  }
+
+  .stat-card h2,
+  .stat-card strong,
+  .stat-number {
+    font-size: 1.28rem !important;
+    line-height: 1.1 !important;
+  }
+
+  .filters-grid,
+  .filter-grid,
+  .filtros-grid {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+
+  .tabs-container,
+  .tabs,
+  .filter-tabs {
+    display: flex !important;
+    gap: 8px !important;
+    overflow-x: auto !important;
+    padding-bottom: 4px !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
+  }
+
+  .tabs-container::-webkit-scrollbar,
+  .tabs::-webkit-scrollbar,
+  .filter-tabs::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  .tab-btn,
+  .tab-button {
+    flex: 0 0 auto !important;
+    padding: 0 12px !important;
+    min-height: 36px !important;
+    font-size: 0.76rem !important;
+  }
+
+  .pagination,
+  .pagination-controls,
+  .paginacion {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    flex-wrap: wrap !important;
+  }
+
+  .pagination-info,
+  .paginacion-info {
+    width: 100% !important;
+    text-align: center !important;
+    font-size: 0.78rem !important;
+  }
+
+  .usuario-card,
+  .material-card,
+  .cuestionario-card,
+  .reporte-card {
+    padding: 13px !important;
+  }
+
+  .usuario-card h3,
+  .material-card h3,
+  .cuestionario-card h3,
+  .reporte-card h3 {
+    font-size: 0.98rem !important;
+    margin-bottom: 6px !important;
+  }
+
+  .usuario-meta,
+  .material-meta,
+  .cuestionario-meta,
+  .reporte-meta,
+  .meta-grid,
+  .card-meta {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 6px !important;
+    font-size: 0.78rem !important;
+  }
+
+  .pdf-modal-card,
+  .evidencia-modal-card,
+  .preguntas-modal-card,
+  .modal-card {
+    width: calc(100vw - 18px) !important;
+    max-width: calc(100vw - 18px) !important;
+    max-height: calc(100vh - 18px) !important;
+    border-radius: 18px !important;
+    padding: 12px !important;
+    overflow: auto !important;
+  }
+
+  .modal-overlay {
+    padding: 8px !important;
+    align-items: center !important;
+  }
+
+  .modal-head {
+    gap: 8px !important;
+    align-items: flex-start !important;
+  }
+
+  .modal-head h3 {
+    font-size: 1rem !important;
+  }
+
+  .modal-close {
+    width: 34px !important;
+    height: 34px !important;
+    min-width: 34px !important;
+  }
+
+  .pdf-container,
+  .evidencia-container,
+  .documento-container {
+    height: min(62vh, 520px) !important;
+    min-height: 320px !important;
+  }
+
+  .pdf-container iframe,
+  .evidencia-container iframe,
+  .documento-container iframe {
+    height: 100% !important;
+  }
+
+  .btn-aprobar,
+  .btn-rechazar,
+  .btn-ver,
+  .btn-detalle,
+  .btn-documento {
+    flex: 1 1 120px !important;
+    padding-inline: 10px !important;
+  }
+}
+
+/* =========================
+   ESTADÍSTICAS Y GRÁFICAS
+========================= */
+
+@media (max-width: 900px) {
+  .charts-grid {
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+  }
+
+  .chart-card,
+  .top-asesores-card {
+    padding: 14px !important;
+  }
+
+  .chart-head {
+    gap: 6px !important;
+    flex-wrap: wrap !important;
+  }
+
+  .chart-head h3 {
+    font-size: 0.98rem !important;
+  }
+
+  .chart-container {
+    height: 240px !important;
+    min-height: 220px !important;
+    max-height: 300px !important;
+    overflow: hidden !important;
+  }
+
+  .chart-container.top-chart {
+    height: 280px !important;
+  }
+}
+
+@media (max-width: 520px) {
+  .chart-container {
+    height: 210px !important;
+    min-height: 200px !important;
+  }
+
+  .chart-container.top-chart {
+    height: 240px !important;
+  }
+}
+
+/* =========================
+   CHAT Y VIDEOLLAMADA
+========================= */
+
+@media (max-width: 720px) {
+  .chat-container,
+  .chat-page,
+  .chat-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    border-radius: 18px !important;
+  }
+
+  .chat-header,
+  .chat-modal-header {
+    padding: 12px !important;
+    gap: 8px !important;
+  }
+
+  .chat-body,
+  .chat-messages,
+  #chatMensajes,
+  #mensajesChat {
+    min-height: 320px !important;
+    max-height: 58vh !important;
+    padding: 12px !important;
+  }
+
+  .chat-input-area,
+  .chat-form,
+  .chat-modal-form {
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+    padding: 10px !important;
+  }
+
+  .chat-input-area button,
+  .chat-form button,
+  .chat-modal-form button {
+    width: 100% !important;
+  }
+
+  .mensaje,
+  .message,
+  .bubble,
+  .chat-bubble {
+    max-width: 88% !important;
+    font-size: 0.86rem !important;
+    padding: 9px 11px !important;
+    border-radius: 14px !important;
+  }
+
+  .chat-unread-badge,
+  .unread-badge {
+    min-width: 18px !important;
+    height: 18px !important;
+    padding: 0 6px !important;
+    font-size: 0.68rem !important;
+  }
+
+  .video-container,
+  .videollamada-container,
+  #jitsiContainer,
+  #meet,
+  .meet-container {
+    width: 100% !important;
+    height: calc(100vh - 92px) !important;
+    min-height: 520px !important;
+    border-radius: 0 !important;
+  }
+}
+
+/* =========================
+   MÓVIL CHICO
+========================= */
+
+@media (max-width: 520px) {
+  .dashboard,
+  .container,
+  main.dashboard,
+  main.container {
+    padding: 16px 10px 28px !important;
+  }
+
+  .stats-grid,
+  .quick-grid,
+  .acciones-grid,
+  .cards-grid,
+  .materiales-grid,
+  .cuestionarios-grid,
+  .asesorias-grid,
+  .solicitudes-grid,
+  .reportes-grid,
+  .usuarios-grid,
+  .resenas-grid,
+  .metricas-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+  }
+
+  .quick-card,
+  .accion-card {
+    min-height: 118px !important;
+  }
+
+  .quick-card span,
+  .accion-card span,
+  .card-label {
+    font-size: 0.7rem !important;
+  }
+
+  .quick-card strong,
+  .accion-card strong {
+    font-size: 0.9rem !important;
+    line-height: 1.18 !important;
+  }
+
+  .quick-card p,
+  .accion-card p {
+    font-size: 0.76rem !important;
+    line-height: 1.28 !important;
+  }
+
+  .page-header,
+  .dashboard-hero,
+  .hero-card,
+  .panel-card,
+  .form-card,
+  .login-card,
+  .register-card {
+    padding: 14px !important;
+    border-radius: 17px !important;
+  }
+
+  .stat-card {
+    min-height: 74px !important;
+    padding: 10px !important;
+  }
+
+  .stat-card h2,
+  .stat-card strong,
+  .stat-number {
+    font-size: 1.15rem !important;
+  }
+
+  .card-actions > *,
+  .acciones-card > *,
+  .actions > *,
+  .form-actions > * {
+    flex: 1 1 100% !important;
+  }
+}
+
+/* Ultra chico: si no caben 2 columnas, baja a 1 para evitar torre rota/overflow */
+@media (max-width: 350px) {
+  .stats-grid,
+  .quick-grid,
+  .acciones-grid,
+  .cards-grid,
+  .materiales-grid,
+  .cuestionarios-grid,
+  .asesorias-grid,
+  .solicitudes-grid,
+  .reportes-grid,
+  .usuarios-grid,
+  .resenas-grid,
+  .metricas-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+
+/* =========================================================
+   LANDING / INDEX - MOBILE HERO ESTÉTICO
+   Ajuste final: en móvil el hero visual aparece arriba,
+   texto más corto, botones compactos y menos "torre infinita".
+   ========================================================= */
+
+@media (max-width: 720px) {
+  body.index-page .navbar,
+  body:not(.dashboard-page) > .navbar {
+    min-height: 56px !important;
+    padding: 8px 12px !important;
+  }
+
+  body.index-page .hero,
+  body > .hero:first-of-type {
+    padding: 14px 12px 22px !important;
+    background:
+      radial-gradient(circle at 18% 0%, rgba(37, 99, 235, 0.18), transparent 32%),
+      radial-gradient(circle at 92% 12%, rgba(22, 163, 74, 0.14), transparent 28%),
+      linear-gradient(180deg, #f8fbff 0%, #eef4ff 100%) !important;
+  }
+
+  body.index-page .hero-content,
+  body > .hero:first-of-type .hero-content {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 14px !important;
+    min-height: auto !important;
+    width: 100% !important;
+  }
+
+  body.index-page .hero-visual,
+  body > .hero:first-of-type .hero-visual {
+    order: -1 !important;
+    width: 100% !important;
+    min-height: 150px !important;
+    height: 168px !important;
+    padding: 8px !important;
+    border-radius: 22px !important;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.10) !important;
+    background: rgba(255, 255, 255, 0.82) !important;
+  }
+
+  body.index-page .hero-image,
+  body > .hero:first-of-type .hero-image {
+    width: 100% !important;
+    height: 100% !important;
+    max-height: none !important;
+    object-fit: cover !important;
+    object-position: center !important;
+    border-radius: 16px !important;
+  }
+
+  body.index-page .hero-text,
+  body > .hero:first-of-type .hero-text {
+    text-align: left !important;
+    background: rgba(255, 255, 255, 0.76) !important;
+    border: 1px solid rgba(219, 228, 240, 0.78) !important;
+    border-radius: 22px !important;
+    padding: 15px !important;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.055) !important;
+    backdrop-filter: blur(10px) !important;
+  }
+
+  body.index-page .hero-text .badge,
+  body > .hero:first-of-type .hero-text .badge {
+    margin-bottom: 9px !important;
+    max-width: 100% !important;
+    font-size: 0.69rem !important;
+    line-height: 1.15 !important;
+    padding: 7px 10px !important;
+  }
+
+  body.index-page .hero-text h1,
+  body > .hero:first-of-type .hero-text h1 {
+    font-size: clamp(1.72rem, 8.3vw, 2.18rem) !important;
+    line-height: 0.98 !important;
+    letter-spacing: -0.055em !important;
+    margin: 8px 0 9px !important;
+    max-width: 11ch !important;
+  }
+
+  body.index-page .hero-text p,
+  body > .hero:first-of-type .hero-text p {
+    font-size: 0.86rem !important;
+    line-height: 1.42 !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 3 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+  }
+
+  body.index-page .hero-actions,
+  body > .hero:first-of-type .hero-actions {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px !important;
+    margin-top: 13px !important;
+  }
+
+  body.index-page .hero-actions .btn,
+  body > .hero:first-of-type .hero-actions .btn {
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 38px !important;
+    height: 38px !important;
+    padding: 0 10px !important;
+    border-radius: 12px !important;
+    font-size: 0.78rem !important;
+  }
+
+  body.index-page .hero-actions .btn.outline,
+  body > .hero:first-of-type .hero-actions .btn.outline {
+    grid-column: 1 / -1 !important;
+  }
+
+  body.index-page .section,
+  body > main .section {
+    padding-top: 28px !important;
+    padding-bottom: 28px !important;
+  }
+
+  body.index-page .section-heading,
+  body > main .section-heading {
+    margin-bottom: 16px !important;
+  }
+
+  body.index-page .section-heading h2,
+  body > main .section-heading h2 {
+    font-size: 1.35rem !important;
+  }
+
+  body.index-page .cards,
+  body.index-page .role-grid,
+  body.index-page .features,
+  body > main .cards,
+  body > main .role-grid,
+  body > main .features {
+    gap: 10px !important;
+  }
+
+  body.index-page .card,
+  body.index-page .role-card,
+  body.index-page .feature,
+  body > main .card,
+  body > main .role-card,
+  body > main .feature {
+    padding: 13px !important;
+    border-radius: 16px !important;
+  }
+
+  body.index-page .card p,
+  body.index-page .role-card p,
+  body > main .card p,
+  body > main .role-card p {
+    font-size: 0.8rem !important;
+    line-height: 1.35 !important;
+  }
+
+  body.index-page .cta,
+  body > main .cta {
+    margin: 12px 12px 28px !important;
+    padding: 24px 14px !important;
+    border-radius: 22px !important;
+  }
+}
+
+@media (max-width: 430px) {
+  body.index-page .hero,
+  body > .hero:first-of-type {
+    padding: 11px 10px 18px !important;
+  }
+
+  body.index-page .hero-visual,
+  body > .hero:first-of-type .hero-visual {
+    height: 142px !important;
+    min-height: 142px !important;
+  }
+
+  body.index-page .hero-text,
+  body > .hero:first-of-type .hero-text {
+    padding: 13px !important;
+  }
+
+  body.index-page .hero-text h1,
+  body > .hero:first-of-type .hero-text h1 {
+    font-size: clamp(1.58rem, 8.9vw, 1.95rem) !important;
+  }
+
+  body.index-page .hero-text p,
+  body > .hero:first-of-type .hero-text p {
+    -webkit-line-clamp: 2 !important;
+  }
+
+  body.index-page .hero-actions,
+  body > .hero:first-of-type .hero-actions {
+    grid-template-columns: 1fr !important;
+  }
+
+  body.index-page .hero-actions .btn,
+  body > .hero:first-of-type .hero-actions .btn {
+    height: 36px !important;
+    min-height: 36px !important;
+  }
+}
+
+
+/* =========================================================
+   LANDING MÓVIL FINAL - HOME MÁS ESTÉTICO
+   Hace que el inicio se sienta como app móvil:
+   texto compacto, botones visibles e imagen sin cortar raro.
+   ========================================================= */
+
+@media (max-width: 720px) {
+  body.index-page {
+    background:
+      radial-gradient(circle at 12% 0%, rgba(37, 99, 235, 0.13), transparent 34%),
+      linear-gradient(180deg, #f7fbff 0%, #eef5ff 100%) !important;
+  }
+
+  body.index-page .navbar {
+    background: rgba(255, 255, 255, 0.92) !important;
+    backdrop-filter: blur(14px) !important;
+    border-bottom: 1px solid rgba(219, 228, 240, 0.88) !important;
+  }
+
+  body.index-page .hero {
+    padding: 12px 12px 18px !important;
+    background: transparent !important;
+    border-bottom: 0 !important;
+  }
+
+  body.index-page .hero-content {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+    align-items: stretch !important;
+  }
+
+  body.index-page .hero-text {
+    order: 1 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 18px 16px 16px !important;
+    border-radius: 24px !important;
+    background: rgba(255, 255, 255, 0.96) !important;
+    border: 1px solid rgba(219, 228, 240, 0.95) !important;
+    box-shadow: 0 16px 34px rgba(15, 23, 42, 0.08) !important;
+    overflow: hidden !important;
+  }
+
+  body.index-page .hero-text .badge {
+    width: 100% !important;
+    max-width: 100% !important;
+    justify-content: center !important;
+    text-align: center !important;
+    white-space: normal !important;
+    line-height: 1.2 !important;
+    padding: 7px 10px !important;
+    font-size: 0.72rem !important;
+    margin-bottom: 12px !important;
+  }
+
+  body.index-page .hero-text h1 {
+    max-width: 100% !important;
+    margin: 0 0 10px !important;
+    font-size: clamp(2rem, 9vw, 2.65rem) !important;
+    line-height: 0.98 !important;
+    letter-spacing: -0.06em !important;
+    text-wrap: balance !important;
+    overflow-wrap: normal !important;
+    word-break: normal !important;
+    hyphens: none !important;
+  }
+
+  body.index-page .hero-text p {
+    max-width: 100% !important;
+    margin: 0 !important;
+    color: #526176 !important;
+    font-size: 0.9rem !important;
+    line-height: 1.42 !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 3 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+  }
+
+  body.index-page .hero-actions {
+    width: 100% !important;
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+    margin-top: 14px !important;
+  }
+
+  body.index-page .hero-actions .btn {
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 40px !important;
+    height: 40px !important;
+    padding: 0 10px !important;
+    border-radius: 13px !important;
+    font-size: 0.78rem !important;
+    line-height: 1 !important;
+    box-shadow: none !important;
+  }
+
+  body.index-page .hero-actions .btn.outline {
+    grid-column: 1 / -1 !important;
+    background: #f8fafc !important;
+  }
+
+  body.index-page .hero-visual {
+    order: 2 !important;
+    width: 100% !important;
+    height: 156px !important;
+    min-height: 156px !important;
+    max-height: 156px !important;
+    padding: 8px !important;
+    border-radius: 24px !important;
+    border: 1px solid rgba(219, 228, 240, 0.95) !important;
+    background: rgba(255, 255, 255, 0.96) !important;
+    box-shadow: 0 14px 28px rgba(15, 23, 42, 0.07) !important;
+  }
+
+  body.index-page .hero-image {
+    width: 100% !important;
+    height: 100% !important;
+    border-radius: 18px !important;
+    object-fit: cover !important;
+    object-position: center 38% !important;
+  }
+
+  body.index-page main {
+    margin-top: 0 !important;
+  }
+
+  body.index-page .section,
+  body.index-page .compact-section {
+    padding: 18px 12px !important;
+  }
+
+  body.index-page .section-heading {
+    margin-bottom: 12px !important;
+  }
+
+  body.index-page .section-heading h2 {
+    font-size: 1.14rem !important;
+    line-height: 1.14 !important;
+    margin-bottom: 6px !important;
+    text-wrap: balance !important;
+  }
+
+  body.index-page .section-heading p {
+    font-size: 0.8rem !important;
+    line-height: 1.35 !important;
+  }
+
+  body.index-page .cards,
+  body.index-page .role-grid {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+
+  body.index-page .card,
+  body.index-page .role-card {
+    padding: 13px !important;
+    border-radius: 18px !important;
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.05) !important;
+  }
+
+  body.index-page .icon {
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 11px !important;
+    margin-bottom: 8px !important;
+    font-size: 0.8rem !important;
+  }
+
+  body.index-page .card h3,
+  body.index-page .role-card h3 {
+    font-size: 0.94rem !important;
+    margin-bottom: 5px !important;
+  }
+
+  body.index-page .card p,
+  body.index-page .role-card p {
+    font-size: 0.78rem !important;
+    line-height: 1.35 !important;
+  }
+
+  body.index-page .features {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+  }
+
+  body.index-page .feature {
+    padding: 10px 8px !important;
+    border-radius: 14px !important;
+    font-size: 0.73rem !important;
+    line-height: 1.18 !important;
+  }
+
+  body.index-page .cta {
+    margin: 14px 12px 24px !important;
+    padding: 20px 14px !important;
+    border-radius: 22px !important;
+  }
+
+  body.index-page .cta h2 {
+    font-size: 1.2rem !important;
+    line-height: 1.15 !important;
+  }
+
+  body.index-page .cta p {
+    font-size: 0.82rem !important;
+    margin-bottom: 14px !important;
+  }
+
+  body.index-page .cta .hero-actions {
+    grid-template-columns: 1fr !important;
+  }
+
+  body.index-page .footer {
+    padding: 18px 10px !important;
+    font-size: 0.78rem !important;
+  }
+}
+
+@media (max-width: 390px) {
+  body.index-page .hero {
+    padding-inline: 10px !important;
+  }
+
+  body.index-page .hero-text {
+    padding: 16px 14px 14px !important;
+    border-radius: 22px !important;
+  }
+
+  body.index-page .hero-text h1 {
+    font-size: clamp(1.82rem, 8.7vw, 2.18rem) !important;
+  }
+
+  body.index-page .hero-text p {
+    font-size: 0.82rem !important;
+    -webkit-line-clamp: 2 !important;
+  }
+
+  body.index-page .hero-actions .btn {
+    height: 38px !important;
+    min-height: 38px !important;
+    font-size: 0.73rem !important;
+  }
+
+  body.index-page .hero-visual {
+    height: 138px !important;
+    min-height: 138px !important;
+    max-height: 138px !important;
+  }
+}

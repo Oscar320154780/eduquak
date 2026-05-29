@@ -367,6 +367,33 @@ exports.eliminarCuestionario = async (req, res) => {
 // ALUMNO: ver cuestionarios aprobados
 exports.obtenerCuestionariosAprobados = async (req, res) => {
   try {
+    const { page, limit, offset } = normalizarPaginacion(req, 12, 50);
+    const busqueda = normalizarTexto(req.query.q);
+
+    const where = ["q.estado_revision = 'aprobado'"];
+    const params = [];
+
+    if (busqueda) {
+      const like = `%${busqueda}%`;
+      where.push(`(
+        q.titulo ILIKE ?
+        OR q.materia ILIKE ?
+        OR COALESCE(q.descripcion, '') ILIKE ?
+        OR u.nombre ILIKE ?
+      )`);
+      params.push(like, like, like, like);
+    }
+
+    const whereSql = where.join(" AND ");
+
+    const totalRow = await getQuery(
+      `SELECT COUNT(*) AS total
+       FROM cuestionarios q
+       JOIN usuarios u ON q.id_asesor = u.id_usuario
+       WHERE ${whereSql}`,
+      params
+    );
+
     const cuestionarios = await allQuery(
       `SELECT
         q.id_cuestionario,
@@ -377,13 +404,23 @@ exports.obtenerCuestionariosAprobados = async (req, res) => {
         u.nombre AS nombre_asesor
       FROM cuestionarios q
       JOIN usuarios u ON q.id_asesor = u.id_usuario
-      WHERE q.estado_revision = 'aprobado'
-      ORDER BY q.fecha_creacion DESC`
+      WHERE ${whereSql}
+      ORDER BY q.fecha_creacion DESC
+      LIMIT ? OFFSET ?`,
+      [...params, limit, offset]
     );
+
+    const total = Number(totalRow?.total || 0);
 
     return res.json({
       ok: true,
-      cuestionarios
+      cuestionarios,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.max(Math.ceil(total / limit), 1)
+      }
     });
   } catch (error) {
     console.error("Error al obtener cuestionarios aprobados:", error);

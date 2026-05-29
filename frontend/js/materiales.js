@@ -1,50 +1,50 @@
-// Guía rápida: estos comentarios explican para qué sirve cada función sin cambiar la lógica del archivo.
+// Materiales del alumno con búsqueda y paginación desde backend.
 const API = window.EDUQUAK_API_URL || "";
 const token = localStorage.getItem("token");
 
-let materialesCache = [];
 let estadoAlumno = null;
+let paginaActual = 1;
+const LIMITE_POR_PAGINA = 12;
+let textoBusqueda = "";
+let busquedaTimer = null;
 
 if (!token) {
   window.location.href = "/pages/login.html";
 }
 
-// Se encarga de obtener mi perfil en esta pantalla y mantiene conectada la vista con el backend.
 async function obtenerMiPerfil() {
   try {
     const res = await fetch(`${API}/api/users/me`, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
+      headers: { Authorization: `Bearer ${token}` }
     });
 
     const data = await res.json();
-
-    if (!data.ok) {
-      return null;
-    }
-
-    return data.user || null;
+    return data.ok ? data.user || null : null;
   } catch (error) {
     console.error("Error al obtener perfil:", error);
     return null;
   }
 }
 
-// Se encarga de alumno no verificado en esta pantalla y mantiene conectada la vista con el backend.
 function alumnoNoVerificado() {
   return estadoAlumno !== "verificado";
 }
 
-// Se encarga de mostrar bloqueado en esta pantalla y mantiene conectada la vista con el backend.
+function obtenerArchivoUrl(url) {
+  if (!url) return "#";
+  if (/^https?:\/\//i.test(url)) return url;
+  return `${API}${url}`;
+}
+
 function renderBloqueado() {
   const contenedor = document.getElementById("listaMateriales");
-
   contenedor.innerHTML = `
     <div class="empty-state">
       Tu cuenta debe estar verificada por un administrador para ver materiales aprobados.
     </div>
   `;
+
+  document.getElementById("paginacionMateriales")?.classList.add("hidden");
 
   const inputBusqueda = document.getElementById("busquedaMaterial");
   if (inputBusqueda) {
@@ -53,7 +53,6 @@ function renderBloqueado() {
   }
 }
 
-// Se encarga de mostrar materiales en esta pantalla y mantiene conectada la vista con el backend.
 function renderMateriales(lista) {
   const contenedor = document.getElementById("listaMateriales");
   contenedor.innerHTML = "";
@@ -61,14 +60,14 @@ function renderMateriales(lista) {
   if (!lista || lista.length === 0) {
     contenedor.innerHTML = `
       <div class="empty-state">
-        No hay materiales disponibles por ahora.
+        No hay materiales disponibles con esos filtros.
       </div>
     `;
     return;
   }
 
   lista.forEach((material) => {
-    const archivoUrl = material.archivo_url ? `${API}${material.archivo_url}` : "#";
+    const archivoUrl = obtenerArchivoUrl(material.archivo_url);
 
     const card = document.createElement("article");
     card.className = "material-card";
@@ -103,13 +102,53 @@ function renderMateriales(lista) {
   });
 }
 
-// Se encarga de cargar materiales en esta pantalla y mantiene conectada la vista con el backend.
+function renderPaginacion(pagination) {
+  const paginacion = document.getElementById("paginacionMateriales");
+  if (!paginacion) return;
+
+  const total = Number(pagination?.total || 0);
+  const page = Number(pagination?.page || 1);
+  const totalPages = Number(pagination?.totalPages || 1);
+  const limit = Number(pagination?.limit || LIMITE_POR_PAGINA);
+  const inicio = total === 0 ? 0 : (page - 1) * limit + 1;
+  const fin = Math.min(page * limit, total);
+
+  paginacion.classList.remove("hidden");
+  paginacion.innerHTML = `
+    <p class="pagination-info">Mostrando ${inicio}-${fin} de ${total} materiales</p>
+    <div class="pagination-actions">
+      <button class="btn outline" id="materialesAnterior" ${page <= 1 ? "disabled" : ""}>Anterior</button>
+      <span>Página ${page} de ${totalPages}</span>
+      <button class="btn outline" id="materialesSiguiente" ${page >= totalPages ? "disabled" : ""}>Siguiente</button>
+    </div>
+  `;
+
+  document.getElementById("materialesAnterior")?.addEventListener("click", () => {
+    if (paginaActual > 1) {
+      paginaActual -= 1;
+      cargarMateriales();
+    }
+  });
+
+  document.getElementById("materialesSiguiente")?.addEventListener("click", () => {
+    if (paginaActual < totalPages) {
+      paginaActual += 1;
+      cargarMateriales();
+    }
+  });
+}
+
 async function cargarMateriales() {
   try {
-    const res = await fetch(`${API}/api/materiales/publicos`, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
+    const params = new URLSearchParams({
+      page: String(paginaActual),
+      limit: String(LIMITE_POR_PAGINA)
+    });
+
+    if (textoBusqueda) params.set("q", textoBusqueda);
+
+    const res = await fetch(`${API}/api/materiales/publicos?${params.toString()}`, {
+      headers: { Authorization: `Bearer ${token}` }
     });
 
     const data = await res.json();
@@ -119,48 +158,33 @@ async function cargarMateriales() {
       document.getElementById("listaMateriales").innerHTML = `
         <div class="empty-state">No se pudieron cargar los materiales.</div>
       `;
+      document.getElementById("paginacionMateriales")?.classList.add("hidden");
       return;
     }
 
-    materialesCache = data.materiales || [];
-    renderMateriales(materialesCache);
+    renderMateriales(data.materiales || []);
+    renderPaginacion(data.pagination || { page: paginaActual, limit: LIMITE_POR_PAGINA, total: 0, totalPages: 1 });
   } catch (error) {
     console.error("Error al cargar materiales:", error);
     document.getElementById("listaMateriales").innerHTML = `
       <div class="empty-state">Error al cargar materiales.</div>
     `;
+    document.getElementById("paginacionMateriales")?.classList.add("hidden");
   }
 }
 
-// Este listener responde al evento "input" y mantiene la pantalla sincronizada con lo que hace el usuario.
 document.getElementById("busquedaMaterial")?.addEventListener("input", (e) => {
   if (alumnoNoVerificado()) return;
 
-  const texto = e.target.value.trim().toLowerCase();
+  textoBusqueda = e.target.value.trim();
+  paginaActual = 1;
 
-  if (!texto) {
-    renderMateriales(materialesCache);
-    return;
-  }
-
-  const filtrados = materialesCache.filter((material) => {
-    const titulo = (material.titulo || "").toLowerCase();
-    const materia = (material.materia || "").toLowerCase();
-    const asesor = (material.nombre_asesor || "").toLowerCase();
-    const descripcion = (material.descripcion || "").toLowerCase();
-
-    return (
-      titulo.includes(texto) ||
-      materia.includes(texto) ||
-      asesor.includes(texto) ||
-      descripcion.includes(texto)
-    );
-  });
-
-  renderMateriales(filtrados);
+  clearTimeout(busquedaTimer);
+  busquedaTimer = setTimeout(() => {
+    cargarMateriales();
+  }, 300);
 });
 
-// Se encarga de init en esta pantalla y mantiene conectada la vista con el backend.
 async function init() {
   const perfil = await obtenerMiPerfil();
 

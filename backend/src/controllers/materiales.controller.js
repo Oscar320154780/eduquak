@@ -186,6 +186,33 @@ exports.eliminarMaterial = async (req, res) => {
 // Controla la lógica de obtener materiales aprobados: recibe la petición, habla con la base de datos y responde al frontend.
 exports.obtenerMaterialesAprobados = async (req, res) => {
   try {
+    const { page, limit, offset } = normalizarPaginacion(req, 12, 50);
+    const busqueda = normalizarTexto(req.query.q);
+
+    const where = ["m.estado_revision = 'aprobado'"];
+    const params = [];
+
+    if (busqueda) {
+      const like = `%${busqueda}%`;
+      where.push(`(
+        m.titulo ILIKE ?
+        OR m.materia ILIKE ?
+        OR COALESCE(m.descripcion, '') ILIKE ?
+        OR u.nombre ILIKE ?
+      )`);
+      params.push(like, like, like, like);
+    }
+
+    const whereSql = where.join(" AND ");
+
+    const totalRow = await getQuery(
+      `SELECT COUNT(*) AS total
+       FROM materiales m
+       JOIN usuarios u ON m.id_asesor = u.id_usuario
+       WHERE ${whereSql}`,
+      params
+    );
+
     const materiales = await allQuery(
       `SELECT
         m.id_material,
@@ -197,13 +224,23 @@ exports.obtenerMaterialesAprobados = async (req, res) => {
         u.nombre AS nombre_asesor
       FROM materiales m
       JOIN usuarios u ON m.id_asesor = u.id_usuario
-      WHERE m.estado_revision = 'aprobado'
-      ORDER BY m.fecha_subida DESC`
+      WHERE ${whereSql}
+      ORDER BY m.fecha_subida DESC
+      LIMIT ? OFFSET ?`,
+      [...params, limit, offset]
     );
+
+    const total = Number(totalRow?.total || 0);
 
     return res.json({
       ok: true,
-      materiales
+      materiales,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.max(Math.ceil(total / limit), 1)
+      }
     });
   } catch (error) {
     console.error("Error al obtener materiales aprobados:", error);

@@ -4,6 +4,10 @@ const token = localStorage.getItem("token");
 
 let grupalesCache = [];
 let estadoAlumno = null;
+let paginaActual = 1;
+const LIMITE_POR_PAGINA = 12;
+let textoBusqueda = "";
+let busquedaTimer = null;
 
 if (!token) {
   window.location.href = "/pages/login.html";
@@ -111,7 +115,7 @@ function renderGrupales(lista) {
   if (!lista || lista.length === 0) {
     contenedor.innerHTML = `
       <div class="empty-state">
-        No hay asesorías grupales disponibles por ahora.
+        No hay asesorías grupales disponibles con esos filtros.
       </div>
     `;
     ocultarMensaje();
@@ -205,10 +209,53 @@ function renderGrupales(lista) {
   });
 }
 
+function renderPaginacionGrupales(pagination) {
+  const paginacion = document.getElementById("paginacionGrupales");
+  if (!paginacion) return;
+
+  const total = Number(pagination?.total || 0);
+  const page = Number(pagination?.page || 1);
+  const totalPages = Number(pagination?.totalPages || 1);
+  const limit = Number(pagination?.limit || LIMITE_POR_PAGINA);
+  const inicio = total === 0 ? 0 : (page - 1) * limit + 1;
+  const fin = Math.min(page * limit, total);
+
+  paginacion.classList.remove("hidden");
+  paginacion.innerHTML = `
+    <p class="pagination-info">Mostrando ${inicio}-${fin} de ${total} asesorías grupales</p>
+    <div class="pagination-actions">
+      <button class="btn outline" id="grupalesAnterior" ${page <= 1 ? "disabled" : ""}>Anterior</button>
+      <span>Página ${page} de ${totalPages}</span>
+      <button class="btn outline" id="grupalesSiguiente" ${page >= totalPages ? "disabled" : ""}>Siguiente</button>
+    </div>
+  `;
+
+  document.getElementById("grupalesAnterior")?.addEventListener("click", () => {
+    if (paginaActual > 1) {
+      paginaActual -= 1;
+      cargarGrupales();
+    }
+  });
+
+  document.getElementById("grupalesSiguiente")?.addEventListener("click", () => {
+    if (paginaActual < totalPages) {
+      paginaActual += 1;
+      cargarGrupales();
+    }
+  });
+}
+
 // Se encarga de cargar grupales en esta pantalla y mantiene conectada la vista con el backend.
 async function cargarGrupales() {
   try {
-    const res = await fetch(`${API}/api/asesorias/grupales`, {
+    const params = new URLSearchParams({
+      page: String(paginaActual),
+      limit: String(LIMITE_POR_PAGINA)
+    });
+
+    if (textoBusqueda) params.set("q", textoBusqueda);
+
+    const res = await fetch(`${API}/api/asesorias/grupales?${params.toString()}`, {
       headers: {
         Authorization: `Bearer ${token}`
       }
@@ -221,6 +268,7 @@ async function cargarGrupales() {
       document.getElementById("listaGrupales").innerHTML = `
         <div class="empty-state">No se pudieron cargar las asesorías grupales.</div>
       `;
+      document.getElementById("paginacionGrupales")?.classList.add("hidden");
       ocultarMensaje();
       ocultarPanelInscritos();
       return;
@@ -228,12 +276,14 @@ async function cargarGrupales() {
 
     grupalesCache = data.asesorias || [];
     renderGrupales(grupalesCache);
+    renderPaginacionGrupales(data.pagination || { page: paginaActual, limit: LIMITE_POR_PAGINA, total: 0, totalPages: 1 });
   } catch (error) {
     console.error("Error al ver grupales:", error);
 
     document.getElementById("listaGrupales").innerHTML = `
       <div class="empty-state">Error al cargar las asesorías grupales.</div>
     `;
+    document.getElementById("paginacionGrupales")?.classList.add("hidden");
 
     ocultarMensaje();
     ocultarPanelInscritos();
@@ -486,6 +536,18 @@ async function entrarAJitsiAlumnoDirecto(room, idAsesoria) {
     mostrarAlertaVideo("No se pudo validar la videollamada. Intenta de nuevo.");
   }
 }
+
+document.getElementById("busquedaGrupal")?.addEventListener("input", (e) => {
+  if (alumnoNoVerificado()) return;
+
+  textoBusqueda = e.target.value.trim();
+  paginaActual = 1;
+
+  clearTimeout(busquedaTimer);
+  busquedaTimer = setTimeout(() => {
+    cargarGrupales();
+  }, 300);
+});
 
 // Se encarga de init en esta pantalla y mantiene conectada la vista con el backend.
 async function init() {
