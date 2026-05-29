@@ -668,10 +668,17 @@ function abrirChat(idAsesoria) {
     return;
   }
 
-  window.open(
-    `/pages/chat.html?id=${encodeURIComponent(idAsesoria)}`,
-    "_blank"
-  );
+  if (window.Swal) {
+    Swal.fire({
+      icon: "error",
+      title: "Chat no disponible",
+      text: "No se pudo cargar la ventana de chat. Recarga la página e intenta de nuevo.",
+      confirmButtonText: "Entendido"
+    });
+    return;
+  }
+
+  alert("No se pudo cargar la ventana de chat. Recarga la página e intenta de nuevo.");
 }
 
 // Este listener responde al evento "click" y mantiene la pantalla sincronizada con lo que hace el usuario.

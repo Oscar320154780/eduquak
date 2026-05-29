@@ -158,16 +158,22 @@ async function entrarAJitsi(room, idAsesoria) {
 
 // abrir chat de asesoría en modal
 function abrirChat(idAsesoria) {
-
   if (window.EduQuakChatModal) {
     window.EduQuakChatModal.open(idAsesoria);
     return;
   }
 
-  window.open(
-    `/pages/chat.html?id=${encodeURIComponent(idAsesoria)}`,
-    "_blank"
-  );
+  if (window.Swal) {
+    Swal.fire({
+      icon: "error",
+      title: "Chat no disponible",
+      text: "No se pudo cargar la ventana de chat. Recarga la página e intenta de nuevo.",
+      confirmButtonText: "Entendido"
+    });
+    return;
+  }
+
+  alert("No se pudo cargar la ventana de chat. Recarga la página e intenta de nuevo.");
 }
 
 // modal reporte

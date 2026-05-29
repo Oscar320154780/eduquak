@@ -129,6 +129,18 @@
     aplicarTemaChat();
     refs.close.addEventListener("click", cerrar);
     refs.form.addEventListener("submit", enviarMensaje);
+
+    refs.textarea.addEventListener("input", () => {
+      refs.textarea.style.height = "auto";
+      refs.textarea.style.height = Math.min(refs.textarea.scrollHeight, 120) + "px";
+    });
+
+    refs.textarea.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        refs.form.requestSubmit();
+      }
+    });
   }
 
   function mostrarEstado(texto) {
@@ -288,7 +300,9 @@
     clearInterval(state.intervalo);
     state.intervalo = setInterval(cargarMensajes, 3000);
 
-    setTimeout(() => refs.textarea.focus(), 80);
+    if (window.matchMedia("(min-width: 769px)").matches) {
+      setTimeout(() => refs.textarea.focus(), 80);
+    }
   }
 
   function cerrar() {
