@@ -30,11 +30,60 @@ document
 // Guía rápida: estos comentarios explican para qué sirve cada función sin cambiar la lógica del archivo.
 const API = window.EDUQUAK_API_URL || "";
 
+const PASSWORD_RULES_MESSAGE =
+  "La contraseña debe tener mínimo 8 caracteres, al menos una mayúscula y al menos un número.";
+
+function validarPasswordSegura(password) {
+  return /^(?=.*[A-Z])(?=.*\d).{8,}$/.test(password || "");
+}
+
+function mostrarErrorRegistro(titulo, mensaje) {
+  const mensajeBox = document.getElementById("mensajeRegistro");
+
+  if (mensajeBox) {
+    mensajeBox.textContent = mensaje;
+  }
+
+  if (window.EduQuakUI) {
+    window.EduQuakUI.error(titulo, mensaje);
+  }
+}
+
 // Este listener responde al evento "submit" y mantiene la pantalla sincronizada con lo que hace el usuario.
 document.getElementById("formAsesor").addEventListener("submit", async (e) => {
   e.preventDefault();
 
   const mensajeBox = document.getElementById("mensajeRegistro");
+  const aceptaTerminos = document.getElementById("terminos_aceptados");
+  const passwordInput = document.getElementById("password");
+  const password = passwordInput ? passwordInput.value : "";
+
+  if (!validarPasswordSegura(password)) {
+    if (passwordInput) {
+      passwordInput.focus();
+    }
+
+    mostrarErrorRegistro(
+      "Contraseña no segura",
+      PASSWORD_RULES_MESSAGE
+    );
+
+    return;
+  }
+
+  if (!aceptaTerminos || !aceptaTerminos.checked) {
+    mensajeBox.textContent = "Debes aceptar los Términos y Condiciones.";
+
+    if (window.EduQuakUI) {
+      window.EduQuakUI.error(
+        "Falta aceptar términos",
+        "Para crear tu cuenta debes aceptar los Términos y Condiciones."
+      );
+    }
+
+    return;
+  }
+
   const formData = new FormData(e.target);
 
   try {

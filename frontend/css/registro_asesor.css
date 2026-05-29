@@ -585,3 +585,50 @@ body:has(.asesor-theme) .password-toggle {
 body:has(.asesor-theme) .password-toggle:hover {
   background: rgba(22, 163, 74, 0.08) !important;
 }
+
+/* Términos y Condiciones */
+.terms-box {
+  padding: 14px 16px;
+  border: 1px solid #bbf7d0;
+  border-radius: 16px;
+  background: #f0fdf4;
+}
+
+.terms-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin: 0;
+  color: #334155;
+  font-size: 0.94rem;
+  line-height: 1.45;
+  cursor: pointer;
+}
+
+.terms-label input {
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+  margin-top: 2px;
+  accent-color: #16a34a;
+  cursor: pointer;
+}
+
+.terms-label a {
+  color: #15803d;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.terms-label a:hover {
+  text-decoration: underline;
+}
+
+
+.password-help {
+  display: block;
+  margin-top: 8px;
+  color: #64748b;
+  font-size: 0.86rem;
+  line-height: 1.35;
+}

@@ -95,20 +95,65 @@ function estadoClase(estado) {
   return "pendiente";
 }
 
-// abrir jitsi
-function entrarAJitsi(room) {
+function mostrarAlertaVideo(mensaje) {
+  if (window.Swal) {
+    Swal.fire({
+      icon: "info",
+      title: "Videollamada no disponible",
+      text: mensaje,
+      confirmButtonText: "Entendido"
+    });
+    return;
+  }
 
-  const user = JSON.parse(
-    localStorage.getItem("user") || "{}"
-  );
+  alert(mensaje);
+}
 
-  const nombre =
-    user.nombre || "Alumno";
+// abrir jitsi con validación de horario
+async function entrarAJitsi(room, idAsesoria) {
 
-  window.open(
-    `/pages/videollamada.html?room=${encodeURIComponent(room)}&name=${encodeURIComponent(nombre)}&role=alumno`,
-    "_blank"
-  );
+  if (!idAsesoria) {
+    mostrarAlertaVideo("No se pudo validar esta asesoría. Intenta recargar la página.");
+    return;
+  }
+
+  try {
+    const res = await fetch(
+      `${API}/api/asesorias/${idAsesoria}/video-access`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    const data = await res.json();
+
+    if (!data.ok) {
+      mostrarAlertaVideo(
+        data.message ||
+        "La videollamada estará disponible 10 minutos antes de la hora agendada."
+      );
+      return;
+    }
+
+    const user = JSON.parse(
+      localStorage.getItem("user") || "{}"
+    );
+
+    const nombre =
+      user.nombre || "Alumno";
+
+    const sala = data.room_name || room;
+
+    window.open(
+      `/pages/videollamada.html?id=${encodeURIComponent(idAsesoria)}&room=${encodeURIComponent(sala)}&name=${encodeURIComponent(nombre)}&role=alumno`,
+      "_blank"
+    );
+  } catch (error) {
+    console.error("Error al validar videollamada:", error);
+    mostrarAlertaVideo("No se pudo validar la videollamada. Intenta de nuevo.");
+  }
 }
 
 // abrir chat de asesoría en modal
@@ -418,7 +463,7 @@ function renderAsesorias(lista) {
             ? `
               <button
                 class="btn primary"
-                data-room="${room}"
+                data-room="${room}" data-video-asesoria="${asesoria.id_asesoria}"
               >
                 Entrar a videollamada
               </button>
@@ -475,7 +520,7 @@ function renderAsesorias(lista) {
 
       btnVideo.addEventListener(
         "click",
-        () => entrarAJitsi(room)
+        () => entrarAJitsi(room, asesoria.id_asesoria)
       );
     }
 
@@ -513,6 +558,8 @@ function renderAsesorias(lista) {
 
     contenedor.appendChild(card);
   });
+
+  document.dispatchEvent(new CustomEvent("eduquak:chat-rendered"));
 }
 
 // filtro

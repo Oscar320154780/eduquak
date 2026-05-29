@@ -178,7 +178,7 @@ function renderIndividuales(lista) {
       <div class="button-row">
         ${
           tieneVideo
-            ? `<button class="btn primary" data-room="${room}">Entrar a videollamada</button>`
+            ? `<button class="btn primary" data-room="${room}" data-video-asesoria="${item.id_asesoria}">Entrar a videollamada</button>`
             : ""
         }
 
@@ -200,7 +200,7 @@ function renderIndividuales(lista) {
     if (btnVideo) {
       // Este listener responde al evento "click" y mantiene la pantalla sincronizada con lo que hace el usuario.
       btnVideo.addEventListener("click", () => {
-        entrarAJitsi(room);
+        entrarAJitsi(room, item.id_asesoria);
       });
     }
 
@@ -221,6 +221,8 @@ function renderIndividuales(lista) {
 
     contenedor.appendChild(card);
   });
+
+  document.dispatchEvent(new CustomEvent("eduquak:chat-rendered"));
 }
 
 // Se encarga de mostrar grupales en esta pantalla y mantiene conectada la vista con el backend.
@@ -284,7 +286,7 @@ function renderGrupales(lista) {
 
         ${
           room
-            ? `<button class="btn dark" data-room="${room}">Entrar a videollamada</button>`
+            ? `<button class="btn dark" data-room="${room}" data-video-asesoria="${item.id_asesoria}">Entrar a videollamada</button>`
             : ""
         }
 
@@ -314,7 +316,7 @@ function renderGrupales(lista) {
     if (btnVideo) {
       // Este listener responde al evento "click" y mantiene la pantalla sincronizada con lo que hace el usuario.
       btnVideo.addEventListener("click", () => {
-        entrarAJitsi(room);
+        entrarAJitsi(room, item.id_asesoria);
       });
     }
 
@@ -327,6 +329,8 @@ function renderGrupales(lista) {
 
     contenedor.appendChild(card);
   });
+
+  document.dispatchEvent(new CustomEvent("eduquak:chat-rendered"));
 }
 
 // Se encarga de mostrar historial en esta pantalla y mantiene conectada la vista con el backend.
@@ -376,6 +380,8 @@ function renderHistorial(lista) {
 
     contenedor.appendChild(card);
   });
+
+  document.dispatchEvent(new CustomEvent("eduquak:chat-rendered"));
 }
 
 // Se encarga de cargar individuales en esta pantalla y mantiene conectada la vista con el backend.
@@ -605,15 +611,54 @@ async function cargarInscritosDeGrupal(idAsesoria) {
   }
 }
 
-// Se encarga de entrar ajitsi en esta pantalla y mantiene conectada la vista con el backend.
-function entrarAJitsi(room) {
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
-  const nombre = user.nombre || "Asesor";
+function mostrarAlertaVideo(mensaje) {
+  if (window.Swal) {
+    Swal.fire({
+      icon: "info",
+      title: "Videollamada no disponible",
+      text: mensaje,
+      confirmButtonText: "Entendido"
+    });
+    return;
+  }
 
-  window.open(
-    `/pages/videollamada.html?room=${encodeURIComponent(room)}&name=${encodeURIComponent(nombre)}&role=asesor`,
-    "_blank"
-  );
+  alert(mensaje);
+}
+
+// Se encarga de entrar a Jitsi validando horario y pertenencia.
+async function entrarAJitsi(room, idAsesoria) {
+  if (!idAsesoria) {
+    mostrarAlertaVideo("No se pudo validar esta asesoría. Intenta recargar la página.");
+    return;
+  }
+
+  try {
+    const res = await fetch(`${API}/api/asesorias/${idAsesoria}/video-access`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+
+    const data = await res.json();
+
+    if (!data.ok) {
+      mostrarAlertaVideo(
+        data.message ||
+        "La videollamada estará disponible 10 minutos antes de la hora agendada."
+      );
+      return;
+    }
+
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
+    const nombre = user.nombre || "Asesor";
+    const sala = data.room_name || room;
+
+    window.open(
+      `/pages/videollamada.html?id=${encodeURIComponent(idAsesoria)}&room=${encodeURIComponent(sala)}&name=${encodeURIComponent(nombre)}&role=asesor`,
+      "_blank"
+    );
+  } catch (error) {
+    console.error("Error al validar videollamada:", error);
+    mostrarAlertaVideo("No se pudo validar la videollamada. Intenta de nuevo.");
+  }
 }
 
 // Se encarga de abrir chat de una asesoría aceptada en modal.

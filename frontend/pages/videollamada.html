@@ -429,13 +429,15 @@
   <script src="/js/ui-feedback.js"></script>
   <script src="/js/ui-loading.js"></script>
 
+  <script src="/js/config.js"></script>
   <script src="https://meet.jit.si/external_api.js"></script>
   <script>
-    const API = "http://localhost:3000";
+    const API = window.EDUQUAK_API_URL || "";
     const token = localStorage.getItem("token");
 
     const params = new URLSearchParams(window.location.search);
-    const room = params.get("room");
+    const idAsesoria = params.get("id");
+    let room = params.get("room");
     const displayName = params.get("name") || "Usuario EduQuak";
     const roleParam = (params.get("role") || "alumno").toLowerCase();
 
@@ -491,11 +493,61 @@
       }
     }
 
+
+    async function validarAccesoVideollamada() {
+      if (!token) {
+        mostrarError("Debes iniciar sesión para entrar a la videollamada.");
+        setTimeout(() => {
+          window.location.href = "/pages/login.html";
+        }, 1600);
+        return false;
+      }
+
+      if (!idAsesoria) {
+        infoSala.textContent = "Acceso inválido";
+        mostrarError("No se encontró una asesoría válida. Entra desde tu lista de asesorías.");
+        return false;
+      }
+
+      try {
+        const res = await fetch(`${API}/api/asesorias/${idAsesoria}/video-access`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+
+        const data = await res.json();
+
+        if (!data.ok) {
+          infoSala.textContent = "No disponible";
+          mostrarError(
+            data.message ||
+            "La videollamada estará disponible 10 minutos antes de la hora agendada."
+          );
+          return false;
+        }
+
+        room = data.room_name || room;
+        return true;
+      } catch (error) {
+        console.error("Error al validar acceso a videollamada:", error);
+        infoSala.textContent = "No disponible";
+        mostrarError("No se pudo validar la videollamada. Intenta entrar desde tu asesoría.");
+        return false;
+      }
+    }
+
     async function iniciarVideollamada() {
       role = await obtenerRolAutenticado();
       esAsesor = role === "asesor";
       aplicarTemaRol();
       mostrarRol();
+
+      const accesoValido = await validarAccesoVideollamada();
+
+      if (!accesoValido) {
+        return;
+      }
 
       if (!room) {
         infoSala.textContent = "No disponible";
@@ -586,6 +638,5 @@
 
     iniciarVideollamada();
   </script>
-  <script src="/js/config.js"></script>
 </body>
 </html>

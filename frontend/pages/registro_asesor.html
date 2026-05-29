@@ -62,7 +62,17 @@
             <label for="password">Contraseña</label>
 
             <div class="password-field">
-              <input type="password" id="password" name="password" placeholder="••••••••" required>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="••••••••"
+                minlength="8"
+                pattern="(?=.*[A-Z])(?=.*\d).{8,}"
+                title="Mínimo 8 caracteres, al menos una mayúscula y un número"
+                autocomplete="new-password"
+                required
+              >
 
               <button
                 type="button"
@@ -76,6 +86,10 @@
               </svg>
             </button>
             </div>
+
+            <small class="password-help">
+              Mínimo 8 caracteres, al menos una mayúscula y un número.
+            </small>
           </div>
 
           <div class="input-group">
@@ -118,6 +132,25 @@
             <label for="documento">Documento de respaldo</label>
             <input type="file" id="documento" name="documento" accept=".pdf,.png,.jpg,.jpeg" required>
             <small>Formatos permitidos: PDF, PNG, JPG o JPEG.</small>
+          </div>
+
+          <div class="input-group full-width terms-box">
+            <label class="terms-label" for="terminos_aceptados">
+              <input
+                type="checkbox"
+                id="terminos_aceptados"
+                name="terminos_aceptados"
+                value="true"
+                required
+              >
+              <span>
+                Acepto los
+                <a href="/pages/terminos-condiciones.html" target="_blank" rel="noopener noreferrer">
+                  Términos y Condiciones
+                </a>
+                de EduQuak.
+              </span>
+            </label>
           </div>
 
           <div class="full-width">

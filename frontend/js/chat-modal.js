@@ -213,6 +213,7 @@
       ocultarEstado();
       renderInfo(data.asesoria);
       renderMensajes(data.mensajes || []);
+      document.dispatchEvent(new CustomEvent("eduquak:chat-read"));
     } catch (error) {
       console.error(error);
       mostrarEstado("Error al cargar el chat.");

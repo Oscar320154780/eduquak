@@ -171,7 +171,7 @@ function renderGrupales(lista) {
 
         ${
           g.ya_inscrito && room
-            ? `<button class="btn success" data-room="${room}">Entrar a videollamada</button>`
+            ? `<button class="btn success" data-room="${room}" data-video-asesoria="${g.id_asesoria}">Entrar a videollamada</button>`
             : ""
         }
 
@@ -197,7 +197,7 @@ function renderGrupales(lista) {
 
     if (btnVideo) {
       btnVideo.addEventListener("click", () => {
-        entrarAJitsiAlumnoDirecto(room);
+        entrarAJitsiAlumnoDirecto(room, g.id_asesoria);
       });
     }
 
@@ -436,16 +436,55 @@ async function verInscritosGrupalAlumno(idAsesoria) {
   }
 }
 
-// Se encarga de entrar ajitsi alumno directo en esta pantalla y mantiene conectada la vista con el backend.
-function entrarAJitsiAlumnoDirecto(room) {
+function mostrarAlertaVideo(mensaje) {
+  if (window.Swal) {
+    Swal.fire({
+      icon: "info",
+      title: "Videollamada no disponible",
+      text: mensaje,
+      confirmButtonText: "Entendido"
+    });
+    return;
+  }
 
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
-  const nombre = user.nombre || "Alumno";
+  alert(mensaje);
+}
 
-  window.open(
-    `/pages/videollamada.html?room=${encodeURIComponent(room)}&name=${encodeURIComponent(nombre)}&role=alumno`,
-    "_blank"
-  );
+// Se encarga de entrar a Jitsi alumno directo validando horario y pertenencia.
+async function entrarAJitsiAlumnoDirecto(room, idAsesoria) {
+
+  if (!idAsesoria) {
+    mostrarAlertaVideo("No se pudo validar esta asesoría. Intenta recargar la página.");
+    return;
+  }
+
+  try {
+    const res = await fetch(`${API}/api/asesorias/${idAsesoria}/video-access`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+
+    const data = await res.json();
+
+    if (!data.ok) {
+      mostrarAlertaVideo(
+        data.message ||
+        "La videollamada estará disponible 10 minutos antes de la hora agendada."
+      );
+      return;
+    }
+
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
+    const nombre = user.nombre || "Alumno";
+    const sala = data.room_name || room;
+
+    window.open(
+      `/pages/videollamada.html?id=${encodeURIComponent(idAsesoria)}&room=${encodeURIComponent(sala)}&name=${encodeURIComponent(nombre)}&role=alumno`,
+      "_blank"
+    );
+  } catch (error) {
+    console.error("Error al validar videollamada:", error);
+    mostrarAlertaVideo("No se pudo validar la videollamada. Intenta de nuevo.");
+  }
 }
 
 // Se encarga de init en esta pantalla y mantiene conectada la vista con el backend.
