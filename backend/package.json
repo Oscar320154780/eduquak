@@ -11,7 +11,8 @@
     "init-db": "node src/init-postgres.js",
     "test-postgres": "node src/test-postgres.js",
     "update-rechazo": "node src/scripts/update-rechazo-columns.js",
-    "reset-db": "node src/scripts/reset-demo-db.js"
+    "reset-db": "node src/scripts/reset-demo-db.js",
+    "seed-realista": "node src/scripts/seed-realista-3meses.js"
   },
   "keywords": [],
   "author": "",
