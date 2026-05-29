@@ -296,7 +296,7 @@
     refs.title.textContent = "Comunicación de la sesión";
     refs.info.textContent = "Cargando información...";
     refs.textarea.value = "";
-    refs.mostrarFormularioChat(form);
+    mostrarFormularioChat(refs.form);
     ocultarEstado();
 
     refs.overlay.classList.remove("hidden");
