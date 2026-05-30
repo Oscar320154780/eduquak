@@ -37,6 +37,37 @@ function validarPasswordSegura(password) {
   return /^(?=.*[A-Z])(?=.*\d).{8,}$/.test(password || "");
 }
 
+
+const TELEFONO_RULES_MESSAGE = "El teléfono solo debe contener números.";
+
+function normalizarTelefonoInput(input) {
+  if (!input) return "";
+  const soloNumeros = String(input.value || "").replace(/\D/g, "");
+  if (input.value !== soloNumeros) {
+    input.value = soloNumeros;
+  }
+  return soloNumeros;
+}
+
+function prepararValidacionTelefono() {
+  const telefonoInput = document.getElementById("telefono");
+  if (!telefonoInput) return;
+
+  telefonoInput.setAttribute("inputmode", "numeric");
+  telefonoInput.setAttribute("pattern", "[0-9]*");
+  telefonoInput.setAttribute("maxlength", "15");
+
+  telefonoInput.addEventListener("input", () => {
+    normalizarTelefonoInput(telefonoInput);
+  });
+
+  telefonoInput.addEventListener("paste", () => {
+    setTimeout(() => normalizarTelefonoInput(telefonoInput), 0);
+  });
+}
+
+prepararValidacionTelefono();
+
 function mostrarErrorRegistro(titulo, mensaje) {
   const mensajeBox = document.getElementById("mensajeRegistro");
 
@@ -57,6 +88,21 @@ document.getElementById("formAlumno").addEventListener("submit", async (e) => {
   const aceptaTerminos = document.getElementById("terminos_aceptados");
   const passwordInput = document.getElementById("password");
   const password = passwordInput ? passwordInput.value : "";
+  const telefonoInput = document.getElementById("telefono");
+  const telefono = normalizarTelefonoInput(telefonoInput);
+
+  if (telefono && !/^\d+$/.test(telefono)) {
+    if (telefonoInput) {
+      telefonoInput.focus();
+    }
+
+    mostrarErrorRegistro(
+      "Teléfono inválido",
+      TELEFONO_RULES_MESSAGE
+    );
+
+    return;
+  }
 
   if (!validarPasswordSegura(password)) {
     if (passwordInput) {

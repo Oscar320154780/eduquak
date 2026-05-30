@@ -205,7 +205,11 @@
 
   function mostrarFormularioChat(form) {
     if (!form) return;
-    form.style.display = window.matchMedia("(max-width: 768px)").matches ? "flex" : "grid";
+
+    // No forzamos display desde JS porque rompía el layout del composer.
+    // El CSS controla el chat como flex: [input] [Enviar] en web y móvil.
+    form.style.removeProperty("display");
+    form.classList.remove("hidden");
   }
 
   async function cargarMensajes() {

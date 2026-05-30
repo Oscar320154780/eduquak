@@ -20,6 +20,24 @@ function validarPasswordSegura(password) {
 
 }
 
+function normalizarTelefono(telefono) {
+
+  if (telefono === undefined || telefono === null) {
+    return null;
+  }
+
+  const telefonoLimpio = String(telefono).trim();
+
+  return telefonoLimpio === "" ? null : telefonoLimpio;
+
+}
+
+function telefonoEsValido(telefono) {
+
+  return telefono === null || /^\d+$/.test(telefono);
+
+}
+
 
 // =====================================
 // REGISTER ALUMNO
@@ -68,6 +86,17 @@ exports.registerAlumno = async (req, res) => {
       return res.status(400).json({
         ok: false,
         message: "Debes aceptar los Términos y Condiciones para registrarte"
+      });
+
+    }
+
+    const telefonoLimpio = normalizarTelefono(telefono);
+
+    if (!telefonoEsValido(telefonoLimpio)) {
+
+      return res.status(400).json({
+        ok: false,
+        message: "El teléfono solo debe contener números"
       });
 
     }
@@ -141,7 +170,7 @@ exports.registerAlumno = async (req, res) => {
         correo,
         hashedPassword,
         institucion,
-        telefono || null
+        telefonoLimpio
       ]
 
     );
@@ -289,6 +318,17 @@ exports.registerAsesor = async (req, res) => {
 
     }
 
+    const telefonoLimpio = normalizarTelefono(telefono);
+
+    if (!telefonoEsValido(telefonoLimpio)) {
+
+      return res.status(400).json({
+        ok: false,
+        message: "El teléfono solo debe contener números"
+      });
+
+    }
+
     if (!req.file) {
 
       return res.status(400).json({
@@ -358,7 +398,7 @@ exports.registerAsesor = async (req, res) => {
         correo,
         hashedPassword,
         institucion,
-        telefono || null
+        telefonoLimpio
       ]
 
     );
