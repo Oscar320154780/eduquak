@@ -2134,3 +2134,76 @@ body.chat-open {
     font-size: 0.84rem !important;
   }
 }
+
+
+/* ===============================
+   BADGES DE ROL EN NOMBRES
+================================ */
+.role-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  margin-top: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+
+.role-badge.inline {
+  margin-top: 0;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+.role-badge.role-alumno,
+.role-badge.alumno {
+  color: #1d4ed8;
+  background: #eaf2ff;
+}
+
+.role-badge.role-asesor,
+.role-badge.asesor {
+  color: #047857;
+  background: #dcfce7;
+}
+
+.role-badge.role-admin,
+.role-badge.admin {
+  color: #7c3aed;
+  background: #f3e8ff;
+}
+
+.role-title-line {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.role-title-line.column {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.role-title-line h3,
+.role-title-line h4 {
+  margin-bottom: 0;
+}
+
+@media (max-width: 640px) {
+  .role-badge {
+    font-size: 0.68rem;
+    padding: 3px 8px;
+  }
+
+  .role-title-line {
+    gap: 6px;
+  }
+}

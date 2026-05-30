@@ -166,8 +166,10 @@
 
     const otroUsuario = asesoria.otro_usuario || {};
     const nombreOtro = otroUsuario.nombre || "Participante";
+    const rolOtro = (otroUsuario.rol || (state.rolActual === "asesor" ? "alumno" : "asesor")).toLowerCase();
+    const rolLabel = rolOtro === "asesor" ? "Asesor" : "Alumno";
 
-    title.textContent = `Chat con ${nombreOtro}`;
+    title.innerHTML = `Chat con ${escapeHTML(nombreOtro)} <span class="role-badge role-${rolOtro} inline">${rolLabel}</span>`;
     info.textContent = `Asesoría ${asesoria.tipo || ""} · ${asesoria.fecha || "sin fecha"} · ${asesoria.hora || "sin hora"}`;
   }
 
@@ -191,7 +193,7 @@
       articulo.innerHTML = `
         <div class="chat-modal-meta">
           ${escapeHTML(item.nombre_emisor || "Usuario")}
-          · ${escapeHTML(item.rol_emisor || "")}
+          <span class="role-badge role-${escapeHTML(item.rol_emisor || "alumno")} inline">${escapeHTML(item.rol_emisor || "")}</span>
           · ${escapeHTML(formatearFecha(item.fecha_envio))}
         </div>
         <div class="chat-modal-bubble">${escapeHTML(item.mensaje)}</div>

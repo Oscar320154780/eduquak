@@ -113,7 +113,7 @@ function renderCuestionarios() {
       <p class="cuestionario-description">${escaparHTML(c.descripcion || "Sin descripción")}</p>
 
       <div class="cuestionario-meta">
-        <span>👤 ${escaparHTML(c.nombre_asesor)}</span>
+        <span>👤 ${escaparHTML(c.nombre_asesor)} <span class="role-badge role-asesor inline">Asesor</span></span>
         <span>Fecha: ${formatFecha(c.fecha_creacion)}</span>
       </div>
 
@@ -246,7 +246,7 @@ async function verPreguntas(id) {
 
     const { cuestionario, preguntas } = data;
     modalTitulo.textContent = cuestionario.titulo;
-    modalInfo.textContent = `${cuestionario.materia} • ${cuestionario.nombre_asesor}`;
+    modalInfo.innerHTML = `${escaparHTML(cuestionario.materia)} • ${escaparHTML(cuestionario.nombre_asesor)} <span class="role-badge role-asesor inline">Asesor</span>`;
 
     preguntasContainer.innerHTML = (preguntas || []).map((pregunta, index) => `
       <article class="pregunta-preview-card">

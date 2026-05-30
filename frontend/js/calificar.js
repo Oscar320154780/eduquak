@@ -70,7 +70,7 @@ function renderEvaluadas(evaluadas) {
       <div class="calificacion-card-head">
         <div>
           <span class="tipo-chip">${a.tipo || "asesoría"}</span>
-          <h3>${a.nombre_asesor}</h3>
+          <h3>${a.nombre_asesor} <span class="role-badge role-asesor inline">Asesor</span></h3>
           <p>${a.fecha || "-"} · ${a.hora || ""}</p>
         </div>
         <span class="estado-evaluada">Evaluada</span>
@@ -243,7 +243,7 @@ async function cargarAsesoriasFinalizadas() {
         <div class="calificacion-card-head">
           <div>
             <span class="tipo-chip">${a.tipo || "asesoría"}</span>
-            <h3>${a.nombre_asesor}</h3>
+            <h3>${a.nombre_asesor} <span class="role-badge role-asesor inline">Asesor</span></h3>
             <p>${a.fecha || "-"} · ${a.hora || ""}</p>
           </div>
           <span class="estado-pendiente">Pendiente</span>

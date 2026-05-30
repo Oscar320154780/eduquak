@@ -118,7 +118,7 @@ function renderMateriales() {
       <p class="material-description">${escaparHTML(material.descripcion || "Sin descripción")}</p>
 
       <div class="material-meta">
-        <span>👤 ${escaparHTML(material.nombre_asesor)}</span>
+        <span>👤 ${escaparHTML(material.nombre_asesor)} <span class="role-badge role-asesor inline">Asesor</span></span>
         <span>Fecha: ${formatFecha(material.fecha_subida)}</span>
       </div>
 

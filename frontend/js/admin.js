@@ -485,7 +485,7 @@ async function verUsuarios() {
       card.innerHTML = `
         <div class="admin-card-header">
           <div>
-            <h3>${u.nombre}</h3>
+            <h3>${u.nombre} <span class="role-badge role-${String(u.rol || "").toLowerCase()} inline">${u.rol || "usuario"}</span></h3>
             <p class="admin-muted">${u.correo}</p>
           </div>
           <span class="status-pill ${estadoClass(estado)}">${estado}</span>
@@ -493,7 +493,7 @@ async function verUsuarios() {
 
         <div class="admin-meta">
           <p><strong>ID:</strong> ${u.id_usuario}</p>
-          <p><strong>Rol:</strong> ${u.rol}</p>
+          <p><strong>Rol:</strong> <span class="role-badge role-${String(u.rol || "").toLowerCase()} inline">${u.rol || "-"}</span></p>
           <p><strong>Badge:</strong> ${u.badge_verificacion || "-"}</p>
           <p><strong>Institución:</strong> ${u.institucion || "-"}</p>
           <p><strong>Teléfono:</strong> ${u.telefono || "-"}</p>
@@ -857,7 +857,7 @@ async function verReportesAdmin() {
 
     <p>
       <strong>Alumno:</strong>
-      ${r.nombre_alumno}
+      ${r.nombre_alumno} · Alumno
     </p>
 
     <p>
@@ -867,7 +867,7 @@ async function verReportesAdmin() {
 
     <p>
       <strong>Asesor reportado:</strong>
-      ${r.nombre_asesor}
+      ${r.nombre_asesor} · Asesor
     </p>
     <p>
   <strong>Total reportes:</strong>
@@ -1424,6 +1424,18 @@ async function verStatsAdmin() {
   }
 
 }
+
+function limpiarFiltroStatsAdmin() {
+
+  const inicio = document.getElementById("fechaInicio");
+  const fin = document.getElementById("fechaFin");
+
+  if (inicio) inicio.value = "";
+  if (fin) fin.value = "";
+
+  verStatsAdmin();
+
+}
 // Este listener responde al evento "click" y mantiene la pantalla sincronizada con lo que hace el usuario.
 document
   .getElementById("btnVerStatsAdmin")
@@ -1438,6 +1450,14 @@ document
   ?.addEventListener(
     "click",
     verStatsAdmin
+  );
+
+// Este listener limpia el rango de fechas del resumen general.
+document
+  .getElementById("btnLimpiarStats")
+  ?.addEventListener(
+    "click",
+    limpiarFiltroStatsAdmin
   );
   // Se encarga de ver top asesores en esta pantalla y mantiene conectada la vista con el backend.
 async function verTopAsesores() {
@@ -1613,7 +1633,7 @@ async function verTopAsesores() {
             <div>
 
               <h4 class="top-name">
-                ${a.nombre}
+                ${a.nombre} <span class="role-badge role-asesor inline">Asesor</span>
               </h4>
 
               <p class="top-meta">

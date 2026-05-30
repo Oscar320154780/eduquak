@@ -159,7 +159,7 @@ function renderIndividuales(lista) {
     card.innerHTML = `
       <div class="card-top">
         <div>
-          <h3>${item.nombre_alumno || "Alumno"}</h3>
+          <h3>${item.nombre_alumno || "Alumno"} <span class="role-badge role-alumno inline">Alumno</span></h3>
           <span class="tipo-pill">Individual</span>
         </div>
         <span class="estado-pill ${item.estado}">${item.estado || "-"}</span>
@@ -356,7 +356,9 @@ function renderHistorial(lista) {
     card.innerHTML = `
       <div class="card-top">
         <div>
-          <h3>${esGrupal ? "Sesión grupal finalizada" : (item.nombre_alumno || "Alumno")}</h3>
+          <h3>
+            ${esGrupal ? "Sesión grupal finalizada" : `${item.nombre_alumno || "Alumno"} <span class="role-badge role-alumno inline">Alumno</span>`}
+          </h3>
           <span class="tipo-pill">${esGrupal ? "Grupal" : "Individual"}</span>
         </div>
         <span class="estado-pill finalizada">finalizada</span>
@@ -591,7 +593,7 @@ async function cargarInscritosDeGrupal(idAsesoria) {
       card.className = "inscrito-card";
 
       card.innerHTML = `
-        <h3>${alumno.nombre || "Alumno"}</h3>
+        <h3>${alumno.nombre || "Alumno"} <span class="role-badge role-alumno inline">Alumno</span></h3>
         <p class="info-line"><strong>Correo:</strong> ${alumno.correo || "No disponible"}</p>
         <p class="info-line"><strong>ID:</strong> ${alumno.id_usuario || "-"}</p>
         <p class="info-line"><strong>Inscripción:</strong> ${alumno.fecha_inscripcion || "-"}</p>

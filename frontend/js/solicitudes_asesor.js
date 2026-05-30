@@ -83,7 +83,7 @@ function renderSolicitudes(lista) {
     card.innerHTML = `
       <div class="card-top">
         <div>
-          <h3>${solicitud.nombre_alumno || "Alumno"}</h3>
+          <h3>${solicitud.nombre_alumno || "Alumno"} <span class="role-badge role-alumno inline">Alumno</span></h3>
           <span class="tipo-pill">${tipo === "grupal" ? "Grupal" : "Individual"}</span>
         </div>
         <span class="estado-pill ${estado}">${solicitud.estado || "-"}</span>

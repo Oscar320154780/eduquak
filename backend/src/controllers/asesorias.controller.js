@@ -1187,6 +1187,78 @@ exports.calificarAsesor = async (req, res) => {
   }
 };
 
+
+exports.obtenerReporteDeAsesoria = async (req, res) => {
+  try {
+    const id_asesoria = req.params.id;
+    const id_alumno = req.user.id_usuario;
+
+    const reporte = await getQuery(
+      `
+      SELECT
+        r.id_reporte,
+        r.id_asesoria,
+        r.id_alumno,
+        r.id_asesor,
+        r.motivo,
+        r.descripcion,
+        r.evidencia_url,
+        r.tipo_evidencia,
+        r.estado,
+        r.fecha_reporte,
+
+        a.fecha AS fecha_asesoria,
+        a.hora AS hora_asesoria,
+        a.tipo AS tipo_asesoria,
+
+        asesor.nombre AS nombre_asesor,
+        asesor.correo AS correo_asesor,
+
+        alumno.nombre AS nombre_alumno,
+        alumno.correo AS correo_alumno
+
+      FROM reportes_asesoria r
+
+      JOIN asesorias a
+        ON r.id_asesoria = a.id_asesoria
+
+      JOIN usuarios asesor
+        ON r.id_asesor = asesor.id_usuario
+
+      JOIN usuarios alumno
+        ON r.id_alumno = alumno.id_usuario
+
+      WHERE r.id_asesoria = $1
+        AND r.id_alumno = $2
+
+      ORDER BY r.fecha_reporte DESC
+      LIMIT 1
+      `,
+      [id_asesoria, id_alumno]
+    );
+
+    if (!reporte) {
+      return res.status(404).json({
+        ok: false,
+        msg: "No hay reporte registrado para esta asesoría"
+      });
+    }
+
+    return res.json({
+      ok: true,
+      reporte
+    });
+  } catch (error) {
+    console.error("Error al obtener detalle de reporte:", error);
+
+    return res.status(500).json({
+      ok: false,
+      msg: "Error al obtener el detalle del reporte"
+    });
+  }
+};
+
+
 exports.reportarAsesoria = async (req, res) => {
 
   try {

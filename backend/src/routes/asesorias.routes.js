@@ -86,6 +86,15 @@ router.post(
   controller.calificarAsesor
 );
 
+
+// ver detalle de reporte propio de una asesoría
+router.get(
+  "/:id/reporte",
+  requireAuth,
+  requireRole("alumno"),
+  controller.obtenerReporteDeAsesoria
+);
+
 // reportar asesoría finalizada
 router.post(
   "/:id/reportar",

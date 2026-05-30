@@ -7,6 +7,10 @@ if (!token) {
 
 const reportesGrid = document.getElementById("reportesGrid");
 const buscarInput = document.getElementById("buscarReporte");
+const fechaInicioInput = document.getElementById("fechaInicioReporte");
+const fechaFinInput = document.getElementById("fechaFinReporte");
+const btnFiltrarFechas = document.getElementById("btnFiltrarFechas");
+const btnLimpiarFechas = document.getElementById("btnLimpiarFechas");
 const tabs = document.querySelectorAll(".tab-btn");
 const paginationContainer = document.getElementById("reportesPagination");
 
@@ -63,8 +67,13 @@ function construirUrlReportes() {
   params.set("limit", String(limitePorPagina));
 
   const search = buscarInput.value.trim();
+  const fechaInicio = fechaInicioInput?.value || "";
+  const fechaFin = fechaFinInput?.value || "";
+
   if (search) params.set("search", search);
   if (estadoActual) params.set("estado", estadoActual);
+  if (fechaInicio) params.set("fechaInicio", fechaInicio);
+  if (fechaFin) params.set("fechaFin", fechaFin);
 
   return `${API}/api/admin/reportes?${params.toString()}`;
 }
@@ -176,6 +185,33 @@ function reiniciarYCargar() {
   paginaActual = 1;
   cargarReportes();
 }
+function validarRangoFechas() {
+  const fechaInicio = fechaInicioInput?.value || "";
+  const fechaFin = fechaFinInput?.value || "";
+
+  if (fechaInicio && fechaFin && fechaInicio > fechaFin) {
+    Swal.fire({
+      icon: "warning",
+      title: "Rango inválido",
+      text: "La fecha inicial no puede ser mayor que la fecha final"
+    });
+    return false;
+  }
+
+  return true;
+}
+
+function aplicarFiltroFechas() {
+  if (!validarRangoFechas()) return;
+  reiniciarYCargar();
+}
+
+function limpiarFiltroFechas() {
+  if (fechaInicioInput) fechaInicioInput.value = "";
+  if (fechaFinInput) fechaFinInput.value = "";
+  reiniciarYCargar();
+}
+
 
 function obtenerPrioridad(total) {
   const numero = Number(total || 0);
@@ -184,12 +220,58 @@ function obtenerPrioridad(total) {
   return { label: "Baja", class: "baja" };
 }
 
+function estadoOrdenReporte(estado) {
+  const value = String(estado || "pendiente").toLowerCase();
+  if (value === "resuelto") return 3;
+  if (value === "revisado") return 2;
+  return 1;
+}
+
+function renderTimelineReporte(reporte) {
+  const orden = estadoOrdenReporte(reporte.estado);
+
+  const pasos = [
+    {
+      orden: 1,
+      titulo: "Reporte creado",
+      texto: formatearFecha(reporte.fecha_reporte),
+      clase: "done"
+    },
+    {
+      orden: 2,
+      titulo: "Revisado",
+      texto: orden >= 2 ? "El administrador ya revisó el caso." : "Pendiente de revisión.",
+      clase: orden >= 2 ? "done" : "pending"
+    },
+    {
+      orden: 3,
+      titulo: "Resuelto",
+      texto: orden >= 3 ? "El reporte fue marcado como resuelto." : "Aún no se ha resuelto.",
+      clase: orden >= 3 ? "done" : "pending"
+    }
+  ];
+
+  return `
+    <div class="timeline-box timeline-box-steps">
+      ${pasos.map((paso) => `
+        <div class="timeline-item ${paso.clase}">
+          <div class="timeline-dot ${paso.clase === "done" ? "active" : ""}"></div>
+          <div>
+            <strong>${paso.titulo}</strong>
+            <p>${paso.texto}</p>
+          </div>
+        </div>
+      `).join("")}
+    </div>
+  `;
+}
+
 function verDetalle(id) {
   const reporte = reportes.find((r) => Number(r.id_reporte) === Number(id));
   if (!reporte) return;
 
   modalTitulo.textContent = reporte.motivo;
-  modalSubtitulo.textContent = `${reporte.nombre_alumno} • ${reporte.nombre_asesor}`;
+  modalSubtitulo.innerHTML = `${escaparHTML(reporte.nombre_alumno)} • ${escaparHTML(reporte.nombre_asesor)}`;
 
   modalBody.innerHTML = `
     <div class="detalle-grid">
@@ -199,10 +281,7 @@ function verDetalle(id) {
       <div class="detalle-card"><span class="detalle-label">Hora</span><strong>${escaparHTML(reporte.hora_asesoria || "-")}</strong></div>
     </div>
 
-    <div class="timeline-box">
-      <div class="timeline-item"><div class="timeline-dot"></div><div><strong>Reporte creado</strong><p>${formatearFecha(reporte.fecha_reporte)}</p></div></div>
-      <div class="timeline-item"><div class="timeline-dot active"></div><div><strong>Estado actual</strong><p>${capitalizar(reporte.estado)}</p></div></div>
-    </div>
+    ${renderTimelineReporte(reporte)}
 
     <div class="descripcion-box"><h4>Descripción</h4><p>${escaparHTML(reporte.descripcion || "-")}</p></div>
 
@@ -297,6 +376,11 @@ buscarInput?.addEventListener("input", () => {
   clearTimeout(buscarInput._timer);
   buscarInput._timer = setTimeout(reiniciarYCargar, 450);
 });
+
+fechaInicioInput?.addEventListener("change", aplicarFiltroFechas);
+fechaFinInput?.addEventListener("change", aplicarFiltroFechas);
+btnFiltrarFechas?.addEventListener("click", aplicarFiltroFechas);
+btnLimpiarFechas?.addEventListener("click", limpiarFiltroFechas);
 
 tabs.forEach((tab) => {
   tab.addEventListener("click", () => {

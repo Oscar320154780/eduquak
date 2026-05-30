@@ -132,7 +132,7 @@ function renderGrupales(lista) {
     card.innerHTML = `
       <div class="card-top">
         <div>
-          <h3>${g.nombre_asesor}</h3>
+          <h3>${g.nombre_asesor} <span class="role-badge role-asesor inline">Asesor</span></h3>
         </div>
         <span class="estado-pill">${g.estado || "aceptada"}</span>
       </div>
@@ -451,7 +451,7 @@ async function verInscritosGrupalAlumno(idAsesoria) {
       card.className = "inscrito-card";
 
       card.innerHTML = `
-        <h3>${alumno.nombre || "Alumno"}</h3>
+        <h3>${alumno.nombre || "Alumno"} <span class="role-badge role-alumno inline">Alumno</span></h3>
         <p class="info-line"><strong>Correo:</strong> ${alumno.correo || "No disponible"}</p>
         <p class="info-line"><strong>ID:</strong> ${alumno.id_usuario || "-"}</p>
         <p class="info-line"><strong>Inscripción:</strong> ${alumno.fecha_inscripcion || "-"}</p>

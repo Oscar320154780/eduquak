@@ -421,9 +421,21 @@ exports.obtenerReportesAsesorias = async (req, res) => {
     const { page, limit, offset } = normalizarPaginacion(req, 20, 100);
     const estado = normalizarTexto(req.query.estado).toLowerCase();
     const search = normalizarTexto(req.query.search).toLowerCase();
+    const fechaInicio = normalizarTexto(req.query.fechaInicio);
+    const fechaFin = normalizarTexto(req.query.fechaFin);
 
     const where = [];
     const params = [];
+    const resumenWhere = [];
+    const resumenParams = [];
+
+    function agregarFiltroCompartido(sqlFactory, valor) {
+      params.push(valor);
+      where.push(sqlFactory(params.length));
+
+      resumenParams.push(valor);
+      resumenWhere.push(sqlFactory(resumenParams.length));
+    }
 
     if (["pendiente", "revisado", "resuelto"].includes(estado)) {
       params.push(estado);
@@ -431,16 +443,33 @@ exports.obtenerReportesAsesorias = async (req, res) => {
     }
 
     if (search) {
-      params.push(`%${search}%`);
-      where.push(`(
-        LOWER(alumno.nombre) LIKE $${params.length}
-        OR LOWER(asesor.nombre) LIKE $${params.length}
-        OR LOWER(r.motivo) LIKE $${params.length}
-        OR LOWER(COALESCE(r.descripcion, '')) LIKE $${params.length}
-      )`);
+      agregarFiltroCompartido(
+        (index) => `(
+        LOWER(alumno.nombre) LIKE $${index}
+        OR LOWER(asesor.nombre) LIKE $${index}
+        OR LOWER(r.motivo) LIKE $${index}
+        OR LOWER(COALESCE(r.descripcion, '')) LIKE $${index}
+      )`,
+        `%${search}%`
+      );
+    }
+
+    if (fechaInicio) {
+      agregarFiltroCompartido(
+        (index) => `r.fecha_reporte >= $${index}::date`,
+        fechaInicio
+      );
+    }
+
+    if (fechaFin) {
+      agregarFiltroCompartido(
+        (index) => `r.fecha_reporte < ($${index}::date + INTERVAL '1 day')`,
+        fechaFin
+      );
     }
 
     const whereSql = where.length ? `WHERE ${where.join(" AND ")}` : "";
+    const resumenWhereSql = resumenWhere.length ? `WHERE ${resumenWhere.join(" AND ")}` : "";
 
     const totalFiltradoRow = await getQuery(
       `
@@ -519,8 +548,12 @@ exports.obtenerReportesAsesorias = async (req, res) => {
         COALESCE(SUM(CASE WHEN estado = 'pendiente' THEN 1 ELSE 0 END), 0)::int AS pendientes,
         COALESCE(SUM(CASE WHEN estado = 'revisado' THEN 1 ELSE 0 END), 0)::int AS revisados,
         COALESCE(SUM(CASE WHEN estado = 'resuelto' THEN 1 ELSE 0 END), 0)::int AS resueltos
-      FROM reportes_asesoria
-      `
+      FROM reportes_asesoria r
+      JOIN usuarios alumno ON r.id_alumno = alumno.id_usuario
+      JOIN usuarios asesor ON r.id_asesor = asesor.id_usuario
+      ${resumenWhereSql}
+      `,
+      resumenParams
     );
 
     const total = Number(totalFiltradoRow?.total || 0);

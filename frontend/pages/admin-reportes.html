@@ -142,7 +142,7 @@
 
       <div class="filters-grid">
 
-        <div class="input-group">
+        <div class="input-group input-group-search">
 
           <label>
             Buscar reporte
@@ -154,6 +154,50 @@
             placeholder="Alumno, asesor o motivo..."
           >
 
+        </div>
+
+        <div class="input-group">
+
+          <label for="fechaInicioReporte">
+            Desde
+          </label>
+
+          <input
+            type="date"
+            id="fechaInicioReporte"
+          >
+
+        </div>
+
+        <div class="input-group">
+
+          <label for="fechaFinReporte">
+            Hasta
+          </label>
+
+          <input
+            type="date"
+            id="fechaFinReporte"
+          >
+
+        </div>
+
+        <div class="filter-actions">
+          <button
+            type="button"
+            id="btnFiltrarFechas"
+            class="btn primary"
+          >
+            Filtrar
+          </button>
+
+          <button
+            type="button"
+            id="btnLimpiarFechas"
+            class="btn outline"
+          >
+            Limpiar
+          </button>
         </div>
 
       </div>

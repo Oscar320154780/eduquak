@@ -102,6 +102,200 @@ function normalizarReporteEnviado(valor) {
     valor === "true";
 }
 
+
+function escaparHTML(valor) {
+  return String(valor ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function formatearFechaReporte(valor) {
+  if (!valor) {
+    return "Fecha no disponible";
+  }
+
+  const fecha = new Date(valor);
+
+  if (Number.isNaN(fecha.getTime())) {
+    return String(valor);
+  }
+
+  return fecha.toLocaleDateString("es-MX", {
+    day: "numeric",
+    month: "long",
+    year: "numeric"
+  });
+}
+
+function estadoReporteNormalizado(valor) {
+  return String(valor || "pendiente").toLowerCase();
+}
+
+function claseTimelineReporte(estado, paso) {
+  const orden = {
+    pendiente: 1,
+    revisado: 2,
+    resuelto: 3
+  };
+
+  const actual = orden[estadoReporteNormalizado(estado)] || 1;
+
+  return actual >= paso ? "activo" : "";
+}
+
+async function abrirDetalleReporte(idAsesoria) {
+  const existente = document.getElementById("modalReporteDetalle");
+
+  if (existente) {
+    existente.remove();
+  }
+
+  try {
+    const res = await fetch(
+      `${API}/api/asesorias/${idAsesoria}/reporte`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    const data = await res.json();
+
+    if (!data.ok) {
+      if (window.EduQuakUI) {
+        window.EduQuakUI.error(
+          "Reporte no disponible",
+          data.msg || "No se pudo cargar el detalle del reporte"
+        );
+      } else {
+        alert(data.msg || "No se pudo cargar el detalle del reporte");
+      }
+
+      return;
+    }
+
+    const reporte = data.reporte || {};
+    const estado = estadoReporteNormalizado(reporte.estado);
+
+    const modal = document.createElement("div");
+    modal.id = "modalReporteDetalle";
+    modal.className = "modal-reporte";
+
+    modal.innerHTML = `
+      <div class="modal-content modal-detalle-reporte">
+        <div class="detalle-reporte-header">
+          <div>
+            <span class="badge-reporte-detalle">Reporte enviado</span>
+            <h2>${escaparHTML(reporte.motivo || "Detalle del reporte")}</h2>
+            <p>
+              ${escaparHTML(reporte.nombre_alumno || "Alumno")}
+              ·
+              ${escaparHTML(reporte.nombre_asesor || "Asesor")}
+            </p>
+          </div>
+
+          <button
+            type="button"
+            class="btn-cerrar-detalle-reporte"
+            aria-label="Cerrar"
+          >
+            ×
+          </button>
+        </div>
+
+        <div class="detalle-reporte-grid">
+          <div>
+            <strong>Fecha asesoría</strong>
+            <span>${escaparHTML(reporte.fecha_asesoria || "No disponible")}</span>
+          </div>
+
+          <div>
+            <strong>Hora</strong>
+            <span>${escaparHTML(reporte.hora_asesoria || "No disponible")}</span>
+          </div>
+        </div>
+
+        <div class="reporte-timeline">
+          <div class="timeline-item ${claseTimelineReporte(estado, 1)}">
+            <span class="timeline-dot"></span>
+            <div>
+              <strong>Reporte creado</strong>
+              <p>${formatearFechaReporte(reporte.fecha_reporte)}</p>
+            </div>
+          </div>
+
+          <div class="timeline-item ${claseTimelineReporte(estado, 2)}">
+            <span class="timeline-dot"></span>
+            <div>
+              <strong>Revisado</strong>
+              <p>${estado === "pendiente" ? "Pendiente de revisión" : "El administrador ya lo revisó"}</p>
+            </div>
+          </div>
+
+          <div class="timeline-item ${claseTimelineReporte(estado, 3)}">
+            <span class="timeline-dot"></span>
+            <div>
+              <strong>Resuelto</strong>
+              <p>${estado === "resuelto" ? "El reporte fue marcado como resuelto" : "Aún no se ha resuelto"}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="detalle-reporte-box">
+          <h3>Descripción</h3>
+          <p>${escaparHTML(reporte.descripcion || "Sin descripción")}</p>
+        </div>
+
+        ${
+          reporte.evidencia_url
+            ? `
+              <div class="modal-actions detalle-actions">
+                <a
+                  class="btn primary"
+                  href="${escaparHTML(reporte.evidencia_url)}"
+                  target="_blank"
+                  rel="noopener"
+                >
+                  Ver evidencia
+                </a>
+              </div>
+            `
+            : ""
+        }
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    modal
+      .querySelector(".btn-cerrar-detalle-reporte")
+      .addEventListener("click", () => modal.remove());
+
+    modal.addEventListener("click", (event) => {
+      if (event.target === modal) {
+        modal.remove();
+      }
+    });
+
+  } catch (error) {
+    console.error("Error al cargar detalle del reporte:", error);
+
+    if (window.EduQuakUI) {
+      window.EduQuakUI.error(
+        "Error",
+        "No se pudo cargar el detalle del reporte"
+      );
+    } else {
+      alert("No se pudo cargar el detalle del reporte");
+    }
+  }
+}
+
+
 function mostrarAlertaVideo(mensaje) {
   if (window.Swal) {
     Swal.fire({
@@ -433,6 +627,7 @@ function renderAsesorias(lista) {
 
           <h3>
             ${asesoria.nombre_asesor || "Asesor"}
+            <span class="role-badge role-asesor inline">Asesor</span>
           </h3>
 
           <span class="tipo-pill">
@@ -508,9 +703,9 @@ function renderAsesorias(lista) {
       ? `
         <button
           class="btn outline"
-          disabled
+          data-ver-reporte="${asesoria.id_asesoria}"
         >
-          Reporte enviado
+          Ver reporte
         </button>
       `
 
@@ -569,6 +764,16 @@ function renderAsesorias(lista) {
           abrirModalReporte(
             asesoria.id_asesoria
           )
+      );
+    }
+
+    const btnVerReporte =
+      card.querySelector("[data-ver-reporte]");
+
+    if (btnVerReporte) {
+      btnVerReporte.addEventListener(
+        "click",
+        () => abrirDetalleReporte(asesoria.id_asesoria)
       );
     }
 

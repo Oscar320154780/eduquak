@@ -36,7 +36,7 @@ function renderResenas(lista) {
 
     card.innerHTML = `
       <div class="card-top">
-        <h3>${resena.nombre_alumno || "Alumno"}</h3>
+        <h3>${resena.nombre_alumno || "Alumno"} <span class="role-badge role-alumno inline">Alumno</span></h3>
         <span class="rating-pill">
           ${generarEstrellas(calificacion)} ${calificacion}/5
         </span>

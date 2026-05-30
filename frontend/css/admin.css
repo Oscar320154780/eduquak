@@ -1148,3 +1148,22 @@ body:has(.logo-subtitle) .top-asesores-section .top-score-bar span {
     text-align: left;
   }
 }
+
+/* =========================
+   FILTRO RESUMEN ADMIN
+========================= */
+
+.btn.ghost {
+  background: transparent;
+  color: var(--primary-dark);
+  border: 1px solid var(--border);
+}
+
+.btn.ghost:hover {
+  background: #f8fafc;
+  transform: translateY(-2px);
+}
+
+.stats-filtros .btn.ghost {
+  background: #ffffff;
+}

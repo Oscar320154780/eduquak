@@ -127,6 +127,8 @@ function renderInfo(asesoria) {
 
   const otroUsuario = asesoria.otro_usuario || {};
   const nombreOtro = otroUsuario.nombre || "Participante";
+const rolOtro = (otroUsuario.rol || "usuario").toLowerCase();
+const rolLabel = rolOtro === "asesor" ? "Asesor" : rolOtro === "alumno" ? "Alumno" : "Usuario";
 
   chatTitulo.textContent = `Chat con ${nombreOtro}`;
   chatInfo.textContent = `Asesoría ${asesoria.tipo || ""} · ${asesoria.fecha || "sin fecha"} · ${asesoria.hora || "sin hora"}`;

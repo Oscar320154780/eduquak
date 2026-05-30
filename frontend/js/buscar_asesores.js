@@ -140,7 +140,7 @@ function renderTopAsesores(lista) {
         <div class="top-rank">${index + 1}</div>
 
         <div class="top-info">
-          <h3>${asesor.nombre}</h3>
+          <h3>${asesor.nombre} <span class="role-badge role-asesor inline">Asesor</span></h3>
           <p>${asesor.especialidad || "Asesor EduQuak"} · ${total} reseña${total === 1 ? "" : "s"}</p>
         </div>
 
@@ -191,7 +191,7 @@ function renderAsesores(lista) {
 
     card.innerHTML = `
       <div class="asesor-top">
-        <h3>${asesor.nombre}</h3>
+        <h3>${asesor.nombre} <span class="role-badge role-asesor inline">Asesor</span></h3>
         <span class="rating-pill">
           ${generarEstrellas(promedio)} ${promedio}/5
         </span>

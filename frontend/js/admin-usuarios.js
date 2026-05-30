@@ -152,14 +152,14 @@ function renderUsuarios(usuarios) {
       <article class="usuario-card">
         <div class="usuario-top">
           <div class="usuario-identidad">
-            <h3>${nombreSeguro}</h3>
+            <h3>${nombreSeguro} <span class="role-badge role-${escaparHTML(String(usuario.rol || "").toLowerCase())} inline">${escaparHTML(usuario.rol || "usuario")}</span></h3>
             <span class="usuario-correo">${correoSeguro}</span>
           </div>
           ${renderEstado(usuario.estado_validacion)}
         </div>
 
         <div class="usuario-info">
-          <p><strong>Rol:</strong> ${escaparHTML(usuario.rol)}</p>
+          <p><strong>Rol:</strong> <span class="role-badge role-${escaparHTML(String(usuario.rol || "").toLowerCase())} inline">${escaparHTML(usuario.rol || "-")}</span></p>
           <p><strong>Institución:</strong> ${escaparHTML(usuario.institucion || "-")}</p>
           <p><strong>Registro:</strong> ${formatearFecha(usuario.fecha_registro)}</p>
           ${usuario.especialidad ? `<p><strong>Especialidad:</strong> ${escaparHTML(usuario.especialidad)}</p>` : ""}
