@@ -110,3 +110,65 @@ body {
   .terms-card { border-radius: 20px; }
   .terms-button { width: 100%; }
 }
+
+
+.terms-notice {
+  margin: -8px 0 26px;
+  padding: 16px 18px;
+  border-radius: 18px;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  color: #9a3412;
+  line-height: 1.6;
+  font-weight: 650;
+}
+
+.terms-section ul,
+.terms-summary ul {
+  margin: 10px 0 0;
+  padding-left: 22px;
+  color: #475569;
+  line-height: 1.7;
+}
+
+.terms-section li,
+.terms-summary li {
+  margin: 6px 0;
+}
+
+.terms-section p + p,
+.terms-section p + ul,
+.terms-section ul + p {
+  margin-top: 12px;
+}
+
+.terms-summary {
+  margin-top: 28px;
+  padding: 22px;
+  border-radius: 22px;
+  background: linear-gradient(135deg, #eff6ff, #f0fdf4);
+  border: 1px solid #bfdbfe;
+}
+
+.terms-summary h2 {
+  margin: 0 0 10px;
+  font-size: 1.15rem;
+  color: #1e3a8a;
+}
+
+@media (max-width: 640px) {
+  .terms-notice,
+  .terms-summary {
+    border-radius: 16px;
+    padding: 14px;
+  }
+
+  .terms-section {
+    padding: 18px 0;
+  }
+
+  .terms-section ul,
+  .terms-summary ul {
+    padding-left: 18px;
+  }
+}
