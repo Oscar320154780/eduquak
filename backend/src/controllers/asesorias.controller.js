@@ -392,8 +392,8 @@ exports.obtenerMisAsesorias = async (req, res) => {
           u.nombre AS nombre_asesor,
           u.correo AS correo_asesor,
 
-          (
-            SELECT COUNT(*)
+          EXISTS (
+            SELECT 1
             FROM reportes_asesoria r
             WHERE r.id_asesoria = a.id_asesoria
               AND r.id_alumno = ?
@@ -427,8 +427,8 @@ exports.obtenerMisAsesorias = async (req, res) => {
           u.nombre AS nombre_asesor,
           u.correo AS correo_asesor,
 
-          (
-            SELECT COUNT(*)
+          EXISTS (
+            SELECT 1
             FROM reportes_asesoria r
             WHERE r.id_asesoria = a.id_asesoria
               AND r.id_alumno = ?
@@ -1215,7 +1215,7 @@ exports.reportarAsesoria = async (req, res) => {
 
     const asesoria = await getQuery(
       `
-      SELECT id_asesor
+      SELECT id_asesor, id_alumno, estado
       FROM asesorias
       WHERE id_asesoria = $1
       `,
@@ -1229,6 +1229,38 @@ exports.reportarAsesoria = async (req, res) => {
         msg: "Asesoría no encontrada"
       });
 
+    }
+
+    if (asesoria.id_alumno && Number(asesoria.id_alumno) !== Number(id_alumno)) {
+      return res.status(403).json({
+        ok: false,
+        msg: "No puedes reportar una asesoría que no te pertenece"
+      });
+    }
+
+    if (asesoria.estado !== "finalizada") {
+      return res.status(400).json({
+        ok: false,
+        msg: "Solo puedes reportar asesorías finalizadas"
+      });
+    }
+
+    const reporteExistente = await getQuery(
+      `
+      SELECT id_reporte
+      FROM reportes_asesoria
+      WHERE id_asesoria = $1
+        AND id_alumno = $2
+      LIMIT 1
+      `,
+      [id_asesoria, id_alumno]
+    );
+
+    if (reporteExistente) {
+      return res.status(409).json({
+        ok: false,
+        msg: "Ya enviaste un reporte para esta asesoría"
+      });
     }
 
     await runQuery(

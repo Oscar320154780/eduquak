@@ -95,6 +95,13 @@ function estadoClase(estado) {
   return "pendiente";
 }
 
+function normalizarReporteEnviado(valor) {
+  return valor === true ||
+    valor === 1 ||
+    valor === "1" ||
+    valor === "true";
+}
+
 function mostrarAlertaVideo(mensaje) {
   if (window.Swal) {
     Swal.fire({
@@ -334,7 +341,7 @@ asesoriasCache = asesoriasCache.map(
 
       return {
         ...a,
-        reporte_enviado: 1
+        reporte_enviado: true
       };
     }
 
@@ -401,6 +408,9 @@ function renderAsesorias(lista) {
 
     const room =
       asesoria.room_name || "";
+
+    const reporteEnviado =
+      normalizarReporteEnviado(asesoria.reporte_enviado);
 
     const tieneVideo =
       (
@@ -493,7 +503,7 @@ function renderAsesorias(lista) {
         ${
   asesoria.estado === "finalizada"
 
-    ? asesoria.reporte_enviado
+    ? reporteEnviado
 
       ? `
         <button
