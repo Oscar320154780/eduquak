@@ -389,9 +389,34 @@ async function subirMaterial(event) {
   }
 }
 
+
+window.subirMaterial = subirMaterial;
+
+// Fallback fuerte: captura el clic aunque el listener normal no se haya enganchado.
+document.addEventListener(
+  "click",
+  (event) => {
+    const btn = event.target?.closest?.("#btnSubirMaterial");
+    if (!btn) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    console.log("Click detectado en btnSubirMaterial");
+    subirMaterial(event);
+  },
+  true
+);
+
 function inicializarMaterialesAsesor() {
   const form = document.getElementById("formMaterial");
   const btnSubir = document.getElementById("btnSubirMaterial");
+
+  console.log("Materiales asesor listo:", {
+    formMaterial: Boolean(form),
+    btnSubirMaterial: Boolean(btnSubir),
+    api: API || "misma URL"
+  });
 
   form?.addEventListener("submit", subirMaterial);
   btnSubir?.addEventListener("click", subirMaterial);
