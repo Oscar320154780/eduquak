@@ -72,7 +72,7 @@
           <p>Agrega un material nuevo con su información y archivo.</p>
         </div>
 
-        <form id="formMaterial" class="form-grid" enctype="multipart/form-data">
+        <form id="formMaterial" class="form-grid" enctype="multipart/form-data" novalidate>
           <div class="input-group">
             <label for="tituloMaterial">Título</label>
             <input type="text" id="tituloMaterial" name="titulo" placeholder="Ej. Guía de integrales" required>
@@ -95,7 +95,7 @@
           </div>
 
           <div class="full">
-            <button type="submit" class="btn primary">Subir material</button>
+            <button id="btnSubirMaterial" type="button" class="btn primary">Subir material</button>
           </div>
         </form>
       </section>
@@ -115,8 +115,7 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="/js/ui-feedback.js"></script>
   <script src="/js/ui-loading.js"></script>
-
   <script src="/js/config.js"></script>
-  <script src="/js/materiales_asesor.js"></script>
+  <script src="/js/materiales_asesor.js?v=upload-v2"></script>
 </body>
 </html>

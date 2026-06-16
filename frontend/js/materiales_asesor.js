@@ -2,6 +2,7 @@ const API = window.EDUQUAK_API_URL || "";
 const token = localStorage.getItem("token");
 
 let tabMaterialesActiva = "subir";
+let subiendoMaterial = false;
 
 if (!token) {
   window.location.href = "/pages/login.html";
@@ -9,12 +10,14 @@ if (!token) {
 
 function ocultarMensaje() {
   const box = document.getElementById("mensajeMaterial");
+  if (!box) return;
   box.textContent = "";
   box.classList.add("hidden");
 }
 
 function mostrarMensaje(texto) {
   const box = document.getElementById("mensajeMaterial");
+  if (!box) return;
   box.textContent = texto;
   box.classList.remove("hidden");
 }
@@ -39,6 +42,15 @@ function resolverUrlArchivo(url) {
   return `${API}${path}`;
 }
 
+function escapeHtml(valor) {
+  return String(valor ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
 async function leerJsonSeguro(res) {
   try {
     return await res.json();
@@ -46,7 +58,7 @@ async function leerJsonSeguro(res) {
     console.error("La respuesta no fue JSON:", error);
     return {
       ok: false,
-      message: "La respuesta del servidor no fue válida. Revisa Render/servidor."
+      message: `La respuesta del servidor no fue válida. Código HTTP: ${res.status}`
     };
   }
 }
@@ -66,6 +78,8 @@ function cambiarTabMateriales(tab) {
   const btnMisMateriales = document.getElementById("tabBtnMisMateriales");
   const panelSubir = document.getElementById("panelTabSubirMaterial");
   const panelMisMateriales = document.getElementById("panelTabMisMateriales");
+
+  if (!btnSubir || !btnMisMateriales || !panelSubir || !panelMisMateriales) return;
 
   const esSubir = tab === "subir";
 
@@ -118,6 +132,8 @@ async function eliminarMaterial(idMaterial, estadoRevision) {
     if (data.ok) {
       mostrarToast("success", "Material eliminado correctamente");
       await cargarMateriales();
+    } else {
+      mostrarToast("error", data.message || "No se pudo eliminar el material.");
     }
   } catch (error) {
     console.error("Error al eliminar material:", error);
@@ -129,6 +145,8 @@ async function eliminarMaterial(idMaterial, estadoRevision) {
 
 function renderMateriales(lista) {
   const contenedor = document.getElementById("listaMaterialesAsesor");
+  if (!contenedor) return;
+
   contenedor.innerHTML = "";
 
   if (!lista || lista.length === 0) {
@@ -144,7 +162,6 @@ function renderMateriales(lista) {
     const estado = material.estado_revision || "pendiente_revision";
     const claseEstado = estadoClase(estado);
     const archivoUrl = resolverUrlArchivo(material.archivo_url);
-
     const textoEstado = estado === "pendiente_revision" ? "pendiente" : estado;
 
     const card = document.createElement("article");
@@ -153,19 +170,19 @@ function renderMateriales(lista) {
     card.innerHTML = `
       <div class="card-top">
         <div>
-          <h3>${material.titulo || "Material sin título"}</h3>
-          <span class="materia-pill">${material.materia || "Sin materia"}</span>
+          <h3>${escapeHtml(material.titulo || "Material sin título")}</h3>
+          <span class="materia-pill">${escapeHtml(material.materia || "Sin materia")}</span>
         </div>
-        <span class="estado-pill ${claseEstado}">${textoEstado}</span>
+        <span class="estado-pill ${claseEstado}">${escapeHtml(textoEstado)}</span>
       </div>
 
-      <p class="info-line"><strong>Fecha:</strong> ${material.fecha_subida || "-"}</p>
+      <p class="info-line"><strong>Fecha:</strong> ${escapeHtml(material.fecha_subida || "-")}</p>
 
       ${
         material.descripcion
           ? `
             <div class="descripcion-box">
-              ${material.descripcion}
+              ${escapeHtml(material.descripcion)}
             </div>
           `
           : ""
@@ -185,7 +202,7 @@ function renderMateriales(lista) {
         material.motivo_revision
           ? `
             <div class="motivo-box">
-              <strong>Motivo de rechazo:</strong> ${material.motivo_revision}
+              <strong>Motivo de rechazo:</strong> ${escapeHtml(material.motivo_revision)}
             </div>
           `
           : ""
@@ -204,14 +221,14 @@ function renderMateriales(lista) {
             : ""
         }
 
-        <button class="btn danger" data-eliminar="${material.id_material}">
+        <button class="btn danger" type="button" data-eliminar="${material.id_material}">
           Eliminar
         </button>
       </div>
     `;
 
     const btnEliminar = card.querySelector("[data-eliminar]");
-    btnEliminar.addEventListener("click", () =>
+    btnEliminar?.addEventListener("click", () =>
       eliminarMaterial(material.id_material, material.estado_revision)
     );
 
@@ -220,6 +237,8 @@ function renderMateriales(lista) {
 }
 
 async function cargarMateriales() {
+  const contenedor = document.getElementById("listaMaterialesAsesor");
+
   try {
     const res = await fetch(`${API}/api/materiales/mis`, {
       headers: {
@@ -231,9 +250,11 @@ async function cargarMateriales() {
     console.log("Mis materiales:", data);
 
     if (!data.ok) {
-      document.getElementById("listaMaterialesAsesor").innerHTML = `
-        <div class="empty-state">No se pudieron cargar tus materiales.</div>
-      `;
+      if (contenedor) {
+        contenedor.innerHTML = `
+          <div class="empty-state">No se pudieron cargar tus materiales.</div>
+        `;
+      }
       ocultarMensaje();
       return;
     }
@@ -241,42 +262,91 @@ async function cargarMateriales() {
     renderMateriales(data.materiales || []);
   } catch (error) {
     console.error("Error al cargar materiales:", error);
-    document.getElementById("listaMaterialesAsesor").innerHTML = `
-      <div class="empty-state">Error al cargar tus materiales.</div>
-    `;
+    if (contenedor) {
+      contenedor.innerHTML = `
+        <div class="empty-state">Error al cargar tus materiales.</div>
+      `;
+    }
     ocultarMensaje();
   } finally {
     window.EduQuakLoading?.forceHide?.();
   }
 }
 
-document.getElementById("formMaterial").addEventListener("submit", async (e) => {
-  e.preventDefault();
-
-  const form = e.target;
-  const submitBtn = form.querySelector("button[type='submit']");
+function validarFormularioMaterial(form) {
+  const titulo = document.getElementById("tituloMaterial")?.value?.trim();
+  const materia = document.getElementById("materiaMaterial")?.value?.trim();
   const archivo = document.getElementById("archivoMaterial")?.files?.[0];
 
-  ocultarMensaje();
+  if (!titulo) {
+    mostrarMensaje("Escribe el título del material.");
+    return false;
+  }
+
+  if (!materia) {
+    mostrarMensaje("Escribe la materia del material.");
+    return false;
+  }
 
   if (!archivo) {
     mostrarMensaje("Selecciona un archivo antes de subir el material.");
-    return;
+    return false;
   }
 
   const limiteMB = 10;
   if (archivo.size > limiteMB * 1024 * 1024) {
     mostrarMensaje(`El archivo pesa más de ${limiteMB} MB. Usa uno más ligero.`);
+    return false;
+  }
+
+  const extension = `.${archivo.name.split(".").pop() || ""}`.toLowerCase();
+  const permitidas = [".pdf", ".png", ".jpg", ".jpeg", ".doc", ".docx", ".ppt", ".pptx"];
+
+  if (!permitidas.includes(extension)) {
+    mostrarMensaje(`Formato no permitido. Usa: ${permitidas.join(", ")}`);
+    return false;
+  }
+
+  return true;
+}
+
+async function subirMaterial(event) {
+  event?.preventDefault?.();
+
+  if (subiendoMaterial) return;
+
+  const form = document.getElementById("formMaterial");
+  const submitBtn = document.getElementById("btnSubirMaterial");
+
+  if (!form) {
+    mostrarMensaje("No se encontró el formulario de materiales.");
+    return;
+  }
+
+  ocultarMensaje();
+
+  if (!validarFormularioMaterial(form)) {
     return;
   }
 
   const formData = new FormData(form);
+  const archivo = document.getElementById("archivoMaterial")?.files?.[0];
 
   try {
+    subiendoMaterial = true;
+
     if (submitBtn) {
       submitBtn.disabled = true;
       submitBtn.textContent = "Subiendo...";
     }
+
+    mostrarMensaje("Subiendo material, espera unos segundos...");
+
+    console.log("Intentando subir material:", {
+      api: API || "misma URL",
+      archivo: archivo?.name,
+      pesoMB: archivo ? (archivo.size / 1024 / 1024).toFixed(2) : null
+    });
 
     const res = await fetch(`${API}/api/materiales/upload`, {
       method: "POST",
@@ -287,7 +357,11 @@ document.getElementById("formMaterial").addEventListener("submit", async (e) => 
     });
 
     const data = await leerJsonSeguro(res);
-    console.log("Subir material:", data);
+    console.log("Subir material:", {
+      status: res.status,
+      okHttp: res.ok,
+      data
+    });
 
     mostrarMensaje(data.message || "Respuesta recibida.");
 
@@ -301,9 +375,11 @@ document.getElementById("formMaterial").addEventListener("submit", async (e) => 
     }
   } catch (error) {
     console.error("Error al subir material:", error);
-    mostrarMensaje("Error al subir el material. Revisa tu conexión o el servidor.");
+    mostrarMensaje("Error al subir el material. Revisa Render o tu conexión.");
     mostrarToast("error", "Error al subir el material.");
   } finally {
+    subiendoMaterial = false;
+
     if (submitBtn) {
       submitBtn.disabled = false;
       submitBtn.textContent = "Subir material";
@@ -311,16 +387,30 @@ document.getElementById("formMaterial").addEventListener("submit", async (e) => 
 
     window.EduQuakLoading?.forceHide?.();
   }
-});
+}
 
-document.getElementById("tabBtnSubirMaterial").addEventListener("click", () => {
+function inicializarMaterialesAsesor() {
+  const form = document.getElementById("formMaterial");
+  const btnSubir = document.getElementById("btnSubirMaterial");
+
+  form?.addEventListener("submit", subirMaterial);
+  btnSubir?.addEventListener("click", subirMaterial);
+
+  document.getElementById("tabBtnSubirMaterial")?.addEventListener("click", () => {
+    cambiarTabMateriales("subir");
+  });
+
+  document.getElementById("tabBtnMisMateriales")?.addEventListener("click", () => {
+    cambiarTabMateriales("mis-materiales");
+  });
+
+  ocultarMensaje();
   cambiarTabMateriales("subir");
-});
+  cargarMateriales();
+}
 
-document.getElementById("tabBtnMisMateriales").addEventListener("click", () => {
-  cambiarTabMateriales("mis-materiales");
-});
-
-ocultarMensaje();
-cambiarTabMateriales("subir");
-cargarMateriales();
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", inicializarMaterialesAsesor);
+} else {
+  inicializarMaterialesAsesor();
+}
