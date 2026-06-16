@@ -1,0 +1,73 @@
+.swal2-popup {
+  border-radius: 24px !important;
+  padding: 1.6rem 1.4rem 1.4rem !important;
+  font-family: Arial, sans-serif !important;
+}
+
+.swal2-title {
+  color: #334155 !important;
+  font-weight: 800 !important;
+}
+
+.swal2-html-container,
+.swal2-text {
+  color: #64748b !important;
+}
+
+.swal2-confirm,
+.swal2-cancel,
+.swal2-deny {
+  border-radius: 12px !important;
+  font-weight: 700 !important;
+  padding: 0.78rem 1.4rem !important;
+  box-shadow: none !important;
+}
+
+.swal2-confirm {
+  background: #2563eb !important;
+}
+
+.swal2-confirm:hover {
+  background: #1d4ed8 !important;
+}
+
+.swal2-cancel {
+  background: #64748b !important;
+}
+
+.swal2-icon.swal2-success [class^='swal2-success-line'] {
+  background-color: #16a34a !important;
+}
+
+.swal2-icon.swal2-success .swal2-success-ring {
+  border-color: rgba(34, 197, 94, 0.28) !important;
+}
+
+.swal2-toast {
+  border-radius: 18px !important;
+  box-shadow: 0 14px 40px rgba(15, 23, 42, 0.18) !important;
+}
+
+.swal2-toast .swal2-title {
+  font-size: 1rem !important;
+}
+
+
+
+.swal2-toast {
+  width: auto !important;
+  min-width: 280px !important;
+  max-width: 360px !important;
+  padding: 0.85rem 1rem !important;
+}
+
+.swal2-toast .swal2-title {
+  font-size: 0.92rem !important;
+  line-height: 1.25 !important;
+}
+
+.swal2-toast .swal2-icon {
+  width: 1.6em !important;
+  height: 1.6em !important;
+  margin: 0 0.55rem 0 0 !important;
+}

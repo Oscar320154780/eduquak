@@ -1,0 +1,80 @@
+body {
+  background: #eef5ff;
+}
+
+.pago-container {
+  width: min(920px, calc(100% - 32px));
+  margin: 44px auto;
+}
+
+.pago-resultado-card {
+  background: #ffffff;
+  border: 1px solid #dbe7fb;
+  border-radius: 24px;
+  padding: 34px;
+  box-shadow: 0 22px 60px rgba(37, 99, 235, 0.12);
+}
+
+.pago-badge {
+  display: inline-flex;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: #dbeafe;
+  color: #1d4ed8;
+  font-weight: 900;
+  margin-bottom: 18px;
+}
+
+.pago-resultado-card h1 {
+  margin: 0 0 10px;
+  color: #102a56;
+  font-size: clamp(2rem, 4vw, 3.2rem);
+}
+
+.pago-resultado-card p {
+  color: #52627a;
+  font-size: 1.05rem;
+}
+
+.detalle-pago {
+  margin-top: 22px;
+  padding: 16px;
+  border-radius: 16px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  color: #334155;
+}
+
+.acciones-pago {
+  margin-top: 24px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.pago-resultado-card.aprobado {
+  border-color: #86efac;
+}
+
+.pago-resultado-card.aprobado .pago-badge {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.pago-resultado-card.rechazado {
+  border-color: #fecaca;
+}
+
+.pago-resultado-card.rechazado .pago-badge {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.pago-resultado-card.pendiente {
+  border-color: #fed7aa;
+}
+
+.pago-resultado-card.pendiente .pago-badge {
+  background: #ffedd5;
+  color: #9a3412;
+}

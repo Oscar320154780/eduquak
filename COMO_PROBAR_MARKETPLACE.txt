@@ -1,0 +1,31 @@
+FLUJO MARKETPLACE EDUQUAK
+
+1. Render debe tener:
+MERCADOPAGO_PUBLIC_KEY
+MERCADOPAGO_ACCESS_TOKEN
+MERCADOPAGO_CLIENT_ID
+MERCADOPAGO_CLIENT_SECRET
+MERCADOPAGO_REDIRECT_URI=https://eduquak.onrender.com/api/mercadopago/callback
+MERCADOPAGO_MODO_MARKETPLACE=true
+FRONTEND_URL=https://eduquak.onrender.com
+BACKEND_URL=https://eduquak.onrender.com
+COMISION_EDUQUAK=0.15
+PRECIO_BASE_ASESORIA=100
+PRECIO_MINIMO_ASESORIA=80
+PAGOS_CONFIAR_RETORNO=false
+
+2. Mercado Pago Developers debe tener webhook:
+https://eduquak.onrender.com/api/pagos/webhook
+Eventos: payment y merchant_order.
+
+3. El asesor entra a su perfil y presiona Conectar Mercado Pago.
+Debe iniciar sesión con la cuenta vendedor.
+Al volver a EduQuak debe aparecer Cuenta conectada.
+
+4. El alumno solicita asesoría.
+El asesor acepta.
+El alumno paga desde Mis asesorías.
+
+5. La preferencia se crea usando el access token del asesor.
+EduQuak aplica marketplace_fee con la comisión configurada.
+El asesor recibe el pago y EduQuak recibe su comisión.

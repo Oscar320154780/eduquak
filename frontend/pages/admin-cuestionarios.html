@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    Admin Cuestionarios - EduQuak
+  </title>
+
+  <link
+    rel="stylesheet"
+    href="/css/admin-cuestionarios.css"
+  >
+
+  
+
+  <link rel="stylesheet" href="/css/nav-global.css">
+  <link rel="stylesheet" href="/css/compact-ui.css">
+  <link rel="stylesheet" href="/css/ui-feedback.css">
+  <link rel="stylesheet" href="/css/ui-loading.css">
+  <link rel="stylesheet" href="/css/mobile-responsive.css">
+</head>
+
+<body>
+
+  
+
+  <nav class="navbar">
+
+    <div class="logo-wrap">
+      <div class="logo-mark">
+        <img src="/img/logo-eduquak.png" alt="Logo EduQuak" onerror="this.style.display='none'">
+      </div>
+
+      <div class="logo-text">
+        <span class="logo-title">EduQuak</span>
+        <span class="logo-subtitle">Admin</span>
+      </div>
+    </div>
+
+    <div class="nav-actions">
+
+      <a
+        href="/pages/admin.html"
+        class="nav-link"
+      >Panel admin</a>
+    </div>
+
+  </nav>
+
+  
+
+  <main class="dashboard">
+
+    
+
+    <section class="page-header">
+
+      <div>
+
+        <span class="badge">
+          Administración
+        </span>
+
+        <h1>
+          Gestión de cuestionarios
+        </h1>
+
+        <p class="subtitle">
+          Revisa, valida y administra
+          cuestionarios creados por asesores.
+        </p>
+
+      </div>
+
+    </section>
+
+    
+
+    <section class="stats-grid">
+
+      <article class="stat-card">
+
+        <span class="stat-label">
+          Total cuestionarios
+        </span>
+
+        <h2 id="totalCuestionarios">
+          0
+        </h2>
+
+      </article>
+
+      <article class="stat-card">
+
+        <span class="stat-label">
+          Pendientes
+        </span>
+
+        <h2 id="totalPendientes">
+          0
+        </h2>
+
+      </article>
+
+      <article class="stat-card">
+
+        <span class="stat-label">
+          Aprobados
+        </span>
+
+        <h2 id="totalAprobados">
+          0
+        </h2>
+
+      </article>
+
+      <article class="stat-card">
+
+        <span class="stat-label">
+          Rechazados
+        </span>
+
+        <h2 id="totalRechazados">
+          0
+        </h2>
+
+      </article>
+
+    </section>
+
+    
+
+    <section class="panel-card">
+
+      <div class="filters-grid">
+
+        <div class="input-group">
+
+          <label>
+            Buscar cuestionario
+          </label>
+
+          <input
+            type="text"
+            id="buscarCuestionario"
+            placeholder="Título, materia o asesor..."
+          >
+
+        </div>
+
+      </div>
+
+      
+
+      <div class="tabs-wrapper">
+
+        <div class="tabs-header">
+
+          <span class="tabs-label">
+            Estado
+          </span>
+
+        </div>
+
+        <div class="tabs-container">
+
+          <button
+            class="tab-btn active"
+            data-estado=""
+          >
+            Todos
+          </button>
+
+          <button
+            class="tab-btn"
+            data-estado="pendiente_revision"
+          >
+            Pendientes
+          </button>
+
+          <button
+            class="tab-btn"
+            data-estado="aprobado"
+          >
+            Aprobados
+          </button>
+
+          <button
+            class="tab-btn"
+            data-estado="rechazado"
+          >
+            Rechazados
+          </button>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    
+
+    <section
+      id="cuestionariosGrid"
+      class="cuestionarios-grid"
+    ></section>
+
+    <nav
+      id="cuestionariosPagination"
+      class="pagination-bar"
+      aria-label="Paginación"
+    ></nav>
+
+
+  </main>
+
+  
+
+  <div
+    id="modalPreguntas"
+    class="modal-overlay hidden"
+  >
+
+    <div class="preguntas-modal-card">
+
+      <div class="modal-head">
+
+        <div>
+
+          <h3 id="modalTituloCuestionario">
+            Cuestionario
+          </h3>
+
+          <p
+            id="modalInfoCuestionario"
+            class="modal-subtitle"
+          >
+            Información del cuestionario
+          </p>
+
+        </div>
+
+        <button
+          id="btnCerrarPreguntas"
+          class="modal-close"
+          type="button"
+        >
+          ×
+        </button>
+
+      </div>
+
+      <div
+        id="preguntasContainer"
+        class="preguntas-container"
+      ></div>
+
+    </div>
+
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="/js/ui-feedback.js"></script>
+  <script src="/js/ui-loading.js"></script>
+
+  <script src="/js/config.js"></script>
+  <script src="/js/admin-cuestionarios.js"></script>
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel Alumno - EduQuak</title>
+  <link rel="stylesheet" href="/css/alumno.css">
+  <link rel="stylesheet" href="/css/nav-global.css">
+  <link rel="stylesheet" href="/css/compact-ui.css">
+  <link rel="stylesheet" href="/css/ui-feedback.css">
+  <link rel="stylesheet" href="/css/ui-loading.css">
+  <link rel="stylesheet" href="/css/mobile-responsive.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="logo-wrap">
+      <div class="logo-mark">
+        <img src="/img/logo-eduquak.png" alt="Logo EduQuak" onerror="this.style.display='none'">
+      </div>
+      <div class="logo-text">
+        <span class="logo-title">EduQuak</span>
+        <span class="logo-subtitle">Alumno</span>
+      </div>
+    </div>
+
+    <div class="nav-actions">
+      <button id="btnLogout" class="btn danger">Cerrar sesión</button>
+    </div>
+  </nav>
+
+  <main class="container">
+    <section class="hero-card">
+      <div class="hero-content">
+        <div class="hero-info">
+          <span class="badge">Panel del alumno</span>
+          <h1>Hola, <span id="nombre">-</span></h1>
+          <p class="subtitle">
+            Aquí puedes organizar tus asesorías, explorar materiales, resolver cuestionarios
+            y unirte a sesiones grupales.
+          </p>
+
+          <div class="hero-actions">
+            <a href="/pages/perfil_alumno.html" class="btn primary">Ir a mi perfil</a>
+          </div>
+        </div>
+
+        <div class="hero-mini-card">
+          <span class="mini-label">Estado actual</span>
+          <p id="estado">-</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="alertaValidacionAlumno" class="alerta-validacion hidden">
+      <div class="alerta-validacion__icono">!</div>
+
+      <div class="alerta-validacion__contenido">
+        <p class="alerta-validacion__eyebrow">Atención requerida</p>
+        <h2 id="tituloAlertaAlumno">Tu cuenta necesita revisión</h2>
+        <p id="textoAlertaAlumno" class="alerta-validacion__texto">-</p>
+        <p id="motivoAlertaAlumno" class="alerta-validacion__motivo hidden"></p>
+
+        <div class="alerta-validacion__acciones">
+          <a id="btnAccionAlertaAlumno" href="/pages/perfil_alumno.html" class="btn primary">
+            Reenviar documento
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div>
+          <h2>Accesos rápidos</h2>
+          <p>Muévete rápido a las secciones más importantes.</p>
+        </div>
+      </div>
+
+      <div class="acciones-grid">
+        <a href="/pages/mis_asesorias.html" class="accion-card">
+          <div class="accion-icon"><img src="/img/icon-mis-asesorias.svg" alt="" aria-hidden="true"></div>
+          <h3>Mis asesorías</h3>
+          <p>Consulta tus asesorías pendientes, aceptadas y finalizadas.</p>
+        </a>
+
+        <a href="/pages/buscar_asesores.html" class="accion-card">
+          <div class="accion-icon"><img src="/img/icon-buscar-asesores.svg" alt="" aria-hidden="true"></div>
+          <h3>Buscar asesores</h3>
+          <p>Explora asesores y solicita asesorías.</p>
+        </a>
+
+        <a href="/pages/grupales.html" class="accion-card">
+          <div class="accion-icon"><img src="/img/icon-grupales.svg" alt="" aria-hidden="true"></div>
+          <h3>Asesorías grupales</h3>
+          <p>Consulta asesorías grupales, cupos e inscríbete.</p>
+        </a>
+
+        <a href="/pages/cuestionarios.html" class="accion-card">
+          <div class="accion-icon"><img src="/img/icon-cuestionarios.svg" alt="" aria-hidden="true"></div>
+          <h3>Cuestionarios</h3>
+          <p>Explora cuestionarios disponibles y resuélvelos.</p>
+        </a>
+
+        <a href="/pages/materiales.html" class="accion-card">
+          <div class="accion-icon"><img src="/img/icon-materiales.svg" alt="" aria-hidden="true"></div>
+          <h3>Materiales</h3>
+          <p>Revisa materiales aprobados y accede a su contenido.</p>
+        </a>
+
+        <a href="/pages/calificar.html" class="accion-card">
+          <div class="accion-icon"><img src="/img/icon-calificar.svg" alt="" aria-hidden="true"></div>
+          <h3>Calificar asesor</h3>
+          <p>Deja tu reseña de asesorías finalizadas.</p>
+        </a>
+
+        <a href="/pages/mis_asesorias.html" class="accion-card">
+          <div class="accion-icon"><img src="/img/icon-asesorias.svg" alt="" aria-hidden="true"></div>
+          <h3>Pagos pendientes</h3>
+          <p>Paga asesorías aceptadas y libera chat o videollamada.</p>
+        </a>
+      </div>
+    </section>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="/js/ui-feedback.js"></script>
+  <script src="/js/ui-loading.js"></script>
+
+  <script src="/js/alumno.js"></script>
+  <script src="/js/config.js"></script>
+</body>
+</html>

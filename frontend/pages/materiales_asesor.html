@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Materiales - EduQuak</title>
+  <link rel="stylesheet" href="/css/materiales_asesor.css">
+  <link rel="stylesheet" href="/css/nav-global.css">
+  <link rel="stylesheet" href="/css/compact-ui.css">
+  <link rel="stylesheet" href="/css/ui-feedback.css">
+  <link rel="stylesheet" href="/css/ui-loading.css">
+  <link rel="stylesheet" href="/css/mobile-responsive.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="logo-wrap">
+      <div class="logo-mark">
+        <img src="/img/logo-eduquak.png" alt="Logo EduQuak" onerror="this.style.display='none'">
+      </div>
+      <div class="logo-text">
+        <span class="logo-title">EduQuak</span>
+        <span class="logo-subtitle">Asesor</span>
+      </div>
+    </div>
+
+    <div class="nav-actions">
+      <a href="/pages/asesor.html" class="nav-link">Volver al panel</a>
+    </div>
+  </nav>
+
+  <main class="container">
+    <section class="hero-card">
+      <span class="badge">Materiales</span>
+      <h1>Sube y administra tus materiales</h1>
+      <p class="subtitle">
+        Comparte contenido útil para tus alumnos y revisa el estado de aprobación de cada archivo.
+      </p>
+    </section>
+
+    <section class="tabs-card">
+      <div class="tabs-switcher" role="tablist" aria-label="Secciones de materiales">
+        <button
+          id="tabBtnSubirMaterial"
+          class="tab-btn active"
+          type="button"
+          data-tab="subir"
+          role="tab"
+          aria-selected="true"
+        >
+          Subir material
+        </button>
+
+        <button
+          id="tabBtnMisMateriales"
+          class="tab-btn"
+          type="button"
+          data-tab="mis-materiales"
+          role="tab"
+          aria-selected="false"
+        >
+          Mis materiales
+        </button>
+      </div>
+    </section>
+
+    <div id="mensajeMaterial" class="message-box hidden"></div>
+
+    <section id="panelTabSubirMaterial" class="tab-panel active">
+      <section class="panel-card">
+        <div class="section-head">
+          <h2>Subir material</h2>
+          <p>Agrega un material nuevo con su información y archivo.</p>
+        </div>
+
+        <form id="formMaterial" class="form-grid" enctype="multipart/form-data">
+          <div class="input-group">
+            <label for="tituloMaterial">Título</label>
+            <input type="text" id="tituloMaterial" name="titulo" placeholder="Ej. Guía de integrales" required>
+          </div>
+
+          <div class="input-group">
+            <label for="materiaMaterial">Materia</label>
+            <input type="text" id="materiaMaterial" name="materia" placeholder="Ej. Cálculo" required>
+          </div>
+
+          <div class="input-group full">
+            <label for="descripcionMaterial">Descripción</label>
+            <textarea id="descripcionMaterial" name="descripcion" placeholder="Describe brevemente el contenido"></textarea>
+          </div>
+
+          <div class="input-group full">
+            <label for="archivoMaterial">Archivo</label>
+            <input type="file" id="archivoMaterial" name="archivo" accept=".pdf,.png,.jpg,.jpeg" required>
+            <small>Formatos recomendados: PDF, JPG, PNG.</small>
+          </div>
+
+          <div class="full">
+            <button type="submit" class="btn primary">Subir material</button>
+          </div>
+        </form>
+      </section>
+    </section>
+
+    <section id="panelTabMisMateriales" class="tab-panel hidden">
+      <section class="panel-card">
+        <div class="section-head">
+          <h2>Mis materiales</h2>
+          <p>Consulta el estado y abre tus materiales en tarjetas visuales.</p>
+        </div>
+
+        <div id="listaMaterialesAsesor" class="materiales-grid"></div>
+      </section>
+    </section>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="/js/ui-feedback.js"></script>
+  <script src="/js/ui-loading.js"></script>
+
+  <script src="/js/materiales_asesor.js"></script>
+  <script src="/js/config.js"></script>
+</body>
+</html>

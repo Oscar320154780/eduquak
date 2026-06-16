@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calificar asesor - EduQuak</title>
+
+  <link rel="stylesheet" href="/css/alumno_nav.css">
+  <link rel="stylesheet" href="/css/calificar.css">
+  <link rel="stylesheet" href="/css/nav-global.css">
+  <link rel="stylesheet" href="/css/compact-ui.css">
+  <link rel="stylesheet" href="/css/ui-feedback.css">
+  <link rel="stylesheet" href="/css/ui-loading.css">
+  <link rel="stylesheet" href="/css/mobile-responsive.css">
+</head>
+
+<body>
+
+  <nav class="navbar">
+
+    <div class="logo-wrap">
+      <div class="logo-mark">
+        <img src="/img/logo-eduquak.png" alt="Logo EduQuak" onerror="this.style.display='none'">
+      </div>
+
+      <div class="logo-text">
+        <span class="logo-title">EduQuak</span>
+        <span class="logo-subtitle">Alumno</span>
+      </div>
+    </div>
+
+    <div class="nav-actions">
+      <a href="/pages/alumno.html" class="nav-link">Volver al panel</a>
+    </div>
+
+  </nav>
+
+  <main class="container">
+
+    <section class="hero-card">
+
+      <span class="badge">
+        Calificaciones
+      </span>
+
+      <h1>
+        Evalúa a tus asesores
+      </h1>
+
+      <p class="subtitle">
+        Tu opinión ayuda a mejorar la calidad de las asesorías.
+      </p>
+
+    </section>
+
+    <section class="calificacion-tabs-card">
+      <button id="tabPendientesCalificar" class="tab-calificacion active" type="button">
+        Pendientes por evaluar
+      </button>
+      <button id="tabEvaluadasCalificar" class="tab-calificacion" type="button">
+        Ya evaluadas
+      </button>
+    </section>
+
+    <section id="panelPendientesCalificar" class="calificacion-panel active">
+      <div class="section-head calificar-section-head">
+        <div>
+          <h2>Pendientes por evaluar</h2>
+          <p>Califica las asesorías finalizadas para ayudar a mejorar la plataforma.</p>
+        </div>
+      </div>
+      <div id="listaAsesorias" class="asesorias-grid"></div>
+    </section>
+
+    <section id="panelEvaluadasCalificar" class="calificacion-panel hidden">
+      <div class="section-head calificar-section-head">
+        <div>
+          <h2>Ya evaluadas</h2>
+          <p>Consulta tus calificaciones anteriores y comentarios registrados.</p>
+        </div>
+      </div>
+      <div id="listaEvaluadas" class="asesorias-grid"></div>
+    </section>
+
+    <div
+      id="mensajeCalificacion"
+      class="message-box hidden"
+    ></div>
+
+  </main>
+
+  
+
+  <div
+    id="modalReporte"
+    class="modal hidden"
+  >
+
+    <div class="modal-content">
+
+      <h2>
+         Reportar asesoría
+      </h2>
+
+      <input
+        type="hidden"
+        id="idReporteAsesoria"
+      >
+
+      <label>
+        Motivo
+      </label>
+
+      <select id="motivoReporte">
+
+        <option value="">
+          Selecciona un motivo
+        </option>
+
+        <option value="No se presentó">
+          No se presentó
+        </option>
+
+        <option value="Falta de respeto">
+          Falta de respeto
+        </option>
+
+        <option value="Mala conducta">
+          Mala conducta
+        </option>
+
+        <option value="Contenido inadecuado">
+          Contenido inadecuado
+        </option>
+
+        <option value="Otro">
+          Otro
+        </option>
+
+      </select>
+
+      <label>
+        Descripción
+      </label>
+
+      <textarea
+        id="descripcionReporte"
+        placeholder="Describe lo ocurrido..."
+      ></textarea>
+
+      <label for="evidenciaReporte">
+        Evidencia obligatoria
+      </label>
+
+      <p class="form-help">
+        Adjunta una imagen o PDF que respalde el reporte.
+      </p>
+
+      <input
+        type="file"
+        id="evidenciaReporte"
+        accept="image/*,.pdf"
+        required
+      >
+
+      <div class="modal-actions">
+
+        <button
+          class="btn-cancelar"
+          onclick="cerrarModalReporte()"
+        >
+          Cancelar
+        </button>
+
+        <button
+          class="btn-reportar-modal"
+          onclick="enviarReporte()"
+        >
+          Enviar reporte
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="/js/ui-feedback.js"></script>
+  <script src="/js/ui-loading.js"></script>
+
+  <script src="/js/calificar.js"></script>
+  <script src="/js/config.js"></script>
+</body>
+</html>

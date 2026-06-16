@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Videollamada - EduQuak</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #f5f7fb;
+      --surface: #ffffff;
+      --surface-soft: #eef4ff;
+
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --primary-light: #dbeafe;
+
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #dbe4f0;
+
+      --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+      --shadow-soft: 0 6px 18px rgba(15, 23, 42, 0.06);
+      --radius: 20px;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(180deg, #f5f8ff 0%, #eef4ff 100%);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 7%;
+    }
+
+    .logo-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-mark {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      box-shadow: var(--shadow-soft);
+      flex-shrink: 0;
+    }
+
+    .logo-text {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.1;
+    }
+
+    .logo-title {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--primary-dark);
+    }
+
+    .logo-subtitle {
+      font-size: 0.82rem;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .nav-link {
+      font-weight: 700;
+      color: var(--text);
+      transition: color 0.2s ease;
+    }
+
+    .nav-link:hover {
+      color: var(--primary);
+    }
+
+    .container {
+      padding: 28px 7% 40px;
+    }
+
+    .hero-card {
+      background: linear-gradient(135deg, #ffffff 0%, #f7faff 100%);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      padding: 28px;
+      margin-bottom: 22px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: var(--primary-light);
+      color: var(--primary-dark);
+      font-size: 0.9rem;
+      font-weight: 700;
+      margin-bottom: 14px;
+    }
+
+    .hero-card h1 {
+      font-size: 2rem;
+      color: var(--primary-dark);
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      margin-bottom: 20px;
+      max-width: 760px;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    .info-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .info-label {
+      display: block;
+      font-size: 0.84rem;
+      font-weight: 700;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .info-value {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      word-break: break-word;
+    }
+
+    .meet-wrapper {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      padding: 18px;
+    }
+
+    .meet-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+
+    .meet-header h2 {
+      color: var(--primary-dark);
+      font-size: 1.2rem;
+    }
+
+    .meet-status {
+      font-size: 0.92rem;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    #meet {
+      width: 100%;
+      height: 78vh;
+      min-height: 560px;
+      border-radius: 18px;
+      overflow: hidden;
+      background: #0f172a;
+      border: 1px solid var(--border);
+    }
+
+    .error-box {
+      background: #fff;
+      border: 1px solid #fecaca;
+      color: #b91c1c;
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: var(--shadow-soft);
+      margin-top: 20px;
+      display: none;
+    }
+
+    @media (max-width: 900px) {
+      .info-grid {
+        grid-template-columns: 1fr;
+      }
+
+      #meet {
+        height: 70vh;
+        min-height: 500px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .navbar,
+      .container {
+        padding-left: 5%;
+        padding-right: 5%;
+      }
+
+      .hero-card {
+        padding: 22px;
+      }
+
+      .hero-card h1 {
+        font-size: 1.65rem;
+      }
+
+      .logo-title {
+        font-size: 1.08rem;
+      }
+
+      .logo-subtitle {
+        font-size: 0.76rem;
+      }
+
+      #meet {
+        height: 65vh;
+        min-height: 420px;
+      }
+    }
+
+    body.rol-asesor {
+      --primary: #16a34a;
+      --primary-dark: #15803d;
+      --primary-light: #dcfce7;
+      background: linear-gradient(135deg, #eefcf2, #f8fffa);
+    }
+
+    body.rol-asesor .badge {
+      background: var(--primary-light);
+      color: var(--primary-dark);
+    }
+
+    body.rol-asesor .meet-header h2,
+    body.rol-asesor .hero-card h1 {
+      color: var(--primary-dark);
+    }
+
+    body.rol-asesor .logo-mark {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark)) !important;
+    }
+
+    body.rol-asesor .logo-title {
+      color: var(--primary-dark) !important;
+    }
+
+    .container {
+      padding-top: 14px !important;
+      padding-bottom: 26px !important;
+    }
+
+    .hero-card.video-summary {
+      padding: 18px 22px !important;
+      margin-bottom: 14px !important;
+      border-radius: 20px !important;
+    }
+
+    .video-summary .badge {
+      margin-bottom: 8px !important;
+      padding: 6px 12px !important;
+      font-size: 0.82rem !important;
+    }
+
+    .video-summary h1 {
+      font-size: clamp(1.35rem, 2.4vw, 1.85rem) !important;
+      margin-bottom: 6px !important;
+    }
+
+    .video-summary .subtitle {
+      display: none !important;
+    }
+
+    .video-summary .info-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px !important;
+      margin-top: 10px !important;
+    }
+
+    .video-summary .info-card {
+      padding: 12px 14px !important;
+      border-radius: 14px !important;
+    }
+
+    .video-summary .info-label {
+      font-size: 0.78rem !important;
+      margin-bottom: 4px !important;
+    }
+
+    .video-summary .info-value {
+      font-size: 0.92rem !important;
+    }
+
+    .meet-wrapper {
+      padding: 12px !important;
+      border-radius: 20px !important;
+    }
+
+    .meet-header {
+      margin-bottom: 10px !important;
+    }
+
+    .meet-header h2 {
+      font-size: 1.05rem !important;
+    }
+
+    #meet {
+      height: calc(100vh - 290px) !important;
+      min-height: 470px !important;
+      border-radius: 15px !important;
+    }
+
+    @media (max-width: 900px) {
+      .video-summary .info-grid {
+        grid-template-columns: 1fr;
+      }
+
+      #meet {
+        height: 68vh !important;
+        min-height: 430px !important;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .hero-card.video-summary {
+        padding: 16px !important;
+      }
+
+      #meet {
+        height: 64vh !important;
+        min-height: 380px !important;
+      }
+    }
+
+  </style>
+  <link rel="stylesheet" href="/css/nav-global.css">
+  <link rel="stylesheet" href="/css/compact-ui.css">
+  <link rel="stylesheet" href="/css/ui-feedback.css">
+  <link rel="stylesheet" href="/css/ui-loading.css">
+  <link rel="stylesheet" href="/css/mobile-responsive.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="logo-wrap">
+      <div class="logo-mark">
+        <img src="/img/logo-eduquak.png" alt="Logo EduQuak" onerror="this.style.display='none'">
+      </div>
+      <div class="logo-text">
+        <span class="logo-title">EduQuak</span>
+        <span class="logo-subtitle">Videollamada</span>
+      </div>
+    </div>
+
+    
+  </nav>
+
+  <main class="container">
+    <section class="hero-card video-summary">
+      <span class="badge">Sesión en línea</span>
+      <h1>Conéctate a tu asesoría</h1>
+      <p class="subtitle">
+        Verifica la sala y tu nombre antes de entrar. Cuando todo esté listo, la videollamada cargará automáticamente.
+      </p>
+
+      <div class="info-grid">
+        <article class="info-card">
+          <span class="info-label">Sala</span>
+          <p id="infoSala" class="info-value">Cargando sala...</p>
+        </article>
+
+        <article class="info-card">
+          <span class="info-label">Nombre mostrado / rol</span>
+          <p id="infoNombre" class="info-value">Cargando usuario...</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="meet-wrapper">
+      <div class="meet-header">
+        <h2>Videollamada activa</h2>
+        <span id="estadoCarga" class="meet-status">Preparando sala...</span>
+      </div>
+
+      <div id="meet"></div>
+    </section>
+
+    <div id="errorBox" class="error-box"></div>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="/js/ui-feedback.js"></script>
+  <script src="/js/ui-loading.js"></script>
+
+  <script src="/js/config.js"></script>
+  <script src="https://meet.jit.si/external_api.js"></script>
+  <script>
+    const API = window.EDUQUAK_API_URL || "";
+    const token = localStorage.getItem("token");
+
+    const params = new URLSearchParams(window.location.search);
+    const idAsesoria = params.get("id");
+    let room = params.get("room");
+    const displayName = params.get("name") || "Usuario EduQuak";
+    const roleParam = (params.get("role") || "alumno").toLowerCase();
+
+    const infoSala = document.getElementById("infoSala");
+    const infoNombre = document.getElementById("infoNombre");
+    const estadoCarga = document.getElementById("estadoCarga");
+    const errorBox = document.getElementById("errorBox");
+
+    let role = roleParam;
+    let esAsesor = role === "asesor";
+
+    function aplicarTemaRol() {
+      document.body.classList.toggle("rol-asesor", esAsesor);
+      document.body.classList.toggle("rol-alumno", !esAsesor);
+    }
+
+    function mostrarRol() {
+      infoNombre.textContent =
+        `${displayName} · ${esAsesor ? "Asesor" : "Alumno"}`;
+    }
+
+    aplicarTemaRol();
+    mostrarRol();
+
+    function mostrarError(mensaje) {
+      errorBox.textContent = mensaje;
+      errorBox.style.display = "block";
+      estadoCarga.textContent = "No se pudo abrir la sala";
+    }
+
+    async function obtenerRolAutenticado() {
+      if (!token) {
+        return roleParam;
+      }
+
+      try {
+        const res = await fetch(`${API}/api/users/me`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+
+        const data = await res.json();
+
+        if (data.ok && data.user && data.user.rol) {
+          return String(data.user.rol).toLowerCase();
+        }
+
+        return roleParam;
+      } catch (error) {
+        console.warn("No se pudo validar rol real:", error);
+        return roleParam;
+      }
+    }
+
+
+    async function validarAccesoVideollamada() {
+      if (!token) {
+        mostrarError("Debes iniciar sesión para entrar a la videollamada.");
+        setTimeout(() => {
+          window.location.href = "/pages/login.html";
+        }, 1600);
+        return false;
+      }
+
+      if (!idAsesoria) {
+        infoSala.textContent = "Acceso inválido";
+        mostrarError("No se encontró una asesoría válida. Entra desde tu lista de asesorías.");
+        return false;
+      }
+
+      try {
+        const res = await fetch(`${API}/api/asesorias/${idAsesoria}/video-access`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+
+        const data = await res.json();
+
+        if (!data.ok) {
+          infoSala.textContent = "No disponible";
+          mostrarError(
+            data.message ||
+            "La videollamada estará disponible 10 minutos antes de la hora agendada."
+          );
+          return false;
+        }
+
+        room = data.room_name || room;
+        return true;
+      } catch (error) {
+        console.error("Error al validar acceso a videollamada:", error);
+        infoSala.textContent = "No disponible";
+        mostrarError("No se pudo validar la videollamada. Intenta entrar desde tu asesoría.");
+        return false;
+      }
+    }
+
+    async function iniciarVideollamada() {
+      role = await obtenerRolAutenticado();
+      esAsesor = role === "asesor";
+      aplicarTemaRol();
+      mostrarRol();
+
+      const accesoValido = await validarAccesoVideollamada();
+
+      if (!accesoValido) {
+        return;
+      }
+
+      if (!room) {
+        infoSala.textContent = "No disponible";
+        mostrarError("No se encontró la sala de videollamada. Verifica el enlace e inténtalo de nuevo.");
+        return;
+      }
+
+      infoSala.textContent = room;
+
+      try {
+        const domain = "meet.jit.si";
+
+        const opcionesAlumno = {
+          configOverwrite: {
+            startWithAudioMuted: true,
+            prejoinPageEnabled: true,
+            remoteVideoMenu: {
+              disableKick: true,
+              disableGrantModerator: true
+            },
+            disableRemoteMute: true
+          },
+          interfaceConfigOverwrite: {
+            SHOW_JITSI_WATERMARK: false,
+            SHOW_BRAND_WATERMARK: false,
+            SHOW_WATERMARK_FOR_GUESTS: false,
+            TOOLBAR_BUTTONS: [
+              "microphone",
+              "camera",
+              "desktop",
+              "fullscreen",
+              "fodeviceselection",
+              "hangup",
+              "chat",
+              "tileview",
+              "raisehand",
+              "videoquality",
+              "filmstrip",
+              "shortcuts"
+            ]
+          }
+        };
+
+        const opcionesAsesor = {
+          configOverwrite: {
+            startWithAudioMuted: true,
+            prejoinPageEnabled: true
+          },
+          interfaceConfigOverwrite: {
+            SHOW_JITSI_WATERMARK: false,
+            SHOW_BRAND_WATERMARK: false,
+            SHOW_WATERMARK_FOR_GUESTS: false
+          }
+        };
+
+        const opcionesRol =
+          esAsesor ? opcionesAsesor : opcionesAlumno;
+
+        const options = {
+          roomName: room,
+          parentNode: document.querySelector("#meet"),
+          width: "100%",
+          height: "100%",
+          userInfo: {
+            displayName: displayName
+          },
+          configOverwrite: opcionesRol.configOverwrite,
+          interfaceConfigOverwrite: opcionesRol.interfaceConfigOverwrite
+        };
+
+        const api = new JitsiMeetExternalAPI(domain, options);
+
+        api.addEventListener("videoConferenceJoined", () => {
+          estadoCarga.textContent =
+            esAsesor
+              ? "Conectado como asesor"
+              : "Conectado como alumno";
+        });
+
+        api.addEventListener("readyToClose", () => {
+          estadoCarga.textContent = "La sesión ha finalizado";
+        });
+      } catch (error) {
+        console.error("Error al cargar Jitsi:", error);
+        mostrarError("Ocurrió un error al cargar la videollamada.");
+      }
+    }
+
+    iniciarVideollamada();
+  </script>
+</body>
+</html>

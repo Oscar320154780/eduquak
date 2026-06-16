@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pagos - EduQuak</title>
+  <link rel="stylesheet" href="/css/admin.css">
+  <link rel="stylesheet" href="/css/admin-pagos.css">
+  <link rel="stylesheet" href="/css/nav-global.css">
+  <link rel="stylesheet" href="/css/compact-ui.css">
+  <link rel="stylesheet" href="/css/ui-feedback.css">
+  <link rel="stylesheet" href="/css/ui-loading.css">
+  <link rel="stylesheet" href="/css/mobile-responsive.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="logo-wrap">
+      <div class="logo-mark">
+        <img src="/img/logo-eduquak.png" alt="Logo EduQuak" onerror="this.style.display='none'">
+      </div>
+      <div class="logo-text">
+        <span class="logo-title">EduQuak</span>
+        <span class="logo-subtitle">Admin</span>
+      </div>
+    </div>
+    <div class="nav-actions">
+      <a href="/pages/admin.html" class="nav-link">Volver al panel</a>
+    </div>
+  </nav>
+
+  <main class="dashboard">
+    <section class="dashboard-hero">
+      <div class="hero-left">
+        <span class="badge admin-badge">Modelo de negocio</span>
+        <h1>Pagos y comisiones</h1>
+        <p class="subtitle">Monitorea pagos de asesorías, comisión de EduQuak y ganancias estimadas de asesores.</p>
+      </div>
+    </section>
+
+    <section class="pagos-stats-grid">
+      <article class="pago-stat-card">
+        <span>Total pagos</span>
+        <strong id="statTotalPagos">0</strong>
+      </article>
+      <article class="pago-stat-card">
+        <span>Ventas aprobadas</span>
+        <strong id="statVentas">$0.00</strong>
+      </article>
+      <article class="pago-stat-card">
+        <span>Comisión EduQuak</span>
+        <strong id="statComision">$0.00</strong>
+      </article>
+      <article class="pago-stat-card">
+        <span>Ganancia asesores</span>
+        <strong id="statAsesores">$0.00</strong>
+      </article>
+    </section>
+
+    <section class="panel-card">
+      <div class="panel-head">
+        <div>
+          <h2>Historial de pagos</h2>
+          <p>Últimas operaciones generadas desde asesorías individuales y grupales.</p>
+        </div>
+      </div>
+      <div id="listaPagosAdmin" class="pagos-admin-list"></div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="/js/ui-feedback.js"></script>
+  <script src="/js/ui-loading.js"></script>
+  <script src="/js/admin-pagos.js"></script>
+  <script src="/js/config.js"></script>
+</body>
+</html>

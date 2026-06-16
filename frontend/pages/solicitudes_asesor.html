@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solicitudes - EduQuak</title>
+  <link rel="stylesheet" href="/css/solicitudes_asesor.css">
+  <link rel="stylesheet" href="/css/nav-global.css">
+  <link rel="stylesheet" href="/css/compact-ui.css">
+  <link rel="stylesheet" href="/css/ui-feedback.css">
+  <link rel="stylesheet" href="/css/ui-loading.css">
+  <link rel="stylesheet" href="/css/mobile-responsive.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="logo-wrap">
+      <div class="logo-mark">
+        <img src="/img/logo-eduquak.png" alt="Logo EduQuak" onerror="this.style.display='none'">
+      </div>
+      <div class="logo-text">
+        <span class="logo-title">EduQuak</span>
+        <span class="logo-subtitle">Asesor</span>
+      </div>
+    </div>
+
+    <div class="nav-actions">
+      <a href="/pages/asesor.html" class="nav-link">Volver al panel</a>
+    </div>
+  </nav>
+
+  <main class="container">
+    <section class="hero-card">
+      <span class="badge">Solicitudes</span>
+      <h1>Gestiona tus solicitudes pendientes</h1>
+      <p class="subtitle">
+        Aquí revisas únicamente las solicitudes pendientes, asignas fecha y hora, y decides si aceptarlas o rechazarlas.
+      </p>
+    </section>
+
+    <section class="toolbar">
+      <div class="filter-box filter-box-static">
+        <label>Mostrando</label>
+        <div class="filter-readonly">Solo pendientes</div>
+      </div>
+    </section>
+
+    <section id="listaSolicitudes" class="solicitudes-grid"></section>
+
+    <div id="mensajeSolicitud" class="message-box hidden"></div>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="/js/ui-feedback.js"></script>
+  <script src="/js/ui-loading.js"></script>
+
+  <script src="/js/solicitudes_asesor.js"></script>
+  <script src="/js/config.js"></script>
+</body>
+</html>

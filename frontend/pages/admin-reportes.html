@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    Admin Reportes - EduQuak
+  </title>
+
+  <link
+    rel="stylesheet"
+    href="/css/admin-reportes.css"
+  >
+
+  
+
+  <link rel="stylesheet" href="/css/nav-global.css">
+  <link rel="stylesheet" href="/css/compact-ui.css">
+  <link rel="stylesheet" href="/css/ui-feedback.css">
+  <link rel="stylesheet" href="/css/ui-loading.css">
+  <link rel="stylesheet" href="/css/mobile-responsive.css">
+</head>
+
+<body>
+
+  
+
+  <nav class="navbar">
+
+    <div class="logo-wrap">
+      <div class="logo-mark">
+        <img src="/img/logo-eduquak.png" alt="Logo EduQuak" onerror="this.style.display='none'">
+      </div>
+
+      <div class="logo-text">
+        <span class="logo-title">EduQuak</span>
+        <span class="logo-subtitle">Admin</span>
+      </div>
+    </div>
+
+    <div class="nav-actions">
+
+      <a
+        href="/pages/admin.html"
+        class="nav-link"
+      >Panel admin</a>
+    </div>
+
+  </nav>
+
+  
+
+  <main class="dashboard">
+
+    
+
+    <section class="page-header">
+
+      <div>
+
+        <span class="badge">
+          Administración
+        </span>
+
+        <h1>
+          Gestión de reportes
+        </h1>
+
+        <p class="subtitle">
+          Administra incidencias, revisa reportes
+          enviados por alumnos y da seguimiento
+          a problemas en asesorías.
+        </p>
+
+      </div>
+
+    </section>
+
+    
+
+    <section class="stats-grid">
+
+      <article class="stat-card">
+
+        <span class="stat-label">
+          Total reportes
+        </span>
+
+        <h2 id="kpiTotal">
+          0
+        </h2>
+
+      </article>
+
+      <article class="stat-card warning">
+
+        <span class="stat-label">
+          Pendientes
+        </span>
+
+        <h2 id="kpiPendientes">
+          0
+        </h2>
+
+      </article>
+
+      <article class="stat-card info">
+
+        <span class="stat-label">
+          Revisados
+        </span>
+
+        <h2 id="kpiRevisados">
+          0
+        </h2>
+
+      </article>
+
+      <article class="stat-card success">
+
+        <span class="stat-label">
+          Resueltos
+        </span>
+
+        <h2 id="kpiResueltos">
+          0
+        </h2>
+
+      </article>
+
+    </section>
+
+    
+
+    <section class="panel-card">
+
+      <div class="filters-grid">
+
+        <div class="input-group input-group-search">
+
+          <label>
+            Buscar reporte
+          </label>
+
+          <input
+            type="text"
+            id="buscarReporte"
+            placeholder="Alumno, asesor o motivo..."
+          >
+
+        </div>
+
+        <div class="input-group">
+
+          <label for="fechaInicioReporte">
+            Desde
+          </label>
+
+          <input
+            type="date"
+            id="fechaInicioReporte"
+          >
+
+        </div>
+
+        <div class="input-group">
+
+          <label for="fechaFinReporte">
+            Hasta
+          </label>
+
+          <input
+            type="date"
+            id="fechaFinReporte"
+          >
+
+        </div>
+
+        <div class="filter-actions">
+          <button
+            type="button"
+            id="btnFiltrarFechas"
+            class="btn primary"
+          >
+            Filtrar
+          </button>
+
+          <button
+            type="button"
+            id="btnLimpiarFechas"
+            class="btn outline"
+          >
+            Limpiar
+          </button>
+        </div>
+
+      </div>
+
+      
+
+      <div class="tabs-wrapper">
+
+        <div class="tabs-header">
+
+          <span class="tabs-label">
+            Estado
+          </span>
+
+        </div>
+
+        <div class="tabs-container">
+
+          <button
+            class="tab-btn active"
+            data-estado=""
+          >
+            Todos
+          </button>
+
+          <button
+            class="tab-btn"
+            data-estado="pendiente"
+          >
+            Pendientes
+          </button>
+
+          <button
+            class="tab-btn"
+            data-estado="revisado"
+          >
+            Revisados
+          </button>
+
+          <button
+            class="tab-btn"
+            data-estado="resuelto"
+          >
+            Resueltos
+          </button>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    
+
+    <section
+      id="reportesGrid"
+      class="reportes-grid"
+    ></section>
+
+    <nav
+      id="reportesPagination"
+      class="pagination-bar"
+      aria-label="Paginación"
+    ></nav>
+
+
+  </main>
+
+  
+
+  <div
+    id="modalReporte"
+    class="modal-overlay hidden"
+  >
+
+    <div class="modal-card">
+
+      
+
+      <div class="modal-head">
+
+        <div>
+
+          <h3 id="modalTitulo">
+            Detalle del reporte
+          </h3>
+
+          <p
+            id="modalSubtitulo"
+            class="modal-subtitle"
+          >
+            Información completa
+          </p>
+
+        </div>
+
+        <button
+          id="btnCerrarModal"
+          class="modal-close"
+          type="button"
+        >
+          ×
+        </button>
+
+      </div>
+
+      
+
+      <div
+        id="modalBody"
+        class="modal-body"
+      ></div>
+
+    </div>
+
+  </div>
+
+  
+
+  <div
+    id="modalEvidencia"
+    class="modal-overlay hidden"
+  >
+
+    <div class="evidencia-modal-card">
+
+      <div class="modal-head">
+
+        <div>
+
+          <h3>
+            Evidencia del reporte
+          </h3>
+
+          <p class="modal-subtitle">
+            Vista previa integrada
+          </p>
+
+        </div>
+
+        <button
+          id="btnCerrarEvidencia"
+          class="modal-close"
+          type="button"
+        >
+          ×
+        </button>
+
+      </div>
+
+      <div class="evidencia-toolbar">
+
+        <a
+          id="btnAbrirEvidencia"
+          target="_blank"
+          class="btn outline"
+        >
+          Abrir aparte
+        </a>
+
+        <a
+          id="btnDescargarEvidencia"
+          target="_blank"
+          class="btn primary"
+        >
+          Descargar
+        </a>
+
+      </div>
+
+      <iframe
+        id="iframeEvidencia"
+        class="pdf-frame"
+      ></iframe>
+
+      <img
+        id="imagenEvidencia"
+        class="imagen-evidencia hidden"
+        alt="Evidencia"
+      >
+
+    </div>
+
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="/js/ui-feedback.js"></script>
+  <script src="/js/ui-loading.js"></script>
+
+  <script src="/js/config.js"></script>
+  <script src="/js/admin-reportes.js"></script>
+</body>
+</html>

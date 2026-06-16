@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mi perfil - EduQuak</title>
+  <link rel="stylesheet" href="/css/perfil_alumno.css">
+  <link rel="stylesheet" href="/css/nav-global.css">
+  <link rel="stylesheet" href="/css/compact-ui.css">
+  <link rel="stylesheet" href="/css/ui-feedback.css">
+  <link rel="stylesheet" href="/css/ui-loading.css">
+  <link rel="stylesheet" href="/css/mobile-responsive.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="logo-wrap">
+      <div class="logo-mark">
+        <img src="/img/logo-eduquak.png" alt="Logo EduQuak" onerror="this.style.display='none'">
+      </div>
+      <div class="logo-text">
+        <span class="logo-title">EduQuak</span>
+        <span class="logo-subtitle">Alumno</span>
+      </div>
+    </div>
+
+    <div class="nav-actions">
+      <a href="/pages/alumno.html" class="nav-link">Volver al panel</a>
+    </div>
+  </nav>
+
+  <main class="container">
+    <section class="hero-card">
+      <div class="hero-content">
+        <div class="hero-info">
+          <span class="badge">Mi perfil</span>
+          <h1>Administra tu información</h1>
+          <p class="subtitle">
+            Aquí puedes actualizar tus datos personales y cambiar tu contraseña de forma segura.
+          </p>
+        </div>
+
+        <div class="hero-mini-card">
+          <span class="mini-label">Estado actual</span>
+          <p id="estadoActual">-</p>
+        </div>
+      </div>
+    </section>
+<section class="panel-card">
+      <div class="section-head">
+        <div>
+          <h2>Información personal</h2>
+          <p>Edita los datos principales de tu cuenta.</p>
+        </div>
+      </div>
+
+      <form id="formPerfil" class="form-grid">
+        <div class="input-group">
+          <label for="nombre">Nombre completo</label>
+          <input type="text" id="nombre" name="nombre" required>
+        </div>
+
+        <div class="input-group">
+          <label for="correo">Correo</label>
+          <input type="email" id="correo" name="correo" disabled>
+          <small>El correo no se puede modificar por ahora.</small>
+        </div>
+
+        <div class="input-group">
+          <label for="institucion">Institución</label>
+          <input type="text" id="institucion" name="institucion" required>
+        </div>
+
+        <div class="input-group">
+          <label for="telefono">Teléfono</label>
+          <input type="text" id="telefono" name="telefono" placeholder="Opcional">
+        </div>
+
+        <div class="input-group">
+          <label for="rol">Rol</label>
+          <input type="text" id="rol" name="rol" disabled>
+        </div>
+
+        <div class="input-group">
+          <label for="badge">Badge</label>
+          <input type="text" id="badge" name="badge" disabled>
+        </div>
+
+        <div class="actions-row full-width">
+          <button type="submit" class="btn primary">Guardar cambios</button>
+        </div>
+      </form>
+
+      <div id="mensajePerfil" class="message-box"></div>
+    </section>
+
+
+    <section class="panel-card">
+      <div class="section-head">
+        <div>
+          <h2>Seguridad</h2>
+          <p>Cambia tu contraseña cuando lo necesites.</p>
+        </div>
+      </div>
+
+      <form id="formPassword" class="form-grid">
+        <div class="input-group">
+          <label for="password_actual">Contraseña actual</label>
+          <input type="password" id="password_actual" name="password_actual" required>
+        </div>
+
+        <div class="input-group">
+          <label for="password_nueva">Nueva contraseña</label>
+          <input type="password" id="password_nueva" name="password_nueva" required>
+        </div>
+
+        <div class="input-group full-width">
+          <label for="password_confirmacion">Confirmar nueva contraseña</label>
+          <input type="password" id="password_confirmacion" name="password_confirmacion" required>
+        </div>
+
+        <div class="actions-row full-width">
+          <button type="submit" class="btn primary">Actualizar contraseña</button>
+        </div>
+      </form>
+
+      <div id="mensajePassword" class="message-box"></div>
+    </section>
+  
+
+
+    
+
+    <section class="panel-card">
+      <div class="section-head">
+        <div>
+          <h2>Validación de documento</h2>
+          <p>Si tu cuenta fue rechazada, aquí podrás ver el motivo y reenviar tu documento.</p>
+        </div>
+      </div>
+
+      <div id="alertaRechazo" class="status-alert hidden">
+        <strong>Motivo de rechazo:</strong>
+        <p id="motivoRechazo">-</p>
+      </div>
+
+      <div id="alertaReenvio" class="status-alert info hidden">
+        <strong>Documento reenviado</strong>
+        <p id="textoReenvio">Tu documento ya fue reenviado y está otra vez en revisión.</p>
+      </div>
+
+      <form id="formDocumentoAlumno" class="form-grid hidden" enctype="multipart/form-data">
+        <div class="input-group">
+          <label for="tipo_documento_reenvio">Tipo de documento</label>
+          <input type="text" id="tipo_documento_reenvio" name="tipo_documento" placeholder="Ej. constancia_estudios">
+        </div>
+
+        <div class="input-group">
+          <label for="documento_reenvio">Nuevo documento</label>
+          <input type="file" id="documento_reenvio" name="documento" accept=".pdf,.png,.jpg,.jpeg" required>
+          <small>Formatos permitidos: PDF, PNG, JPG o JPEG. Máximo 10 MB.</small>
+        </div>
+
+        <div class="actions-row full-width">
+          <button type="submit" class="btn primary">Reenviar documento</button>
+        </div>
+      </form>
+
+      <div id="mensajeDocumentoAlumno" class="message-box"></div>
+    </section>
+
+    
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="/js/ui-feedback.js"></script>
+  <script src="/js/ui-loading.js"></script>
+
+  <script src="/js/perfil_alumno.js"></script>
+  <script src="/js/config.js"></script>
+</body>
+</html>

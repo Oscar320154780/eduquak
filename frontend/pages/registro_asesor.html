@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registro Asesor - EduQuak</title>
+  <link rel="stylesheet" href="/css/registro_asesor.css">
+  <link rel="stylesheet" href="/css/nav-global.css">
+  <link rel="stylesheet" href="/css/compact-ui.css">
+  <link rel="stylesheet" href="/css/ui-feedback.css">
+  <link rel="stylesheet" href="/css/ui-loading.css">
+  <link rel="stylesheet" href="/css/mobile-responsive.css">
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="logo-wrap">
+      <div class="logo-mark">
+        <img src="/img/logo-eduquak.png" alt="Logo EduQuak" onerror="this.style.display='none'">
+      </div>
+      <div class="logo-text">
+        <span class="logo-title">EduQuak</span>
+        <span class="logo-subtitle">Registro de asesor</span>
+      </div>
+    </div>
+
+    <div class="nav-links">
+      <a href="/" class="nav-link">Inicio</a>
+      <a href="/pages/login.html" class="nav-link">Iniciar sesión</a>
+    </div>
+  </nav>
+
+  <main class="container">
+    <section class="registro-layout">
+<section class="registro-card asesor-theme">
+        <div class="header-registro">
+          <span class="badge asesor-badge">Registro de asesor</span>
+          <h2>Datos profesionales y validación</h2>
+          <p>
+            Tu perfil será revisado antes de aparecer para alumnos.
+          </p>
+        </div>
+
+        <div class="registro-aviso">
+          <strong>Antes de continuar</strong>
+          <p>
+            Tu cuenta quedará en revisión hasta que el administrador valide tu documento.
+          </p>
+        </div>
+
+        <form id="formAsesor" class="form-grid" enctype="multipart/form-data">
+          <div class="input-group">
+            <label for="nombre">Nombre completo</label>
+            <input type="text" id="nombre" name="nombre" placeholder="Tu nombre completo" required>
+          </div>
+
+          <div class="input-group">
+            <label for="correo">Correo</label>
+            <input type="email" id="correo" name="correo" placeholder="ejemplo@email.com" required>
+          </div>
+
+          <div class="input-group">
+            <label for="password">Contraseña</label>
+
+            <div class="password-field">
+              <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="••••••••"
+                minlength="8"
+                pattern="(?=.*[A-Z])(?=.*\d).{8,}"
+                title="Mínimo 8 caracteres, al menos una mayúscula y un número"
+                autocomplete="new-password"
+                required
+              >
+
+              <button
+                type="button"
+                class="password-toggle"
+                data-password-toggle="password"
+                aria-label="Mostrar contraseña"
+              >
+              <svg class="eye-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"></path>
+                <circle cx="12" cy="12" r="2.7"></circle>
+              </svg>
+            </button>
+            </div>
+
+            <small class="password-help">
+              Mínimo 8 caracteres, al menos una mayúscula y un número.
+            </small>
+          </div>
+
+          <div class="input-group">
+            <label for="institucion">Institución</label>
+            <input type="text" id="institucion" name="institucion" placeholder="Tu escuela o institución" required>
+          </div>
+
+          <div class="input-group">
+            <label for="telefono">Teléfono</label>
+            <input type="tel" id="telefono" name="telefono" placeholder="Opcional" inputmode="numeric" pattern="[0-9]*" maxlength="15" autocomplete="tel">
+          </div>
+
+          <div class="input-group">
+            <label for="especialidad">Especialidad</label>
+            <input type="text" id="especialidad" name="especialidad" placeholder="Ej. Matemáticas, Física, Programación" required>
+          </div>
+
+          <div class="input-group">
+            <label for="modalidad">Modalidad</label>
+            <select name="modalidad" id="modalidad">
+              <option value="virtual">Virtual</option>
+              <option value="presencial">Presencial</option>
+              <option value="ambas">Ambas</option>
+            </select>
+          </div>
+
+          <div class="input-group">
+            <label for="materias">Materias que asesora</label>
+            <input type="text" id="materias" name="materias" placeholder="Ej. Álgebra, Cálculo, Química">
+          </div>
+
+          <div class="input-group full-width">
+            <label for="descripcion">Descripción breve</label>
+            <textarea id="descripcion" name="descripcion" placeholder="Cuéntanos un poco sobre tu experiencia"></textarea>
+          </div>
+
+          <input type="hidden" name="tipo_documento" value="documento_respaldo">
+
+          <div class="input-group full-width">
+            <label for="documento">Documento de respaldo</label>
+            <input type="file" id="documento" name="documento" accept=".pdf,.png,.jpg,.jpeg" required>
+            <small>Formatos permitidos: PDF, PNG, JPG o JPEG.</small>
+          </div>
+
+          <div class="input-group full-width terms-box">
+            <label class="terms-label" for="terminos_aceptados">
+              <input
+                type="checkbox"
+                id="terminos_aceptados"
+                name="terminos_aceptados"
+                value="true"
+                required
+              >
+              <span>
+                Acepto los
+                <a href="/pages/terminos-condiciones.html" target="_blank" rel="noopener noreferrer">
+                  Términos y Condiciones
+                </a>
+                de EduQuak.
+              </span>
+            </label>
+          </div>
+
+          <div class="full-width">
+            <button type="submit" class="btn asesor-btn">Registrar asesor</button>
+          </div>
+        </form>
+
+        <div id="mensajeRegistro" class="mensaje"></div>
+
+        <div class="extra-links">
+          <a href="/">Volver al inicio</a>
+          <a href="/pages/login.html">Ya tengo cuenta</a>
+        </div>
+      </section>
+    </section>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="/js/ui-feedback.js"></script>
+  <script src="/js/ui-loading.js"></script>
+
+  <script src="/js/registro_asesor.js"></script>
+  <script src="/js/config.js"></script>
+</body>
+</html>

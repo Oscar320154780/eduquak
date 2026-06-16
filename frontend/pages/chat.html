@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat asesoría - EduQuak</title>
+
+  <link rel="stylesheet" href="/css/chat.css">
+  <link rel="stylesheet" href="/css/nav-global.css">
+  <link rel="stylesheet" href="/css/compact-ui.css">
+  <link rel="stylesheet" href="/css/ui-feedback.css">
+  <link rel="stylesheet" href="/css/ui-loading.css">
+  <link rel="stylesheet" href="/css/mobile-responsive.css">
+</head>
+<body class="chat-page-body">
+
+  <main class="chat-shell">
+
+    <section class="chat-card">
+
+      <header class="chat-header">
+        <div>
+          <span class="badge">Chat de asesoría</span>
+          <h1 id="chatTitulo">Comunicación de la sesión</h1>
+          <p id="chatInfo">Cargando información...</p>
+        </div>
+
+        <button id="btnVolver" class="btn outline" type="button">
+          Volver
+        </button>
+      </header>
+
+      <section id="estadoChat" class="estado-chat hidden"></section>
+
+      <section id="mensajesChat" class="mensajes-chat">
+        <div class="empty-state">Cargando mensajes...</div>
+      </section>
+
+      <form id="formChat" class="chat-form">
+        <textarea
+          id="mensajeInput"
+          placeholder="Escribe tu mensaje..."
+          rows="1"
+          enterkeyhint="send"
+          maxlength="1000"
+          required
+        ></textarea>
+
+        <button class="btn primary" type="submit">
+          Enviar
+        </button>
+      </form>
+
+    </section>
+
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="/js/ui-feedback.js"></script>
+  <script src="/js/ui-loading.js"></script>
+
+  <script src="/js/chat.js"></script>
+  <script src="/js/config.js"></script>
+</body>
+</html>

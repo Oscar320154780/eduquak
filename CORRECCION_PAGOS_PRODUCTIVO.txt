@@ -1,0 +1,14 @@
+CORRECCION PAGO PRODUCTIVO
+
+Se corrigio el flujo para que en produccion EduQuak redirija a init_point y no a sandbox_init_point.
+
+En Render agrega o verifica:
+MERCADOPAGO_USAR_SANDBOX=false
+NODE_ENV=production
+
+Para pruebas sandbox locales puedes usar:
+MERCADOPAGO_USAR_SANDBOX=true
+NODE_ENV=development
+
+Si la URL abre con sandbox.mercadopago.com.mx, sigues en modo prueba.
+Si la URL abre con www.mercadopago.com.mx, estas en modo productivo.
