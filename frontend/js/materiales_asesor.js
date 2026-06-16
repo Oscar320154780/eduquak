@@ -2,7 +2,6 @@ const API = window.EDUQUAK_API_URL || "";
 const token = localStorage.getItem("token");
 
 let tabMaterialesActiva = "subir";
-let subiendoMaterial = false;
 
 if (!token) {
   window.location.href = "/pages/login.html";
@@ -15,28 +14,31 @@ function ocultarMensaje() {
   box.classList.add("hidden");
 }
 
-function mostrarMensaje(texto) {
+function mostrarMensaje(texto, tipo = "info") {
   const box = document.getElementById("mensajeMaterial");
-  if (!box) return;
+  if (!box) {
+    alert(texto);
+    return;
+  }
+
   box.textContent = texto;
   box.classList.remove("hidden");
+  box.dataset.tipo = tipo;
+  box.scrollIntoView({ behavior: "smooth", block: "center" });
 }
 
 function mostrarToast(tipo, texto) {
-  if (window.EduQuakUI) {
+  if (window.EduQuakUI?.toast) {
     window.EduQuakUI.toast(tipo, texto);
     return;
   }
 
-  mostrarMensaje(texto);
+  mostrarMensaje(texto, tipo);
 }
 
 function resolverUrlArchivo(url) {
   if (!url) return "#";
-
-  if (/^https?:\/\//i.test(url)) {
-    return url;
-  }
+  if (/^https?:\/\//i.test(url)) return url;
 
   const path = url.startsWith("/") ? url : `/${url}`;
   return `${API}${path}`;
@@ -52,13 +54,15 @@ function escapeHtml(valor) {
 }
 
 async function leerJsonSeguro(res) {
+  const texto = await res.text();
+
   try {
-    return await res.json();
+    return texto ? JSON.parse(texto) : { ok: false, message: `Respuesta vacía. HTTP ${res.status}` };
   } catch (error) {
-    console.error("La respuesta no fue JSON:", error);
+    console.error("Respuesta no JSON del servidor:", texto);
     return {
       ok: false,
-      message: `La respuesta del servidor no fue válida. Código HTTP: ${res.status}`
+      message: `El servidor respondió algo no válido. HTTP ${res.status}`
     };
   }
 }
@@ -127,7 +131,7 @@ async function eliminarMaterial(idMaterial, estadoRevision) {
 
     const data = await leerJsonSeguro(res);
     console.log("Eliminar material:", data);
-    mostrarMensaje(data.message || "Respuesta recibida.");
+    mostrarMensaje(data.message || "Respuesta recibida.", data.ok ? "success" : "error");
 
     if (data.ok) {
       mostrarToast("success", "Material eliminado correctamente");
@@ -137,7 +141,7 @@ async function eliminarMaterial(idMaterial, estadoRevision) {
     }
   } catch (error) {
     console.error("Error al eliminar material:", error);
-    mostrarMensaje("Error al eliminar el material.");
+    mostrarMensaje("Error al eliminar el material.", "error");
   } finally {
     window.EduQuakLoading?.forceHide?.();
   }
@@ -273,29 +277,36 @@ async function cargarMateriales() {
   }
 }
 
-function validarFormularioMaterial(form) {
+function validarFormularioMaterial() {
   const titulo = document.getElementById("tituloMaterial")?.value?.trim();
   const materia = document.getElementById("materiaMaterial")?.value?.trim();
   const archivo = document.getElementById("archivoMaterial")?.files?.[0];
 
+  console.log("Validando material:", {
+    titulo,
+    materia,
+    archivo: archivo ? archivo.name : null,
+    size: archivo ? archivo.size : null
+  });
+
   if (!titulo) {
-    mostrarMensaje("Escribe el título del material.");
+    mostrarMensaje("Escribe el título del material.", "error");
     return false;
   }
 
   if (!materia) {
-    mostrarMensaje("Escribe la materia del material.");
+    mostrarMensaje("Escribe la materia del material.", "error");
     return false;
   }
 
   if (!archivo) {
-    mostrarMensaje("Selecciona un archivo antes de subir el material.");
+    mostrarMensaje("Selecciona un archivo antes de subir el material.", "error");
     return false;
   }
 
   const limiteMB = 10;
   if (archivo.size > limiteMB * 1024 * 1024) {
-    mostrarMensaje(`El archivo pesa más de ${limiteMB} MB. Usa uno más ligero.`);
+    mostrarMensaje(`El archivo pesa más de ${limiteMB} MB. Usa uno más ligero.`, "error");
     return false;
   }
 
@@ -303,7 +314,7 @@ function validarFormularioMaterial(form) {
   const permitidas = [".pdf", ".png", ".jpg", ".jpeg", ".doc", ".docx", ".ppt", ".pptx"];
 
   if (!permitidas.includes(extension)) {
-    mostrarMensaje(`Formato no permitido. Usa: ${permitidas.join(", ")}`);
+    mostrarMensaje(`Formato no permitido. Usa: ${permitidas.join(", ")}`, "error");
     return false;
   }
 
@@ -312,38 +323,43 @@ function validarFormularioMaterial(form) {
 
 async function subirMaterial(event) {
   event?.preventDefault?.();
+  event?.stopPropagation?.();
 
-  if (subiendoMaterial) return;
+  console.log("INICIO subirMaterial v4");
 
   const form = document.getElementById("formMaterial");
   const submitBtn = document.getElementById("btnSubirMaterial");
 
   if (!form) {
-    mostrarMensaje("No se encontró el formulario de materiales.");
-    return;
+    mostrarMensaje("No se encontró el formulario de materiales.", "error");
+    return false;
   }
 
   ocultarMensaje();
 
-  if (!validarFormularioMaterial(form)) {
-    return;
+  if (!validarFormularioMaterial()) {
+    console.warn("Validación detenida. No se envió al backend.");
+    return false;
   }
 
-  const formData = new FormData(form);
+  const formData = new FormData();
+  formData.append("titulo", document.getElementById("tituloMaterial").value.trim());
+  formData.append("materia", document.getElementById("materiaMaterial").value.trim());
+  formData.append("descripcion", document.getElementById("descripcionMaterial")?.value?.trim() || "");
+  formData.append("archivo", document.getElementById("archivoMaterial").files[0]);
+
   const archivo = document.getElementById("archivoMaterial")?.files?.[0];
 
   try {
-    subiendoMaterial = true;
-
     if (submitBtn) {
       submitBtn.disabled = true;
       submitBtn.textContent = "Subiendo...";
     }
 
-    mostrarMensaje("Subiendo material, espera unos segundos...");
+    mostrarMensaje("Subiendo material, espera unos segundos...", "info");
 
-    console.log("Intentando subir material:", {
-      api: API || "misma URL",
+    console.log("Enviando material al backend:", {
+      url: `${API}/api/materiales/upload`,
       archivo: archivo?.name,
       pesoMB: archivo ? (archivo.size / 1024 / 1024).toFixed(2) : null
     });
@@ -357,29 +373,33 @@ async function subirMaterial(event) {
     });
 
     const data = await leerJsonSeguro(res);
-    console.log("Subir material:", {
+
+    console.log("Respuesta subida material v4:", {
       status: res.status,
       okHttp: res.ok,
       data
     });
 
-    mostrarMensaje(data.message || "Respuesta recibida.");
-
-    if (data.ok) {
-      mostrarToast("success", "Material subido correctamente. Quedó en revisión.");
-      form.reset();
-      await cargarMateriales();
-      cambiarTabMateriales("mis-materiales");
-    } else {
-      mostrarToast("error", data.message || "No se pudo subir el material.");
+    if (!res.ok || !data.ok) {
+      const mensaje = data.message || `No se pudo subir el material. HTTP ${res.status}`;
+      mostrarMensaje(mensaje, "error");
+      mostrarToast("error", mensaje);
+      return false;
     }
-  } catch (error) {
-    console.error("Error al subir material:", error);
-    mostrarMensaje("Error al subir el material. Revisa Render o tu conexión.");
-    mostrarToast("error", "Error al subir el material.");
-  } finally {
-    subiendoMaterial = false;
 
+    mostrarMensaje(data.message || "Material subido correctamente. Quedó en revisión.", "success");
+    mostrarToast("success", "Material subido correctamente. Quedó en revisión.");
+
+    form.reset();
+    await cargarMateriales();
+    cambiarTabMateriales("mis-materiales");
+    return true;
+  } catch (error) {
+    console.error("Error real al subir material v4:", error);
+    mostrarMensaje("Error al subir el material. Revisa Network o los logs de Render.", "error");
+    mostrarToast("error", "Error al subir el material.");
+    return false;
+  } finally {
     if (submitBtn) {
       submitBtn.disabled = false;
       submitBtn.textContent = "Subir material";
@@ -389,30 +409,13 @@ async function subirMaterial(event) {
   }
 }
 
-
 window.subirMaterial = subirMaterial;
-
-// Fallback fuerte: captura el clic aunque el listener normal no se haya enganchado.
-document.addEventListener(
-  "click",
-  (event) => {
-    const btn = event.target?.closest?.("#btnSubirMaterial");
-    if (!btn) return;
-
-    event.preventDefault();
-    event.stopPropagation();
-
-    console.log("Click detectado en btnSubirMaterial");
-    subirMaterial(event);
-  },
-  true
-);
 
 function inicializarMaterialesAsesor() {
   const form = document.getElementById("formMaterial");
   const btnSubir = document.getElementById("btnSubirMaterial");
 
-  console.log("Materiales asesor listo:", {
+  console.log("Materiales asesor v4 listo:", {
     formMaterial: Boolean(form),
     btnSubirMaterial: Boolean(btnSubir),
     api: API || "misma URL"
