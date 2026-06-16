@@ -8,14 +8,31 @@ const {
   requireVerified,
   requireVerifiedAlumno
 } = require("../middleware/verified.middleware");
-const { uploadMaterial } = require("../config/multer");
+const { uploadMaterial, formatosMateriales } = require("../config/multer");
+
+function subirArchivoMaterial(req, res, next) {
+  uploadMaterial.single("archivo")(req, res, (error) => {
+    if (!error) {
+      return next();
+    }
+
+    const esTamano = error.code === "LIMIT_FILE_SIZE";
+
+    return res.status(400).json({
+      ok: false,
+      message: esTamano
+        ? "El archivo es demasiado grande. Máximo permitido: 10 MB."
+        : error.message || `Archivo no permitido. Usa: ${formatosMateriales.join(", ")}`
+    });
+  });
+}
 
 router.post(
   "/upload",
   requireAuth,
   requireRole("asesor"),
   requireVerified,
-  uploadMaterial.single("archivo"),
+  subirArchivoMaterial,
   controller.subirMaterial
 );
 

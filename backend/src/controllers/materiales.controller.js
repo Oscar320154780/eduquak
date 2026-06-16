@@ -46,7 +46,9 @@ function normalizarTexto(valor) {
 exports.subirMaterial = async (req, res) => {
   try {
     const id_asesor = req.user.id_usuario;
-    const { titulo, descripcion, materia } = req.body;
+    const titulo = normalizarTexto(req.body.titulo);
+    const descripcion = normalizarTexto(req.body.descripcion);
+    const materia = normalizarTexto(req.body.materia);
 
     if (!titulo || !materia) {
       return res.status(400).json({
@@ -58,7 +60,7 @@ exports.subirMaterial = async (req, res) => {
     if (!req.file) {
       return res.status(400).json({
         ok: false,
-        message: "Debes subir un archivo PDF"
+        message: "Debes subir un archivo válido"
       });
     }
 
@@ -93,7 +95,7 @@ exports.subirMaterial = async (req, res) => {
     console.error("Error al subir material:", error);
     return res.status(500).json({
       ok: false,
-      message: "Error al subir material"
+      message: error.message || "Error al subir material"
     });
   }
 };

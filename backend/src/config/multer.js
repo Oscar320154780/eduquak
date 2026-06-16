@@ -5,7 +5,7 @@ function createUploader(allowedExtensions = [".pdf", ".png", ".jpg", ".jpeg"]) {
   const storage = multer.memoryStorage();
 
   const fileFilter = (req, file, cb) => {
-    const ext = path.extname(file.originalname).toLowerCase();
+    const ext = path.extname(file.originalname || "").toLowerCase();
 
     if (!allowedExtensions.includes(ext)) {
       return cb(
@@ -27,8 +27,20 @@ function createUploader(allowedExtensions = [".pdf", ".png", ".jpg", ".jpeg"]) {
   });
 }
 
+const formatosMateriales = [
+  ".pdf",
+  ".png",
+  ".jpg",
+  ".jpeg",
+  ".doc",
+  ".docx",
+  ".ppt",
+  ".pptx"
+];
+
 module.exports = {
   uploadConstancia: createUploader([".pdf", ".png", ".jpg", ".jpeg"]),
   uploadRespaldo: createUploader([".pdf", ".png", ".jpg", ".jpeg"]),
-  uploadMaterial: createUploader([".pdf"])
+  uploadMaterial: createUploader(formatosMateriales),
+  formatosMateriales
 };

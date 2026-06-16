@@ -19,6 +19,38 @@ function mostrarMensaje(texto) {
   box.classList.remove("hidden");
 }
 
+function mostrarToast(tipo, texto) {
+  if (window.EduQuakUI) {
+    window.EduQuakUI.toast(tipo, texto);
+    return;
+  }
+
+  mostrarMensaje(texto);
+}
+
+function resolverUrlArchivo(url) {
+  if (!url) return "#";
+
+  if (/^https?:\/\//i.test(url)) {
+    return url;
+  }
+
+  const path = url.startsWith("/") ? url : `/${url}`;
+  return `${API}${path}`;
+}
+
+async function leerJsonSeguro(res) {
+  try {
+    return await res.json();
+  } catch (error) {
+    console.error("La respuesta no fue JSON:", error);
+    return {
+      ok: false,
+      message: "La respuesta del servidor no fue válida. Revisa Render/servidor."
+    };
+  }
+}
+
 function estadoClase(estado) {
   const valor = (estado || "").toLowerCase();
 
@@ -79,28 +111,19 @@ async function eliminarMaterial(idMaterial, estadoRevision) {
       }
     });
 
-    let data;
-
-    try {
-      data = await res.json();
-    } catch (jsonError) {
-      console.error("La respuesta no fue JSON:", jsonError);
-      mostrarMensaje("La respuesta del servidor no fue válida.");
-      return;
-    }
-
+    const data = await leerJsonSeguro(res);
     console.log("Eliminar material:", data);
     mostrarMensaje(data.message || "Respuesta recibida.");
 
     if (data.ok) {
-      if (window.EduQuakUI) {
-        window.EduQuakUI.toast("success", "Material eliminado correctamente");
-      }
+      mostrarToast("success", "Material eliminado correctamente");
       await cargarMateriales();
     }
   } catch (error) {
     console.error("Error al eliminar material:", error);
     mostrarMensaje("Error al eliminar el material.");
+  } finally {
+    window.EduQuakLoading?.forceHide?.();
   }
 }
 
@@ -120,7 +143,7 @@ function renderMateriales(lista) {
   lista.forEach((material) => {
     const estado = material.estado_revision || "pendiente_revision";
     const claseEstado = estadoClase(estado);
-    const archivoUrl = material.archivo_url ? `${API}${material.archivo_url}` : "#";
+    const archivoUrl = resolverUrlArchivo(material.archivo_url);
 
     const textoEstado = estado === "pendiente_revision" ? "pendiente" : estado;
 
@@ -171,13 +194,13 @@ function renderMateriales(lista) {
       <div class="button-row">
         ${
           material.archivo_url
-            ? `<a href="${archivoUrl}" target="_blank" class="btn primary">Abrir archivo</a>`
+            ? `<a href="${archivoUrl}" target="_blank" rel="noopener" class="btn primary">Abrir archivo</a>`
             : ""
         }
 
         ${
           material.archivo_url
-            ? `<a href="${archivoUrl}" target="_blank" class="btn outline" download>Descargar</a>`
+            ? `<a href="${archivoUrl}" target="_blank" rel="noopener" class="btn outline" download>Descargar</a>`
             : ""
         }
 
@@ -204,7 +227,7 @@ async function cargarMateriales() {
       }
     });
 
-    const data = await res.json();
+    const data = await leerJsonSeguro(res);
     console.log("Mis materiales:", data);
 
     if (!data.ok) {
@@ -222,6 +245,8 @@ async function cargarMateriales() {
       <div class="empty-state">Error al cargar tus materiales.</div>
     `;
     ocultarMensaje();
+  } finally {
+    window.EduQuakLoading?.forceHide?.();
   }
 }
 
@@ -229,9 +254,30 @@ document.getElementById("formMaterial").addEventListener("submit", async (e) => 
   e.preventDefault();
 
   const form = e.target;
+  const submitBtn = form.querySelector("button[type='submit']");
+  const archivo = document.getElementById("archivoMaterial")?.files?.[0];
+
+  ocultarMensaje();
+
+  if (!archivo) {
+    mostrarMensaje("Selecciona un archivo antes de subir el material.");
+    return;
+  }
+
+  const limiteMB = 10;
+  if (archivo.size > limiteMB * 1024 * 1024) {
+    mostrarMensaje(`El archivo pesa más de ${limiteMB} MB. Usa uno más ligero.`);
+    return;
+  }
+
   const formData = new FormData(form);
 
   try {
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Subiendo...";
+    }
+
     const res = await fetch(`${API}/api/materiales/upload`, {
       method: "POST",
       headers: {
@@ -240,28 +286,30 @@ document.getElementById("formMaterial").addEventListener("submit", async (e) => 
       body: formData
     });
 
-    let data;
-
-    try {
-      data = await res.json();
-    } catch (jsonError) {
-      console.error("La respuesta no fue JSON:", jsonError);
-      mostrarMensaje("La respuesta del servidor no fue válida.");
-      return;
-    }
-
+    const data = await leerJsonSeguro(res);
     console.log("Subir material:", data);
 
     mostrarMensaje(data.message || "Respuesta recibida.");
 
     if (data.ok) {
+      mostrarToast("success", "Material subido correctamente. Quedó en revisión.");
       form.reset();
       await cargarMateriales();
       cambiarTabMateriales("mis-materiales");
+    } else {
+      mostrarToast("error", data.message || "No se pudo subir el material.");
     }
   } catch (error) {
     console.error("Error al subir material:", error);
-    mostrarMensaje("Error al subir el material.");
+    mostrarMensaje("Error al subir el material. Revisa tu conexión o el servidor.");
+    mostrarToast("error", "Error al subir el material.");
+  } finally {
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Subir material";
+    }
+
+    window.EduQuakLoading?.forceHide?.();
   }
 });
 
